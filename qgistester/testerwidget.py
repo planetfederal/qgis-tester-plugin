@@ -2,6 +2,8 @@ import os
 from PyQt4 import uic, QtGui, QtCore
 from report import *
 import traceback
+import sys
+from qgistester.reportdialog import ReportDialog
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
@@ -42,8 +44,8 @@ class TesterWidget(BASE, WIDGET):
     def runNextTest(self):
         if self.currentTestResult:
             self.report.addTestResult(self.currentTestResult)
-        self.currentTestResult = TestResult()
         if self.currentTest < len(self.tests):
+            self.currentTestResult = TestResult(self.tests[self.currentTest])
             item = self.listTests.item(self.currentTest)
             item.setBackground(QtCore.Qt.cyan)
             self.currentTestStep = 0
@@ -51,8 +53,9 @@ class TesterWidget(BASE, WIDGET):
             self.btnTestFailed.setEnabled(False)
             self.runNextStep()
         else:
-            #TODO show report
             self.toolbar.setVisible(False)
+            dlg = ReportDialog(self.report)
+            dlg.exec_()
 
     def runNextStep(self):
         test = self.tests[self.currentTest]
@@ -66,6 +69,7 @@ class TesterWidget(BASE, WIDGET):
                 self.btnNextStep.setEnabled(False)
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
+                self.txtStep.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
                     function()
@@ -73,6 +77,7 @@ class TesterWidget(BASE, WIDGET):
                 except:
                     self.testFails(traceback.format_exc())
             else:
+                self.txtStep.setEnabled(True)
                 self.btnTestOk.setEnabled(True)
                 self.btnTestFailed.setEnabled(True)
                 self.btnNextStep.setEnabled(False)
@@ -81,16 +86,17 @@ class TesterWidget(BASE, WIDGET):
                 self.btnNextStep.setEnabled(False)
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
+                self.txtStep.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
                     function()
+                    self.currentTestStep += 1
+                    self.runNextStep()
                 except:
-                    self.currentTestResult.failed(desc, traceback.format_exc())
-                    self.testFails()
-                self.currentTestStep += 1
-                self.runNextStep()
+                    self.testFails(traceback.format_exc())
             else:
                 self.currentTestStep += 1
+                self.txtStep.setEnabled(True)
                 self.btnNextStep.setEnabled(True)
 
     def testPasses(self):
@@ -105,10 +111,10 @@ class TesterWidget(BASE, WIDGET):
         item = self.listTests.item(self.currentTest)
         item.setBackground(QtCore.Qt.white)
         item.setForeground(QtCore.Qt.red)
-        self.currentTest +=1
         test = self.tests[self.currentTest]
         desc, function = test.steps[self.currentTestStep]
         self.currentTestResult.failed(desc, msg)
+        self.currentTest +=1
         self.runNextTest()
 
     def skipTest(self):

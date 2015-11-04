@@ -30,6 +30,8 @@ class TestSelector(BASE, WIDGET):
                 groupItem.addChild(testItem)
             self.testsTree.addTopLevelItem(groupItem)
 
+        self.testsTree.expandAll()
+
         self.buttonBox.accepted.connect(self.okPressed)
         self.buttonBox.rejected.connect(self.cancelPressed)
 

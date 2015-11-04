@@ -5,15 +5,20 @@ import pkgutil
 import unittest
 from qgistester.test import Test, UnitTestWrapper
 
+
 def tests():
 	_tests = []
 	prefix = __name__ + "."
 	path = __path__
 	for importer, modname, ispkg in pkgutil.iter_modules(path, prefix):
+		modtests = []
+		group = modname.split(".")[-1]
 		module = __import__(modname, fromlist="dummy")
 		if "tests" in dir(module):
-			_tests.extend(module.tests())
+			modtests.extend(module.tests())
 		if "suite" in dir(module):
-			for unit in module.suite():
-				_tests.append(UnitTestWrapper(modname.split(".")[-1], unit))
+			modtests.extend([UnitTestWrapper(unit) for unit in module.suite()])
+		for t in modtests:
+			t.group = group
+		_tests.extend(modtests)
 	return  _tests

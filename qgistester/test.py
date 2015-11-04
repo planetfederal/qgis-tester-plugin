@@ -1,25 +1,24 @@
-from report import TestResult
 from unittest.suite import TestSuite
+from unittest.result import TestResult
+from unittest.runner import TextTestRunner
 
 class Test():
 
-    steps = []
-
-    def __init__(self, group, name):
+    def __init__(self, name):
+        self.steps = []
         self.name = name
-        self.group = group
+        self.group = ""
 
     def addStep(self, name, function=None):
         self.steps.append((name, function))
 
 class UnitTestWrapper():
 
-    steps = []
-
-    def __init__(self, group, test):
-        self.group = group
+    def __init__(self, test):
+        self.steps = []
         self.test = test
         self.name = unicode(test)
+        self.group = ""
         def runTest():
             suite = TestSuite()
             suite.addTest(self.test)
@@ -29,13 +28,13 @@ class UnitTestWrapper():
                 raise Exception(result.err)
         self.steps.append(("Run unit test", runTest))
 
-class _TestRunner():
+class _TestRunner(TextTestRunner):
 
     def __init__(self):
         pass
 
     def run(self, test):
-        result = _TestResult(self)
+        result = _TestResult()
         test(result)
 
         return result
