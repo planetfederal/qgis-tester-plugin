@@ -8,17 +8,19 @@ class Test():
         self.steps = []
         self.name = name
         self.group = ""
+        self.cleanup = lambda: None
 
     def addStep(self, name, function=None):
         self.steps.append((name, function))
 
-class UnitTestWrapper():
+    def setCleanup(self,function):
+        self.cleanup = function
+
+class UnitTestWrapper(Test):
 
     def __init__(self, test):
-        self.steps = []
+        Test.__init__(self, unicode(test))
         self.test = test
-        self.name = unicode(test)
-        self.group = ""
         def runTest():
             suite = TestSuite()
             suite.addTest(self.test)
@@ -27,6 +29,10 @@ class UnitTestWrapper():
             if result.err is not None:
                 raise Exception(result.err)
         self.steps.append(("Run unit test", runTest))
+
+    def setCleanup(self):
+        pass
+
 
 class _TestRunner(TextTestRunner):
 

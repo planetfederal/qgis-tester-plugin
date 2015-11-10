@@ -4,6 +4,7 @@ from report import *
 import traceback
 import sys
 from qgistester.reportdialog import ReportDialog
+from utils import execute
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
@@ -45,6 +46,8 @@ class TesterWidget(BASE, WIDGET):
         if self.currentTestResult:
             self.report.addTestResult(self.currentTestResult)
         if self.currentTest < len(self.tests):
+            self.listTests.scrollToItem(self.listTests.item(self.currentTest),
+                                        QtGui.QAbstractItemView.EnsureVisible)
             self.currentTestResult = TestResult(self.tests[self.currentTest])
             item = self.listTests.item(self.currentTest)
             item.setBackground(QtCore.Qt.cyan)
@@ -72,7 +75,7 @@ class TesterWidget(BASE, WIDGET):
                 self.txtStep.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    function()
+                    execute(function)
                     self.testPasses()
                 except:
                     self.testFails(traceback.format_exc())
@@ -89,7 +92,7 @@ class TesterWidget(BASE, WIDGET):
                 self.txtStep.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    function()
+                    execute(function)
                     self.currentTestStep += 1
                     self.runNextStep()
                 except:
@@ -103,8 +106,15 @@ class TesterWidget(BASE, WIDGET):
         item = self.listTests.item(self.currentTest)
         item.setBackground(QtCore.Qt.white)
         item.setForeground(QtCore.Qt.green)
+        try:
+            test = self.tests[self.currentTest]
+            test.cleanup()
+            self.currentTestResult.passed()
+        except:
+            item.setForeground(QtCore.Qt.red)
+            self.currentTestResult.failed("Test cleanup", traceback.format_exc())
+
         self.currentTest +=1
-        self.currentTestResult.passed()
         self.runNextTest()
 
     def testFails(self, msg = ""):
@@ -114,6 +124,10 @@ class TesterWidget(BASE, WIDGET):
         test = self.tests[self.currentTest]
         desc, function = test.steps[self.currentTestStep]
         self.currentTestResult.failed(desc, msg)
+        try:
+            test.cleanup()
+        except:
+            item.setForeground(QtCore.Qt.red)
         self.currentTest +=1
         self.runNextTest()
 
@@ -121,8 +135,14 @@ class TesterWidget(BASE, WIDGET):
         item = self.listTests.item(self.currentTest)
         item.setBackground(QtCore.Qt.white)
         item.setForeground(QtCore.Qt.gray)
+        try:
+            test = self.tests[self.currentTest]
+            test.cleanup()
+        except:
+            item.setForeground(QtCore.Qt.red)
         self.currentTest +=1
         self.currentTestResult.skipped()
+
         self.runNextTest()
 
     def cancelTesting(self):
