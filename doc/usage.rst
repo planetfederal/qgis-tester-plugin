@@ -21,12 +21,12 @@ In the lower part of the QGIS window you will see the testing panel.
 
 It has two parts: 
 
-* The right one contains a list of all the test to be run. The current test being executed is highlighted in blue. Test that have already been executed are shown in red (if they failed), green (if they failed) or grey (if they were skipped)
+* The right one contains a list of all the test to be run. The current test being executed is highlighted in blue. Tests that have already been executed are shown in red (if they failed), green (if they passed) or grey (if they were skipped)
 
 * The left one contains a description of the current step in the current test. If the step is automated (that is, if no user interaction is expected during this step), the panel in the left part is disabled. Otherwise, the panel will show a description of the task that the test expects you to perform.
 
 
-All test selected in the test selection dialog will be run sequentially. Test can be of two types: automated and semi-automated. Each of them is described in the next sections, with indication about how to run the test in each case.
+All tests selected in the test selection dialog will be run sequentially. Tests can be of two types: automated and semi-automated. Each of them is described in the next sections, with indication about how to run the test in each case.
 
 Automated tests
 ----------------
@@ -43,7 +43,7 @@ Semi-automated test contain steps that do not require user interaction (such as 
 
 Here are a couple examples of suchs test, to help understand how the user should interact with the plugin in these cases.
 
-Example 1: A test to check correct uploading of styles to a GeoServer catalog. It has the following steps:
+**Example 1**: A test to check correct uploading of styles to a GeoServer catalog. It has the following steps:
 
 - Open a QGIS project and upload on of its layers (including its style) to a test GeoServer catalog.
 - Create a WMS layer that connects to the layer uploaded to GeoServer on the previous step.
@@ -58,7 +58,7 @@ The thrid step is manual, and the test panel will show something like this.
 
 It tells the user to verify that symbology is correctly uploaded and used. Based on that, the user should indicate whether the test passes or not. Once the user clicks on any of the buttons to indicate that, the test is finished and the plugin will move to the neext test.
 
-Example 2: A test to verify that a layer is correctly imported into GeServer by dragging and dropping. It has the following steps
+**Example 2**: A test to verify that a layer is correctly imported into GeServer by dragging and dropping. It has the following steps
 
 - Create a GeoServer catalog and set it up in the GeoServer explorer. Open the GeoServer explorer.
 - Drag a layer file from the QGIS browser into the item corresponding to that catalog in the GeoServer explorer
@@ -71,9 +71,9 @@ The test panel will look like this.
 .. image:: testpanel_upload_dragdrop.png
 	:align: center
 
-This is not the final step, so the "Test passes" and "Test fails" buttons are disabled. Instead, a "Next step" button is enabled. The user should clik on it once it has performed the task indicated in the panel (that is, once the layer file has been dragged into teh GeoServer explorer)
+This is not the final step, so the "Test passes" and "Test fails" buttons are disabled. Instead, a "Next step" button is enabled. The user should click on it once he has performed the task indicated in the panel (that is, once the layer file has been dragged into the GeoServer explorer)
 
-The last step is automated. The plugin will decide if the test passes or not, by checking the layers in the catalog. The user interaction is not needed for that. Once checked, the plugin will move to the next test
+The last step is automated. The plugin will decide if the test passes or not, by checking the layers in the catalog. The user interaction is not needed for that. Once checked, the plugin will move to the next test.
 
 Test report
 #############
