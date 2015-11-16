@@ -12,7 +12,7 @@ class TesterPlugin:
 		self.toolbar = None
 
 	def unload(self):
-		self.iface.removePluginWebMenu(u"Tester", self.action)
+		self.iface.removePluginMenu(u"Tester", self.action)
 		del self.action
 		if self.toolbar:
 			self.toolbar.setVisible(False)
