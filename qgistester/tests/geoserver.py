@@ -2,12 +2,17 @@ import qgis.utils
 from qgistester.test import Test
 import geoserverexplorer
 from geoserverexplorer.geoserver.retry import RetryCatalog
-from geoserverexplorer.test.catalogtests import suite as catalogSuite
 from geoserverexplorer.gui.gsexploreritems import *
 from geoserverexplorer.qgis.catalog import CatalogWrapper
 import os
 from qgistester.utils import layerFromName
 
+from geoserverexplorer.test.catalogtests import suite as catalogSuite
+from geoserverexplorer.test.deletetests import suite as deleteSuite
+#from geoserverexplorer.test.dragdroptests import suite as dragdropSuite
+from geoserverexplorer.test.guitests import suite as guiSuite
+#from geoserverexplorer.test.integrationtest import suite as integrationSuite
+#from geoserverexplorer.test.pkitests import suite as pkiSuite
 
 
 #Tests assume a standard Geoserver at localhost:8080 and default admin/geoserver credentials
@@ -86,4 +91,11 @@ def functionalTests():
     return [dragdropTest, vectorRenderingTest]
 
 def unitTests():
-    return catalogSuite()
+    _tests = []
+    _tests.extend(catalogSuite())
+    _tests.extend(deleteSuite())
+    #_tests.extend(dragdropSuite())
+    #_tests.extend(guiSuite())
+    #_tests.extend(integrationSuite())
+    #_tests.extend(pkiSuite())
+    return _tests 
