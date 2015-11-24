@@ -6,7 +6,7 @@ import unittest
 from qgistester.test import Test, UnitTestWrapper
 
 
-def tests():
+def findTests():
 	_tests = []
 	prefix = __name__ + "."
 	path = __path__
@@ -22,3 +22,17 @@ def tests():
 			t.group = group
 		_tests.extend(modtests)
 	return  _tests
+
+tests = findTests()
+
+def addTestModule(module):
+	modtests = []
+	modname = module.__name__
+	group = modname.split(".")[-1]
+	if "functionalTests" in dir(module):
+		modtests.extend(module.functionalTests())
+	if "unitTests" in dir(module):
+		modtests.extend([UnitTestWrapper(unit) for unit in module.unitTests()])
+	for t in modtests:
+		t.group = group
+	tests.extend(modtests)
