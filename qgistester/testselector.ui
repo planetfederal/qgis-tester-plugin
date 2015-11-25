@@ -15,6 +15,37 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="selectAllLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;All&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="unselectAllLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;None&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+   <item>
     <widget class="QTreeWidget" name="testsTree">
      <attribute name="headerVisible">
       <bool>false</bool>

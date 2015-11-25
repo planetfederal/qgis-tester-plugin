@@ -15,7 +15,7 @@ class TestSelector(BASE, WIDGET):
         self.tests = None
 
         allTests = defaultdict(list)
-        for test in tests.tests():
+        for test in tests.tests:
             allTests[test.group].append(test)
 
         for group, groupTests in allTests.iteritems():
@@ -32,9 +32,20 @@ class TestSelector(BASE, WIDGET):
 
         self.testsTree.expandAll()
 
+        self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
+        self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
+
         self.buttonBox.accepted.connect(self.okPressed)
         self.buttonBox.rejected.connect(self.cancelPressed)
 
+
+    def checkTests(self, b):
+        state = QtCore.Qt.Checked if b else QtCore.Qt.Unchecked
+        for i in xrange(self.testsTree.topLevelItemCount()):
+            item = self.testsTree.topLevelItem(i)
+            for j in xrange(item.childCount()):
+                child = item.child(j)
+                child.setCheckState(0, state)
 
     def cancelPressed(self):
         self.close()
