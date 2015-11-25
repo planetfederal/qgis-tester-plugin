@@ -5,6 +5,16 @@ Instructions to write new tests are described in this document
 
 To write a new set of tests, add a python module file in the *tests* folder of the plugin. The module must can have two functions, to define unit tests (automated) and functional tests (semi-automated):  *functionalTests()* and *unitTests()*. None of these functions is mandatory. The plugin will look for them and, if found, will call them to retrieve the tests decalred by the module.
 
+Plugins can add their tests suite to this tester plugin by using the addTestModule() function.
+
+In your plugin *__init__* method add something like this:
+
+        try:
+            from qgistester.tests import addTestModule
+            addTestModule(testmodule, "Name_of_my_plugin")
+        except:
+            pass
+
 Unit Tests
 ***********
 
@@ -24,4 +34,4 @@ To add a step to the test, the *addStep()* method is used. It accepts two parame
 
 You can add a cleanup task to be performed when the test is finished (or skipped), by using the *setCleanup()* method and passing a function where the cleanup is to be performed.
 
-See the *tests* folder to see the current test and see how they are implemented
+See the *tests* folder to see the current tests and see how they are implemented.
