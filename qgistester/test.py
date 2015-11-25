@@ -1,6 +1,7 @@
 from unittest.suite import TestSuite
 from unittest.result import TestResult
 from unittest.runner import TextTestRunner
+import traceback
 
 class Test():
 
@@ -27,7 +28,7 @@ class UnitTestWrapper(Test):
             runner = _TestRunner()
             result = runner.run(suite)
             if result.err is not None:
-                raise Exception(result.err)
+                raise Exception(traceback.format_tb(result.err[2]))
         self.steps.append(("Run unit test", runTest))
 
     def setCleanup(self):
