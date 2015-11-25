@@ -25,10 +25,9 @@ def findTests():
 
 tests = findTests()
 
-def addTestModule(module):
+def addTestModule(module, group = None):
 	modtests = []
-	modname = module.__name__
-	group = modname.split(".")[-1]
+	group = group or module.__name__.split(".")[-1]
 	if "functionalTests" in dir(module):
 		modtests.extend(module.functionalTests())
 	if "unitTests" in dir(module):
