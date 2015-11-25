@@ -1,6 +1,6 @@
 # QGIS Tester
 
-A QGIS plugin to automate and simplify testing routines for Boundless QGIS plugins and interactions with OpenGeo Suite.
+A QGIS plugin to automate and simplify testing routines QGIS plugins
 
 Usage of the plugin is defined  `here <./doc/usage.rst>`_
 
