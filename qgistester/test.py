@@ -28,7 +28,8 @@ class UnitTestWrapper(Test):
             runner = _TestRunner()
             result = runner.run(suite)
             if result.err is not None:
-                raise Exception(traceback.format_tb(result.err[2]))
+                desc = result.err[1].message + "\n" + "".join(traceback.format_tb(result.err[2]))
+                raise Exception(desc)
         self.steps.append(("Run unit test", runTest))
 
     def setCleanup(self):
