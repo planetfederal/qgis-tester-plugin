@@ -25,6 +25,9 @@ class TesterPlugin:
 
 
 	def test(self):
+		if self.toolbar is not None and self.toolbar.isVisible():
+			QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
+			return 
 		dlg = TestSelector()
 		dlg.exec_()
 		if dlg.tests:
