@@ -21,6 +21,7 @@ class TestSelector(BASE, WIDGET):
         for group, groupTests in allTests.iteritems():
             groupItem = QtGui.QTreeWidgetItem()
             groupItem.setText(0, group)
+            groupItem.setFlags(groupItem.flags() | QtCore.Qt.ItemIsTristate);
             for test in groupTests:
                 testItem = QtGui.QTreeWidgetItem()
                 testItem.setFlags(testItem.flags() | QtCore.Qt.ItemIsUserCheckable);
