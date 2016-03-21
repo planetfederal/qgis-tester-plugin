@@ -57,8 +57,6 @@ class TesterWidget(BASE, WIDGET):
             item = self.listTests.item(self.currentTest)
             item.setBackground(QtCore.Qt.cyan)
             self.currentTestStep = 0
-            self.btnTestOk.setEnabled(False)
-            self.btnTestFailed.setEnabled(False)
             self.runNextStep()
         else:
             self.toolbar.setVisible(False)
@@ -67,17 +65,24 @@ class TesterWidget(BASE, WIDGET):
 
     def runNextStep(self):
         test = self.tests[self.currentTest]
-        desc, function = test.steps[self.currentTestStep]
+        desc, function, isVerifyStep = test.steps[self.currentTestStep]
         self.btnSkip.setEnabled(True)
         self.btnCancel.setEnabled(True)
-        self.txtStep.setText(desc)
+        if os.path.exists(desc):
+            with open(desc) as f:
+                html = "".join(f.readlines())
+            self.webView.setHtml(html, QtCore.QUrl.fromUserInput(desc))
+        else:
+            self.webView.setHtml(desc)
         QtCore.QCoreApplication.processEvents()
         if self.currentTestStep == len(test.steps) - 1:
             if function is not None:
+                self.btnTestOk.setEnabled(False)
+                self.btnTestFailed.setEnabled(False)
                 self.btnNextStep.setEnabled(False)
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
-                self.txtStep.setEnabled(False)
+                self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
                     execute(function)
@@ -85,16 +90,20 @@ class TesterWidget(BASE, WIDGET):
                 except:
                     self.testFails(traceback.format_exc())
             else:
-                self.txtStep.setEnabled(True)
                 self.btnTestOk.setEnabled(True)
+                self.btnTestOk.setText("Test passes")
                 self.btnTestFailed.setEnabled(True)
+                self.btnTestFailed.setText("Test fails")
+                self.webView.setEnabled(True)
                 self.btnNextStep.setEnabled(False)
         else:
             if function is not None:
+                self.btnTestOk.setEnabled(False)
+                self.btnTestFailed.setEnabled(False)
                 self.btnNextStep.setEnabled(False)
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
-                self.txtStep.setEnabled(False)
+                self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
                     execute(function)
@@ -104,35 +113,51 @@ class TesterWidget(BASE, WIDGET):
                     self.testFails(traceback.format_exc())
             else:
                 self.currentTestStep += 1
-                self.txtStep.setEnabled(True)
-                self.btnNextStep.setEnabled(True)
+                self.webView.setEnabled(True)
+                self.btnNextStep.setEnabled(not isVerifyStep)
+                if isVerifyStep:
+                    self.btnTestOk.setEnabled(True)
+                    self.btnTestOk.setText("Step passes")
+                    self.btnTestFailed.setEnabled(True)
+                    self.btnTestFailed.setText("Step fails")
+                else:
+                    self.btnTestOk.setEnabled(False)
+                    self.btnTestFailed.setEnabled(False)
 
     def testPasses(self):
-        item = self.listTests.item(self.currentTest)
-        item.setBackground(QtCore.Qt.white)
-        item.setForeground(QtCore.Qt.green)
-        try:
-            test = self.tests[self.currentTest]
-            test.cleanup()
-            self.currentTestResult.passed()
-        except:
-            item.setForeground(QtCore.Qt.red)
-            self.currentTestResult.failed("Test cleanup", traceback.format_exc())
+        test = self.tests[self.currentTest]
+        if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
+            self.runNextStep()
+        else:
+            item = self.listTests.item(self.currentTest)
+            item.setBackground(QtCore.Qt.white)
+            item.setForeground(QtCore.Qt.green)
+            try:
+                test = self.tests[self.currentTest]
+                test.cleanup()
+                self.currentTestResult.passed()
+            except:
+                item.setForeground(QtCore.Qt.red)
+                self.currentTestResult.failed("Test cleanup", traceback.format_exc())
 
-        self.currentTest +=1
-        self.runNextTest()
+            self.currentTest +=1
+            self.runNextTest()
+
 
     def testFails(self, msg = ""):
         item = self.listTests.item(self.currentTest)
         item.setBackground(QtCore.Qt.white)
         item.setForeground(QtCore.Qt.red)
         test = self.tests[self.currentTest]
-        desc, function = test.steps[self.currentTestStep]
+        if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
+            desc = test.steps[self.currentTestStep - 1][0]
+        else:
+            desc = test.steps[self.currentTestStep][0]
         self.currentTestResult.failed(desc, msg)
         try:
             test.cleanup()
         except:
-            item.setForeground(QtCore.Qt.red)
+            pass
         self.currentTest +=1
         self.runNextTest()
 

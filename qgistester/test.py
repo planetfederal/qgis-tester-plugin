@@ -16,16 +16,17 @@ class Test():
         self.group = ""
         self.cleanup = lambda: None
 
-    def addStep(self, name, function=None):
-        self.steps.append((name, function))
+    def addStep(self, name, function=None, isVerifyStep=False):
+        self.steps.append((name, function, isVerifyStep))
 
     def setCleanup(self,function):
         self.cleanup = function
 
+
 class UnitTestWrapper(Test):
 
     def __init__(self, test):
-        Test.__init__(self, unicode(test))
+        Test.__init__(self, test.shortDescription() or test.id())
         self.test = test
         def runTest():
             suite = TestSuite()
@@ -35,7 +36,7 @@ class UnitTestWrapper(Test):
             if result.err is not None:
                 desc = result.err[1].message + "\n" + "".join(traceback.format_tb(result.err[2]))
                 raise Exception(desc)
-        self.steps.append(("Run unit test", runTest))
+        self.steps.append(("Run unit test", runTest, False))
 
     def setCleanup(self):
         pass
