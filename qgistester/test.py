@@ -8,6 +8,15 @@ from unittest.result import TestResult
 from unittest.runner import TextTestRunner
 import traceback
 
+class Step():
+
+    def __init__(self, description, function=None, prestep=None, isVerifyStep=False):
+        self.description = description
+        self.function = function
+        self.prestep = prestep
+        self.isVerifyStep = isVerifyStep
+
+
 class Test():
 
     def __init__(self, name):
@@ -16,8 +25,8 @@ class Test():
         self.group = ""
         self.cleanup = lambda: None
 
-    def addStep(self, name, function=None, isVerifyStep=False):
-        self.steps.append((name, function, isVerifyStep))
+    def addStep(self, description, function=None, prestep=None, isVerifyStep=False):
+        self.steps.append(Step(description, function, prestep, isVerifyStep))
 
     def setCleanup(self,function):
         self.cleanup = function
@@ -36,7 +45,7 @@ class UnitTestWrapper(Test):
             if result.err is not None:
                 desc = result.err[1].message + "\n" + "".join(traceback.format_tb(result.err[2]))
                 raise Exception(desc)
-        self.steps.append(("Run unit test", runTest, False))
+        self.steps.append(Step("Run unit test", runTest))
 
     def setCleanup(self):
         pass

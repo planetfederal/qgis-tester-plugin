@@ -54,18 +54,18 @@ class TesterWidget(BASE, WIDGET):
 
     def runNextStep(self):
         test = self.tests[self.currentTest]
-        desc, function, isVerifyStep = test.steps[self.currentTestStep]
+        step = test.steps[self.currentTestStep]
         self.btnSkip.setEnabled(True)
         self.btnCancel.setEnabled(True)
-        if os.path.exists(desc):
-            with open(desc) as f:
+        if os.path.exists(step.description):
+            with open(step.description) as f:
                 html = "".join(f.readlines())
-            self.webView.setHtml(html, QtCore.QUrl.fromUserInput(desc))
+            self.webView.setHtml(html, QtCore.QUrl.fromUserInput(step.description))
         else:
-            self.webView.setHtml(desc)
+            self.webView.setHtml(step.description)
         QtCore.QCoreApplication.processEvents()
         if self.currentTestStep == len(test.steps) - 1:
-            if function is not None:
+            if step.function is not None:
                 self.btnTestOk.setEnabled(False)
                 self.btnTestFailed.setEnabled(False)
                 self.btnNextStep.setEnabled(False)
@@ -74,7 +74,7 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    execute(function)
+                    execute(step.function)
                     self.testPasses()
                 except:
                     self.testFails(traceback.format_exc())
@@ -85,8 +85,10 @@ class TesterWidget(BASE, WIDGET):
                 self.btnTestFailed.setText("Test fails")
                 self.webView.setEnabled(True)
                 self.btnNextStep.setEnabled(False)
+                if step.prestep:
+                    step.prestep()
         else:
-            if function is not None:
+            if step.function is not None:
                 self.btnTestOk.setEnabled(False)
                 self.btnTestFailed.setEnabled(False)
                 self.btnNextStep.setEnabled(False)
@@ -95,7 +97,7 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    execute(function)
+                    execute(step.function)
                     self.currentTestStep += 1
                     self.runNextStep()
                 except:
@@ -103,8 +105,8 @@ class TesterWidget(BASE, WIDGET):
             else:
                 self.currentTestStep += 1
                 self.webView.setEnabled(True)
-                self.btnNextStep.setEnabled(not isVerifyStep)
-                if isVerifyStep:
+                self.btnNextStep.setEnabled(not step.isVerifyStep)
+                if step.isVerifyStep:
                     self.btnTestOk.setEnabled(True)
                     self.btnTestOk.setText("Step passes")
                     self.btnTestFailed.setEnabled(True)
@@ -112,6 +114,8 @@ class TesterWidget(BASE, WIDGET):
                 else:
                     self.btnTestOk.setEnabled(False)
                     self.btnTestFailed.setEnabled(False)
+                if step.prestep:
+                    step.prestep()
 
     def testPasses(self):
         test = self.tests[self.currentTest]
@@ -123,7 +127,6 @@ class TesterWidget(BASE, WIDGET):
                 test.cleanup()
                 self.currentTestResult.passed()
             except:
-                item.setForeground(QtCore.Qt.red)
                 self.currentTestResult.failed("Test cleanup", traceback.format_exc())
 
             self.currentTest +=1
@@ -149,7 +152,7 @@ class TesterWidget(BASE, WIDGET):
             test = self.tests[self.currentTest]
             test.cleanup()
         except:
-            item.setForeground(QtCore.Qt.red)
+            pass
         self.currentTest +=1
         self.currentTestResult.skipped()
 
