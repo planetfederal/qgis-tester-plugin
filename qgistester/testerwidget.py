@@ -16,11 +16,9 @@ WIDGET, BASE = uic.loadUiType(
 
 class TesterWidget(BASE, WIDGET):
 
-    def __init__(self, toolbar):
+    def __init__(self):
         QtGui.QWidget.__init__(self)
         self.setupUi(self)
-
-        self.toolbar = toolbar
 
         self.btnCancel.clicked.connect(self.cancelTesting)
         self.btnTestOk.clicked.connect(self.testPasses)
@@ -30,19 +28,12 @@ class TesterWidget(BASE, WIDGET):
 
     def setTests(self, tests):
         self.tests = tests
-        for t in tests:
-            item = QtGui.QListWidgetItem("%s: %s" % (t.group.upper(), t.name))
-            self.listTests.addItem(item)
 
     currentTestResult = None
     currentTest = 0;
     def startTesting(self):
         self.currentTest = 0
         self.report = Report()
-        for i, test in enumerate(self.tests):
-            item = self.listTests.item(i)
-            item.setForeground(QtCore.Qt.black)
-            item.setBackground(QtCore.Qt.white)
 
         self.runNextTest()
 
@@ -51,15 +42,13 @@ class TesterWidget(BASE, WIDGET):
         if self.currentTestResult:
             self.report.addTestResult(self.currentTestResult)
         if self.currentTest < len(self.tests):
-            self.listTests.scrollToItem(self.listTests.item(self.currentTest),
-                                        QtGui.QAbstractItemView.EnsureVisible)
-            self.currentTestResult = TestResult(self.tests[self.currentTest])
-            item = self.listTests.item(self.currentTest)
-            item.setBackground(QtCore.Qt.cyan)
+            test = self.tests[self.currentTest]
+            self.labelCurrentTest.setText("Current test: %s-%s" % (test.group.upper(), test.name))
+            self.currentTestResult = TestResult(test)
             self.currentTestStep = 0
             self.runNextStep()
         else:
-            self.toolbar.setVisible(False)
+            self.setVisible(False)
             dlg = ReportDialog(self.report)
             dlg.exec_()
 
@@ -129,9 +118,6 @@ class TesterWidget(BASE, WIDGET):
         if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
             self.runNextStep()
         else:
-            item = self.listTests.item(self.currentTest)
-            item.setBackground(QtCore.Qt.white)
-            item.setForeground(QtCore.Qt.green)
             try:
                 test = self.tests[self.currentTest]
                 test.cleanup()
@@ -145,9 +131,6 @@ class TesterWidget(BASE, WIDGET):
 
 
     def testFails(self, msg = ""):
-        item = self.listTests.item(self.currentTest)
-        item.setBackground(QtCore.Qt.white)
-        item.setForeground(QtCore.Qt.red)
         test = self.tests[self.currentTest]
         if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
             desc = test.steps[self.currentTestStep - 1][0]
@@ -162,9 +145,6 @@ class TesterWidget(BASE, WIDGET):
         self.runNextTest()
 
     def skipTest(self):
-        item = self.listTests.item(self.currentTest)
-        item.setBackground(QtCore.Qt.white)
-        item.setForeground(QtCore.Qt.gray)
         try:
             test = self.tests[self.currentTest]
             test.cleanup()
@@ -176,7 +156,7 @@ class TesterWidget(BASE, WIDGET):
         self.runNextTest()
 
     def cancelTesting(self):
-        self.toolbar.setVisible(False)
+        self.setVisible(False)
 
 
 

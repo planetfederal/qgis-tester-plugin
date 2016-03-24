@@ -11,14 +11,19 @@ class TesterPlugin:
 
 	def __init__(self, iface):
 		self.iface = iface
-		self.toolbar = None
+		self.widget = None
+		self.iface.initializationCompleted.connect(self.hideWidget)
+
+	def hideWidget(self):
+		if self.widget:
+			self.widget.hide()
 
 	def unload(self):
 		self.iface.removePluginMenu(u"Tester", self.action)
 		del self.action
-		if self.toolbar:
-			self.toolbar.setVisible(False)
-			del self.toolbar
+		if self.widget:
+			self.widget.hide()
+			del self.widget
 
 	def initGui(self):
 		self.action = QtGui.QAction("Start testing", self.iface.mainWindow())
@@ -27,21 +32,15 @@ class TesterPlugin:
 
 
 	def test(self):
-		if self.toolbar is not None and self.toolbar.isVisible():
+		if self.widget is not None and self.widget.isVisible():
 			QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
-			return 
+			return
 		dlg = TestSelector()
 		dlg.exec_()
 		if dlg.tests:
-			self.toolbar = QtGui.QToolBar("Tester", self.iface.mainWindow())
-			self.toolbar.setAllowedAreas(QtCore.Qt.BottomToolBarArea)
-			self.toolbar.setFloatable(False)
-			self.toolbar.setMovable(False)
-			self.iface.mainWindow().addToolBar(QtCore.Qt.BottomToolBarArea, self.toolbar)
-			self.widget = TesterWidget(self.toolbar)
-			self.widget.setMaximumHeight(100)
-			self.toolbar.addWidget(self.widget)
-			self.toolbar.setVisible(True)
+			self.widget = TesterWidget()
+			self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
+			self.widget.show()
 			self.widget.setTests(dlg.tests)
 			self.widget.startTesting()
 
