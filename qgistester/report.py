@@ -33,9 +33,11 @@ class TestResult():
         self.status = self.SKIPPED
 
     def __str__(self):
+        s = "Test name: %s-%s\nTest result:" % (self.test.group, self.test.name)
         if self.status == self.SKIPPED:
-            return "Test skipped"
-        if self.status == self.PASSED:
-            return "Test passed correctly"
+            s+= "Test skipped"
+        elif self.status == self.PASSED:
+            s+= "Test passed correctly"
         else:
-            return "Test failed at step '%s' with message:\n%s" %(self.errorStep, self.errorMessage)
+            s+= "Test failed at step '%s' with message:\n%s" %(self.errorStep, self.errorMessage)
+        return s
