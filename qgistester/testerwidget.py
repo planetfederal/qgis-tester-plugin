@@ -136,9 +136,9 @@ class TesterWidget(BASE, WIDGET):
     def testFails(self, msg = ""):
         test = self.tests[self.currentTest]
         if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
-            desc = test.steps[self.currentTestStep - 1][0]
+            desc = test.steps[self.currentTestStep - 1].description
         else:
-            desc = test.steps[self.currentTestStep][0]
+            desc = test.steps[self.currentTestStep].description
         self.currentTestResult.failed(desc, msg)
         try:
             test.cleanup()
