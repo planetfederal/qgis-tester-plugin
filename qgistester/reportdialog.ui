@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>596</width>
-    <height>593</height>
+    <width>646</width>
+    <height>517</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,6 +16,9 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="resultsTree">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
      <attribute name="headerVisible">
       <bool>false</bool>
      </attribute>
@@ -27,7 +30,11 @@
     </widget>
    </item>
    <item>
-    <widget class="QTextBrowser" name="resultText"/>
+    <widget class="QTextBrowser" name="resultText">
+     <property name="contextMenuPolicy">
+      <enum>Qt::CustomContextMenu</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">

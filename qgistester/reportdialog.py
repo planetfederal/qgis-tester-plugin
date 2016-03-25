@@ -6,6 +6,7 @@
 from PyQt4 import QtGui, uic, QtCore
 import os
 from collections import defaultdict
+import webbrowser
 
 
 WIDGET, BASE = uic.loadUiType(
@@ -16,7 +17,7 @@ class ReportDialog(BASE, WIDGET):
     resultColor = [QtCore.Qt.green, QtCore.Qt.red, QtCore.Qt.gray]
     def __init__(self, report):
         QtGui.QDialog.__init__(self)
-            
+
         self.setupUi(self)
         self.resultsTree.clear()
 
@@ -40,8 +41,21 @@ class ReportDialog(BASE, WIDGET):
 
         self.resultsTree.expandAll()
         self.resultsTree.itemClicked.connect(self.itemClicked)
+        self.resultsTree.customContextMenuRequested.connect(self.showPopupMenu)
 
         self.buttonBox.accepted.connect(self.okPressed)
+
+    def showPopupMenu(self, point):
+        item = self.resultsTree.selectedItems()[0]
+        url = item.result.test.issueUrl
+        if url:
+            menu = QtGui.QMenu()
+            action = QtGui.QAction("Open issue page", None)
+            action.triggered.connect(lambda: webbrowser.open_new(url))
+            menu.addAction(action)
+            point = self.mapToGlobal(point)
+            menu.exec_(point)
+
 
     def itemClicked(self):
         result= self.resultsTree.currentItem().result

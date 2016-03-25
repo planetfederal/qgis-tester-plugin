@@ -24,12 +24,16 @@ class Test():
         self.name = name
         self.group = ""
         self.cleanup = lambda: None
+        self.issueUrl = None
 
     def addStep(self, description, function=None, prestep=None, isVerifyStep=False):
         self.steps.append(Step(description, function, prestep, isVerifyStep))
 
     def setCleanup(self,function):
         self.cleanup = function
+
+    def setIssueUrl(self, url):
+        self.issueUrl = url
 
 
 class UnitTestWrapper(Test):
