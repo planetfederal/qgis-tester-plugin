@@ -17,26 +17,21 @@ A window will be shown with the available tests grouped in categories.
 
 Select the tests that you want to be executed and then click on run
 
-In the lower part of the QGIS window you will see the testing panel.
+In the upper part of the QGIS window you will see the testing panel.
 
-.. image:: testpanel.png
+.. image:: testpanel_upload_dragdrop.png
 	:align: center
 
-It has two parts: 
-
-* The right one contains a list of all the test to be run. The current test being executed is highlighted in blue. Tests that have already been executed are shown in red (if they failed), green (if they passed) or grey (if they were skipped)
-
-* The left one contains a description of the current step in the current test. If the step is automated (that is, if no user interaction is expected during this step), the panel in the left part is disabled. Otherwise, the panel will show a description of the task that the test expects you to perform.
+It has a single panel with a description of the current step in the current test. If the step is automated (that is, if no user interaction is expected during this step), the panel is disabled. Otherwise, the panel will show a description of the task that the test expects you to perform.
 
 
-All tests selected in the test selection dialog will be run sequentially. Tests can be of two types: automated and semi-automated. Each of them is described in the next sections, with indication about how to run the test in each case.
+All tests selected in the test selection dialog will be run sequentially. Tests can be of two types: automated and semi-automated. Each of them is described in the next sections, with indications about how to run the test in each case.
 
 Automated tests
 ----------------
 
 Automated tests have no user interaction. The tester plugin will take care of running the test and checking that the conditions defined to pass the test are met.
 
-Once the test has finished running, the plugin will set up the color of the test accordingly to indicate whether it passed or not, and start running the next test.
 
 
 Semi-automated tests
@@ -54,7 +49,7 @@ Here are a couple examples of suchs test, to help understand how the user should
 
 The two first steps are automated, so the user doesnt have to do anything. At the end of those steps, the project will have a vector layer with a symbology stored in the project, and a WMS layer with a symbology that is used client side.
 
-The thrid step is manual, and the test panel will show something like this.
+The third step is manual, and the test panel will show something like this.
 
 .. image:: testpanel_verify_rendering.png
 	:align: center
@@ -78,6 +73,8 @@ This is not the final step, so the "Test passes" and "Test fails" buttons are di
 
 The last step is automated. The plugin will decide if the test passes or not, by checking the layers in the catalog. The user interaction is not needed for that. Once checked, the plugin will move to the next test.
 
+Some tests might contain intermedate manual steps where something is to be verified by the user. In this case, the "Test passes" and "Test fails" button will be renamed to "Step passes" and "Step fails" and will be enabled. The "Next step" button will be disabled.
+
 Test report
 #############
 
@@ -90,3 +87,5 @@ For those tests that have not passed correctly (displayed in red), you can click
 
 .. image:: testresulttrace.png
 	:align: center
+
+Right-clicking on the test name in the list will open a context menu with a single menu entry: "Open issue page". Select it to open the corresponding issue page for the test, in case it has be defined. If no issue page has been defined for that test, the context menu will not be shown.
