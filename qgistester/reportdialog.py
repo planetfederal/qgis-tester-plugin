@@ -58,7 +58,10 @@ class ReportDialog(BASE, WIDGET):
 
 
     def itemClicked(self):
-        result= self.resultsTree.currentItem().result
+        try:
+            result= self.resultsTree.currentItem().result
+        except:
+            return
         self.resultText.setText(str(result))
 
     def okPressed(self):
