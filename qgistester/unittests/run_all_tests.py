@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Run all unit tests."""
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -13,7 +14,9 @@ from qgistester.unittests.test_Test import suite as testTestsSuite
 from qgistester.unittests.test_TesterWidget import suite as \
                                            testerWidgetTestsSuite
 from qgistester.unittests.test_TestSelector import suite as \
-                                           testSelectorTestsSuite
+                                           selectorTestsSuite
+from qgistester.unittests.test_translations import suite as \
+                                           translationsTestsSuite
 
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
@@ -27,7 +30,8 @@ def unitTests():
     _tests.extend(reportDialogTestsSuite())
     _tests.extend(testTestsSuite())
     _tests.extend(testerWidgetTestsSuite())
-    _tests.extend(testSelectorTestsSuite())
+    _tests.extend(selectorTestsSuite())
+    _tests.extend(translationsTestsSuite())
     return _tests
 
 
@@ -39,5 +43,6 @@ def runAllUnitTests():
     _suite.addTest(reportDialogTestsSuite())
     _suite.addTest(testTestsSuite())
     _suite.addTest(testerWidgetTestsSuite())
-    _suite.addTest(testSelectorTestsSuite())
+    _suite.addTest(selectorTestsSuite())
+    _suite.addTest(translationsTestsSuite())
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(_suite)
