@@ -5,14 +5,14 @@
 #
 import unittest
 import sys
-from qgistester.unittests.plugintests import suite as pluginTestsSuite
-from qgistester.unittests.reportTests import suite as reportTestsSuite
-from qgistester.unittests.testReportDialog import suite as \
+from qgistester.unittests.test_plugin import suite as pluginTestsSuite
+from qgistester.unittests.test_report import suite as reportTestsSuite
+from qgistester.unittests.test_ReportDialog import suite as \
                                            reportDialogTestsSuite
-from qgistester.unittests.testTest import suite as testTestsSuite
-from qgistester.unittests.testTesterWidget import suite as \
+from qgistester.unittests.test_Test import suite as testTestsSuite
+from qgistester.unittests.test_TesterWidget import suite as \
                                            testerWidgetTestsSuite
-from qgistester.unittests.testTestSelector import suite as \
+from qgistester.unittests.test_TestSelector import suite as \
                                            testSelectorTestsSuite
 
 # Tests for the QGIS Tester plugin. To know more see
