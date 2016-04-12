@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test plugin.py."""
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -9,7 +10,8 @@ from qgistester.unittests import utils
 
 
 class TesterTests(unittest.TestCase):
-    """Tests for the TesterPlugin class that provides QGIS User itnerface to run tests."""
+    """Tests for the TesterPlugin class that provides QGIS User itnerface to
+    run tests."""
 
     @classmethod
     def setUpClass(cls):
@@ -61,3 +63,6 @@ def run_all():
 # run a subset of tests using unittest skipping nose or testplugin
 def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
+
+if __name__ == "__main__":
+    run_all()

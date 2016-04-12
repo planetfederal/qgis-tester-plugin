@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Test test.py."""
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -161,3 +162,6 @@ def run_all():
 def run_subset():
     """run a subset of tests using unittest > no nose or testplugin."""
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
+
+if __name__ == "__main__":
+    run_all()
