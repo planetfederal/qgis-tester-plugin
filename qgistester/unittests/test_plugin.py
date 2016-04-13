@@ -7,7 +7,9 @@
 import unittest
 import sys
 from qgistester.unittests import utils
+from qgistester.unittests.utils import get_qgis_app
 
+from qgistester.plugin import TesterPlugin
 
 class TesterTests(unittest.TestCase):
     """Tests for the TesterPlugin class that provides QGIS User itnerface to
@@ -17,6 +19,11 @@ class TesterTests(unittest.TestCase):
     def setUpClass(cls):
         """Test setUp method."""
         utils.setUpEnv()
+        # create qgis application stub
+        # do not need to call exitQgis()
+        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = get_qgis_app()
+        # create the instance to test
+        cls.testerPlugin = TesterPlugin(cls.IFACE)
 
     @classmethod
     def tearDownClass(cls):
@@ -25,11 +32,30 @@ class TesterTests(unittest.TestCase):
 
     def testInit(self):
         """check if plugin is loaded and present in qgis loaded plugins."""
-        self.assertTrue(False)
+        self.assertEqual(self.IFACE, self.testerPlugin.iface)
+        self.assertEqual(self.testerPlugin.widget, None)
+
+        # check if p.iface.initializationCompleted has a new slot connected
+        # this check can be done for SIP binded classes like all comes from
+        # SIP binding. In that case I can't use QObject.receivers method
+
+    def testHideWidget(self):
+        """check if the widget is hided."""
+        # precondition
+        self.testerPlugin.widget = self.PARENT
+        self.testerPlugin.widget.show()
+        self.assertTrue(self.testerPlugin.widget.isVisible())
+        # do test
+        self.testerPlugin.hideWidget()
+        self.assertFalse(self.testerPlugin.widget.isVisible())
 
     def testUnload(self):
         """check if plugin unload is correctly executed. If possibile chech no
         error are available in qgis log."""
+        # preconditions
+		action = QtGui.QAction("Start testing", self.IFACE.mainWindow())
+		self.IFACE.addPluginToMenu(u"Tester", action)
+
         self.assertTrue(False)
 
     def testInitGui(self):
