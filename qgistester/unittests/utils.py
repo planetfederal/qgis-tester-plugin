@@ -16,7 +16,6 @@ path = os.path.join(os.path.abspath(os.path.dirname(__file__)), os.path.pardir,
                     os.path.pardir)
 sys.path.insert(1, path)
 
-
 LOGGER = logging.getLogger('QGIS')
 QGIS_APP = None  # Static variable used to hold hand to running QGIS app
 CANVAS = None
