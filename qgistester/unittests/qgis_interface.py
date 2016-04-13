@@ -38,6 +38,7 @@ class QgisInterface(QObject):
     so most methods are simply stubs.
     """
     currentLayerChanged = pyqtSignal(QgsMapCanvasLayer)
+    initializationCompleted = pyqtSignal()
 
     def __init__(self, canvas):
         """Constructor
@@ -57,6 +58,7 @@ class QgisInterface(QObject):
 
         # For processing module
         self.destCrs = None
+
 
     @pyqtSlot('QStringList')
     def addLayers(self, layers):

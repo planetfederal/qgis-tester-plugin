@@ -3,7 +3,9 @@
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
-#
+#import qgis
+import sip
+sip.setapi('QVariant', 2)
 import unittest
 import sys
 from qgistester.unittests import utils
@@ -34,6 +36,7 @@ class TesterTests(unittest.TestCase):
         """check if plugin is loaded and present in qgis loaded plugins."""
         self.assertEqual(self.IFACE, self.testerPlugin.iface)
         self.assertEqual(self.testerPlugin.widget, None)
+        import ipdb; ipdb.set_trace()
 
         # check if p.iface.initializationCompleted has a new slot connected
         # this check can be done for SIP binded classes like all comes from
@@ -53,9 +56,8 @@ class TesterTests(unittest.TestCase):
         """check if plugin unload is correctly executed. If possibile chech no
         error are available in qgis log."""
         # preconditions
-		action = QtGui.QAction("Start testing", self.IFACE.mainWindow())
-		self.IFACE.addPluginToMenu(u"Tester", action)
-
+        action = QtGui.QAction("Start testing", self.IFACE.mainWindow())
+        self.IFACE.addPluginToMenu(u"Tester", action)
         self.assertTrue(False)
 
     def testInitGui(self):
