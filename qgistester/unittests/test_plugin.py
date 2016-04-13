@@ -4,12 +4,10 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #import qgis
-import sip
-sip.setapi('QVariant', 2)
+import utils
 import unittest
 import sys
-from qgistester.unittests import utils
-from qgistester.unittests.utils import get_qgis_app
+
 
 from qgistester.plugin import TesterPlugin
 
@@ -23,7 +21,7 @@ class TesterTests(unittest.TestCase):
         utils.setUpEnv()
         # create qgis application stub
         # do not need to call exitQgis()
-        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = get_qgis_app()
+        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = utils.get_qgis_app()
         # create the instance to test
         cls.testerPlugin = TesterPlugin(cls.IFACE)
 

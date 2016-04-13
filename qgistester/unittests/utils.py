@@ -7,6 +7,11 @@
 import sys
 import logging
 
+import sip
+for api in ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl", "QVariant"]:
+    sip.setapi(api, 2)
+
+
 LOGGER = logging.getLogger('QGIS')
 QGIS_APP = None  # Static variable used to hold hand to running QGIS app
 CANVAS = None
