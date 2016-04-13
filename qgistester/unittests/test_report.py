@@ -7,10 +7,11 @@
 import unittest
 import sys
 import utilities
-
+from qgistester.report import Report, TestResult
+from qgistester.test import Test
 
 class ReportTests(unittest.TestCase):
-    """Tests for the Report class that provides QGIS User itnerface to run
+    """Tests for the Report class that provides QGIS User interface to run
     tests."""
 
     @classmethod
@@ -25,14 +26,20 @@ class ReportTests(unittest.TestCase):
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        r = Report()
+        self.assertTrue(type(r.results) == list)
+        self.assertTrue(len(r.results) == 0)
 
     def testAddTestResult(self):
         """test if a test is added in the results array."""
-        self.assertTrue(False)
+        r = Report()
+        r.addTestResult('PASSED')
+        self.assertEqual(r.results[0], 'PASSED')
+        self.assertTrue(len(r.results) == 1)
+
 
 class TestResultTests(unittest.TestCase):
-    """Tests for the TestResult class that provides QGIS User itnerface to run
+    """Tests for the TestResult class that provides QGIS User interface to run
     tests."""
 
     @classmethod
@@ -47,11 +54,22 @@ class TestResultTests(unittest.TestCase):
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        tr = TestResult('fake_test')
+        self.assertEqual(tr.test, 'fake_test')
+        self.assertEqual(tr.state, tr.SKIPPED)
+        self.assertEqual(tr.errorStep, None)
+        self.assertEqual(tr.errorMessage, None)
+
 
     def testFailed(self):
         """check if the fail is correctly set."""
-        self.assertTrue(False)
+        t = Test('Test that fail is set')
+        t.addStep('Fail', lambda: False)
+        tr = TestResult(t)
+        self.assertEqual(tr.status, t.FAILED)
+        import ipdb; ipdb.set_trace()
+        self.assertEqual(tr.errorStep, step)
+        self.errorMessage = message
 
     def testPassed(self):
         """check if the passed is correctly set."""
