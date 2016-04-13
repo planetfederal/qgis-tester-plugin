@@ -56,32 +56,49 @@ class TestResultTests(unittest.TestCase):
         """check if __init__ is correctly executed."""
         tr = TestResult('fake_test')
         self.assertEqual(tr.test, 'fake_test')
-        self.assertEqual(tr.state, tr.SKIPPED)
+        self.assertEqual(tr.status, tr.SKIPPED)
         self.assertEqual(tr.errorStep, None)
         self.assertEqual(tr.errorMessage, None)
 
 
     def testFailed(self):
-        """check if the fail is correctly set."""
+        """check if the fail flag is correctly set."""
         t = Test('Test that fail is set')
         t.addStep('Fail', lambda: False)
         tr = TestResult(t)
-        self.assertEqual(tr.status, t.FAILED)
-        import ipdb; ipdb.set_trace()
-        self.assertEqual(tr.errorStep, step)
-        self.errorMessage = message
+        tr.failed('fake_step', 'FAILED')
+        self.assertEqual(tr.status, tr.FAILED)
+        self.assertEqual(tr.errorStep, 'fake_step')
+        self.assertEqual(tr.errorMessage, 'FAILED')
 
     def testPassed(self):
         """check if the passed is correctly set."""
-        self.assertTrue(False)
+        t = Test('Test that passed is set')
+        t.addStep('Passed', lambda: False)
+        tr = TestResult(t)
+        tr.passed()
+        self.assertEqual(tr.status, tr.PASSED)
+        self.assertIsNone(tr.errorStep)
+        self.assertIsNone(tr.errorMessage, 'PASSED')
+
 
     def testSkipped(self):
         """check if the skipped is correctly set."""
-        self.assertTrue(False)
+        t = Test('Test that skipped is set')
+        t.addStep('Skipped', lambda: False)
+        tr = TestResult(t)
+        tr.skipped()
+        self.assertEqual(tr.status, tr.SKIPPED)
+        self.assertIsNone(tr.errorStep)
+        self.assertIsNone(tr.errorMessage, 'PASSED')
+
 
     def test__str___(self):
         """test __str__  that convert a status in readamble string."""
-        self.assertTrue(False)
+        t = Test('Test that skipped is set')
+        t.addStep('Skipped', lambda: False)
+        tr = TestResult(t)
+        self.assertEquals(u"%s" % tr, 'Test name: -Test that skipped is set\nTest result:Test skipped')
 
 
 ###############################################################################
