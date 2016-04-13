@@ -6,7 +6,7 @@
 #
 import unittest
 import sys
-from qgistester.unittests import utils
+import utilities
 
 
 class StepTests(unittest.TestCase):
@@ -15,12 +15,12 @@ class StepTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
@@ -33,12 +33,12 @@ class TestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
@@ -64,12 +64,12 @@ class UnitTestWrapperTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
@@ -87,12 +87,12 @@ class _TestRunnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
@@ -109,12 +109,12 @@ class _TestResultTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""

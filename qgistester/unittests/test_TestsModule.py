@@ -6,7 +6,7 @@
 #
 import unittest
 import sys
-from qgistester.unittests import utils
+import utilities
 
 from qgistester.tests import findTests, addTestModule
 from qgistester.tests.packaging import _loadSpatialite, \
@@ -20,12 +20,12 @@ class StepTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def test(self):
         """check ."""

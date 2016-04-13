@@ -4,10 +4,9 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #import qgis
-import utils
+import utilities
 import unittest
 import sys
-
 
 from qgistester.plugin import TesterPlugin
 
@@ -18,17 +17,17 @@ class TesterTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
         # create qgis application stub
         # do not need to call exitQgis()
-        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = utils.get_qgis_app()
+        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = utilities.get_qgis_app()
         # create the instance to test
         cls.testerPlugin = TesterPlugin(cls.IFACE)
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if plugin is loaded and present in qgis loaded plugins."""

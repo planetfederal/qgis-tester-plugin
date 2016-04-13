@@ -6,7 +6,7 @@
 #
 import unittest
 import sys
-from qgistester.unittests import utils
+import utilities
 
 
 class ReportDialogTests(unittest.TestCase):
@@ -16,12 +16,12 @@ class ReportDialogTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
