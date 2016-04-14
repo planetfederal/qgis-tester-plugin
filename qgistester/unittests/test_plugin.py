@@ -3,11 +3,12 @@
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
-#import qgis
+#
 import utilities
 import unittest
 import sys
-
+from qgis.testing import start_app, stop_app
+from qgis.testing.mocked import get_iface
 from qgistester.plugin import TesterPlugin
 
 class TesterTests(unittest.TestCase):
@@ -18,9 +19,9 @@ class TesterTests(unittest.TestCase):
     def setUpClass(cls):
         """Test setUp method."""
         utilities.setUpEnv()
-        # create qgis application stub
-        # do not need to call exitQgis()
-        cls.QGIS_APP, cls.CANVAS, cls.IFACE, cls.PARENT = utilities.get_qgis_app()
+        cls.QGIS_APP = start_app()
+        cls.IFACE = get_iface()
+
         # create the instance to test
         cls.testerPlugin = TesterPlugin(cls.IFACE)
 
@@ -28,13 +29,12 @@ class TesterTests(unittest.TestCase):
     def tearDownClass(cls):
         """Test tearDown method."""
         utilities.cleanUpEnv()
+        stop_app()
 
     def testInit(self):
         """check if plugin is loaded and present in qgis loaded plugins."""
         self.assertEqual(self.IFACE, self.testerPlugin.iface)
         self.assertEqual(self.testerPlugin.widget, None)
-        import ipdb; ipdb.set_trace()
-
         # check if p.iface.initializationCompleted has a new slot connected
         # this check can be done for SIP binded classes like all comes from
         # SIP binding. In that case I can't use QObject.receivers method
