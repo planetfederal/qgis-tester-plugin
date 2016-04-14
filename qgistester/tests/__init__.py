@@ -15,6 +15,12 @@ def findTests():
     _tests = []
     prefix = __name__ + "."
     path = __path__
+
+    # skip if itself
+    if 'qgistester.tests' in prefix:
+        return
+
+    # parse tests of the module to look for unit and functional tests
     for importer, modname, ispkg in pkgutil.iter_modules(path, prefix):
         modtests = []
         group = modname.split(".")[-1]
