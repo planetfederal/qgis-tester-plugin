@@ -4,14 +4,12 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import os
 import unittest
 import sys
 import utilities
 
 from qgistester.tests import findTests, addTestModule
-from qgistester.tests.packaging import _loadSpatialite, \
-                                       _openDBManager, \
-                                       _openLogMessagesDialog
 
 
 class StepTests(unittest.TestCase):
@@ -27,36 +25,46 @@ class StepTests(unittest.TestCase):
         """Test tearDown method."""
         utilities.cleanUpEnv()
 
-    def test(self):
-        """check ."""
-        self.assertTrue(False)
-
     def testFindTests(self):
         """check findTests method to find all tests inside a plugin."""
-        self.assertTrue(False)
+        tests = findTests(path=[os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')], prefix='data.')
+        test_names = [utw.name for utw in tests]
+        self.assertIn('Test that fails', test_names)
+        self.assertIn('Test that passes', test_names)
+        self.assertIn('Functional test', test_names)
+
 
     def testAddTestModule(self):
-        """check addTestModule methiod to add a test in the qgistester
+        """check addTestModule method to add a test in the qgistester
         plugin."""
-        self.assertTrue(False)
+        from qgistester import tests
+        if tests.tests is None:
+            tests.tests = []
+        from data import plugin1
+        addTestModule(plugin1, 'Plugin1')
+        test_names = [utw.name for utw in tests.tests]
+        self.assertIn('Test that fails', test_names)
+        self.assertIn('Test that passes', test_names)
+        self.assertIn('Functional test', test_names)
 
-    def testLoadSpatialite(self):
-        """check _loadSpatialite method to check if provider is available."""
-        self.assertTrue(False)
 
-    def testOpenDBManager(self):
-        """check if Db Manager is available."""
-        self.assertTrue(False)
-
-    def testOpenLogMessagesDialog(self):
-        """check if LogMessageDialog is available."""
-        self.assertTrue(False)
+    # def testLoadSpatialite(self):
+    #     """check _loadSpatialite method to check if provider is available."""
+    #     self.assertTrue(False)
+    #
+    # def testOpenDBManager(self):
+    #     """check if Db Manager is available."""
+    #     self.assertTrue(False)
+    #
+    # def testOpenLogMessagesDialog(self):
+    #     """check if LogMessageDialog is available."""
+    #     self.assertTrue(False)
 
 
 ###############################################################################
 
 def suiteSubset():
-    """Setup a test suit for a subset of tests."""
+    """Setup a test suite for a subset of tests."""
     tests = ['testInit']
     suite = unittest.TestSuite(map(StepTests, tests))
     return suite

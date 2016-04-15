@@ -29,7 +29,7 @@ class Test():
     def addStep(self, description, function=None, prestep=None, isVerifyStep=False):
         self.steps.append(Step(description, function, prestep, isVerifyStep))
 
-    def setCleanup(self,function):
+    def setCleanup(self, function):
         self.cleanup = function
 
     def setIssueUrl(self, url):
@@ -80,4 +80,3 @@ class _TestResult(TestResult):
 
     def addFailure(self, test, err):
         self.err = err
-

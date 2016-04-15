@@ -11,15 +11,17 @@ import unittest
 from qgistester.test import Test, UnitTestWrapper
 
 
-def findTests():
+def findTests(path=None, prefix=None):
+    """Search for tests in the given path and prefix"""
     _tests = []
-    prefix = __name__ + "."
-    path = __path__
+    if prefix is None:
+        prefix = __name__ + "."
+    if path is None:
+        path = __path__
 
     # skip if itself
     if 'qgistester.tests' in prefix:
         return
-
     # parse tests of the module to look for unit and functional tests
     for importer, modname, ispkg in pkgutil.iter_modules(path, prefix):
         modtests = []
