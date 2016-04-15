@@ -4,12 +4,15 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-import utilities
+import mock
 import unittest
 import sys
+import utilities
 from qgis.testing import start_app, stop_app
 from qgis.testing.mocked import get_iface
 from qgistester.plugin import TesterPlugin
+from PyQt4 import QtGui, QtCore
+
 
 class TesterTests(unittest.TestCase):
     """Tests for the TesterPlugin class that provides QGIS User itnerface to
@@ -20,10 +23,9 @@ class TesterTests(unittest.TestCase):
         """Test setUp method."""
         utilities.setUpEnv()
         cls.QGIS_APP = start_app()
-        cls.IFACE = get_iface()
-
-        # create the instance to test
-        cls.testerPlugin = TesterPlugin(cls.IFACE)
+        assert cls.QGIS_APP != None
+        cls.IFACE_Mock = get_iface()
+        assert cls.IFACE_Mock != None
 
     @classmethod
     def tearDownClass(cls):
@@ -33,38 +35,83 @@ class TesterTests(unittest.TestCase):
 
     def testInit(self):
         """check if plugin is loaded and present in qgis loaded plugins."""
-        self.assertEqual(self.IFACE, self.testerPlugin.iface)
+        # create the instance to test
+        self.IFACE_Mock.reset_mock()
+        self.testerPlugin = TesterPlugin(self.IFACE_Mock)
+        self.assertEqual(len(self.IFACE_Mock.mock_calls), 1)
+        stringToFind = 'call.initializationCompleted.connect(<bound method TesterPlugin.hideWidget of <qgistester.plugin.TesterPlugin'
+        self.assertIn(stringToFind, str(self.IFACE_Mock.mock_calls[0]))
+
+        self.assertEqual(self.IFACE_Mock, self.testerPlugin.iface)
         self.assertEqual(self.testerPlugin.widget, None)
-        # check if p.iface.initializationCompleted has a new slot connected
-        # this check can be done for SIP binded classes like all comes from
-        # SIP binding. In that case I can't use QObject.receivers method
 
     def testHideWidget(self):
         """check if the widget is hided."""
         # precondition
-        self.testerPlugin.widget = self.PARENT
-        self.testerPlugin.widget.show()
-        self.assertTrue(self.testerPlugin.widget.isVisible())
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        testerPlugin.widget = mock.Mock(spec=QtGui.QWidget)
+        self.assertEqual(len(testerPlugin.widget.mock_calls), 0)
         # do test
-        self.testerPlugin.hideWidget()
-        self.assertFalse(self.testerPlugin.widget.isVisible())
+        testerPlugin.hideWidget()
+        self.assertEqual(len(testerPlugin.widget.mock_calls), 1)
+        self.assertEqual('call.hide()',
+                         str(testerPlugin.widget.mock_calls[0]))
 
     def testUnload(self):
-        """check if plugin unload is correctly executed. If possibile chech no
-        error are available in qgis log."""
+        """check if plugin unload is correctly executed. That means, menu
+        remove is called and deleted relative QAction."""
         # preconditions
-        action = QtGui.QAction("Start testing", self.IFACE.mainWindow())
-        self.IFACE.addPluginToMenu(u"Tester", action)
-        self.assertTrue(False)
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        action = QtGui.QAction("Start testing", self.IFACE_Mock.mainWindow())
+        testerPlugin.action = action
+        # do test 1) widget is None
+        self.IFACE_Mock.reset_mock()
+        testerPlugin.unload()
+        self.assertIn("call.removePluginMenu(u'Tester'",
+                      str(self.IFACE_Mock.mock_calls[0]))
+        self.assertNotIn('action', testerPlugin.__dict__)
+        self.assertIn('widget', testerPlugin.__dict__)
+
+        # preconditions
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        action = QtGui.QAction("Start testing", self.IFACE_Mock.mainWindow())
+        testerPlugin.action = action
+        # do test 2) widget is available
+        self.IFACE_Mock.reset_mock()
+        testerPlugin.widget = mock.MagicMock(QtGui.QWidget)
+        testerPlugin.unload()
+        self.assertIn("call.removePluginMenu(u'Tester'",
+                      str(self.IFACE_Mock.mock_calls[0]))
+        self.assertNotIn('action', testerPlugin.__dict__)
+        self.assertNotIn('widget', testerPlugin.__dict__)
+        # I can not check if widget.hide has been called due to delete of
+        # widget during unload
 
     def testInitGui(self):
-        """Check that the plugin is correctly loaded and set actiopns and
-        buttons"""
-        self.assertTrue(False)
+        """Check that the plugin create the relative action and register
+        self.test linked to the action."""
+        # preconditions
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        self.assertNotIn('action', testerPlugin.__dict__)
+        # do test
+        testerPlugin.iface.reset_mock
+        testerPlugin.initGui()
+        self.assertIsNotNone(testerPlugin.action)
+        self.assertTrue(isinstance(testerPlugin.action, QtGui.QAction))
+        self.assertTrue(testerPlugin.action.receivers(
+                        QtCore.SIGNAL('triggered()')) == 1)
+        self.assertIn("call.addPluginToMenu(u'Tester'",
+                      str(testerPlugin.iface.mock_calls[3]))
 
     def testTest(self):
-        ''' check test (would be better called run) method that add test dock
-        to qgis
+        ''' check test method:
+        1) test if messageBox is shown in case widget is visible
+        2) open test selector widget
+            2.1) cancel => do nothing
+            2.2) ok =>
+                2.2.1) Create TesterWidget and dock it
+                2.2.2) load atests in it
+                2.2.3) start running test
         '''
         self.assertTrue(False)
 
@@ -72,7 +119,7 @@ class TesterTests(unittest.TestCase):
 ###############################################################################
 
 def suiteSubset():
-    tests = ['testInit']
+    tests = ['testInitGui']
     suite = unittest.TestSuite(map(TesterTests, tests))
     return suite
 
