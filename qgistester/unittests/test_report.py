@@ -4,11 +4,17 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+
+__author__ = 'Alessandro Pasotti'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
 import unittest
 import sys
 import utilities
+from qgistester.utils import execute
 from qgistester.report import Report, TestResult
-from qgistester.test import Test
+from qgistester.test import Test, UnitTestWrapper
 
 class ReportTests(unittest.TestCase):
     """Tests for the Report class that provides QGIS User interface to run
@@ -101,6 +107,62 @@ class TestResultTests(unittest.TestCase):
         self.assertEquals(u"%s" % tr, 'Test name: -Test that skipped is set\nTest result:Test skipped')
 
 
+
+class TestRealRunner(unittest.TestCase):
+    """Tests that TestResult is correctly populated after a real test run"""
+
+    @classmethod
+    def runner(cls, suite):
+        test = list(suite)[0]
+        utw = UnitTestWrapper(test)
+        report = Report()
+        result = TestResult(test)
+        step = utw.steps[0]
+        try:
+            step.function()
+            result.passed()
+        except Exception, e:
+            result.failed(test, str(e))
+        report.addTestResult(result)
+        return report.results[0]
+
+    @classmethod
+    def setUpClass(cls):
+        """Test setUp method."""
+        utilities.setUpEnv()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Test tearDown method."""
+        utilities.cleanUpEnv()
+
+    def testPassed(self):
+        """Tests if a passed test correctly set PASSED in TestResult"""
+
+        class TestPassed(unittest.TestCase):
+            def testPassed(self):
+                self.assertTrue(True)
+
+        # Mimick the behaviour in testerwidget.py
+        suite = unittest.makeSuite(TestPassed, 'test')
+        result = self.runner(suite)
+        self.assertEquals(result.status, result.PASSED)
+
+    def testFailed(self):
+        """Tests if a passed test correctly set FAILED in TestResult"""
+
+        class TestFailed(unittest.TestCase):
+            def testFailed(self):
+                self.assertTrue(False)
+
+        # Mimick the behaviour in testerwidget.py
+        suite = unittest.makeSuite(TestFailed, 'test')
+        result = self.runner(suite)
+        from IPython import embed; embed()
+        self.assertEquals(result.status, result.FAILED)
+
+
+
 ###############################################################################
 
 def suiteSubset():
@@ -115,6 +177,7 @@ def suite():
     suite = unittest.TestSuite()
     suite.addTests(unittest.makeSuite(ReportTests, 'test'))
     suite.addTests(unittest.makeSuite(TestResultTests, 'test'))
+    suite.addTests(unittest.makeSuite(TestRealRunner, 'test'))
     return suite
 
 
