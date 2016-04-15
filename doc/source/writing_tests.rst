@@ -6,7 +6,7 @@ Writing tests
 
 Instructions to write new tests are described in this document
 
-To write a new set of tests, add a python module file in the *tests* folder of the plugin. The module must can have two functions, to define unit tests (automated) and functional tests (semi-automated):  *functionalTests()* and *unitTests()*. None of these functions is mandatory. The plugin will look for them and, if found, will call them to retrieve the tests decalred by the module.
+To write a new set of tests, add a python module file in the *tests* folder of the plugin. The module can have two functions, to define unit tests (automated) and functional tests (semi-automated):  *functionalTests()* and *unitTests()*. None of these functions is mandatory. The plugin will look for them and, if found, will call them to retrieve the tests declared by the module.
 
 Plugins can add their tests suite to this tester plugin by using the addTestModule() function.
 
