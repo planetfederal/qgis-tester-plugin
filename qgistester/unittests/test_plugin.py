@@ -5,11 +5,13 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import mock
+from mock import call
 import unittest
 import sys
 import utilities
 from qgis.testing import start_app, stop_app
 from qgis.testing.mocked import get_iface
+import qgistester
 from qgistester.plugin import TesterPlugin
 from PyQt4 import QtGui, QtCore
 
@@ -103,9 +105,10 @@ class TesterTests(unittest.TestCase):
         self.assertIn("call.addPluginToMenu(u'Tester'",
                       str(testerPlugin.iface.mock_calls[3]))
 
+
     def testTest(self):
         ''' check test method:
-        1) test if messageBox is shown in case widget is visible
+        1) test if messageBox.warning is called
         2) open test selector widget
             2.1) cancel => do nothing
             2.2) ok =>
@@ -113,27 +116,79 @@ class TesterTests(unittest.TestCase):
                 2.2.2) load atests in it
                 2.2.3) start running test
         '''
-        self.assertTrue(False)
+        # test 1)
+        # preconditions
+        qwidget = mock.Mock(spec=QtGui.QWidget)
+        qwidget.isVisible.return_value = True
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        testerPlugin.widget = qwidget
+        # do test1
+        # I only test that PyQt4.QtGui.QMessageBox.warning is called in
+        # the above preconditions
+        qmessageboxMock = mock.Mock(spec=QtGui.QMessageBox)
+        with mock.patch('PyQt4.QtGui.QMessageBox', qmessageboxMock):
+            testerPlugin.test()
+        self.assertIn("call.warning", str(qmessageboxMock.mock_calls[0]))
+
+        # test 2.1)
+        # preconditions: TestSelector constructor mock return a mock simulating
+        # a QDialog
+        dlgMock = mock.Mock()
+        dlgMock.tests = None
+        testselectorMock = mock.Mock(spec=qgistester.testselector.TestSelector,
+                                     return_value=dlgMock)
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        testerPlugin.widget = None  # necessary to overpass first tested if
+        # do test
+        with mock.patch('qgistester.plugin.TestSelector', testselectorMock):
+            testerPlugin.test()
+        self.assertIsNone(testerPlugin.widget)
+
+        # test 2.2 and 2.3
+        # preconditions: TestSelector constructor mock return a mock simulating
+        # a QDialog
+        testselectorMock.reset_mock
+        dlgMock.reset_mock
+        dlgMock.tests = 'some tests'
+        testerwidgetMock = mock.Mock(spec=qgistester.testerwidget.TesterWidget,
+                                     return_value=dlgMock)
+        testerPlugin = TesterPlugin(self.IFACE_Mock)
+        testerPlugin.widget = None  # necessary to overpass first tested if
+        # do test
+        with mock.patch('qgistester.plugin.TestSelector', testselectorMock):
+            with mock.patch('qgistester.plugin.TesterWidget',
+                            testerwidgetMock):
+                testerPlugin.test()
+        self.assertIsNotNone(testerPlugin.widget)
+        expected = [call.exec_(), call.exec_(), call.show(),
+                    call.setTests('some tests'), call.startTesting()]
+        self.assertEqual(dlgMock.mock_calls, expected)
 
 
 ###############################################################################
 
 def suiteSubset():
-    tests = ['testInitGui']
+    """Setup a test suit for a subset of tests."""
+    tests = ['testInit']
     suite = unittest.TestSuite(map(TesterTests, tests))
     return suite
 
+
 def suite():
-    suite = unittest.makeSuite(TesterTests, 'test')
+    """Return test suite for all tests."""
+    suite = unittest.TestSuite()
+    suite.addTests(unittest.makeSuite(TesterTests, 'test'))
     return suite
 
-# run all tests using unittest skipping nose or testplugin
+
 def run_all():
+    """run all tests using unittest => no nose or testplugin."""
     # demo_test = unittest.TestLoader().loadTestsFromTestCase(CatalogTests)
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suite())
 
-# run a subset of tests using unittest skipping nose or testplugin
+
 def run_subset():
+    """run a subset of tests using unittest > no nose or testplugin."""
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
 
 if __name__ == "__main__":
