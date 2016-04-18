@@ -6,11 +6,8 @@
 #
 import unittest
 import sys
-import os
 import mock
 import utilities
-from PyQt4.QtTest import QTest
-from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QApplication
 from qgistester.test import UnitTestWrapper
 from qgistester.testerwidget import TesterWidget
@@ -21,12 +18,11 @@ class TesterWidgetTests(unittest.TestCase):
     """Tests for the TesterWidget class that create and mange the tester
     interface to execute tester plugin tests."""
 
-
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        cls.functionalTests =functionalTests()
-        cls.unitTests =  [UnitTestWrapper(unit) for unit in unitTests()]
+        cls.functionalTests = functionalTests()
+        cls.unitTests = [UnitTestWrapper(unit) for unit in unitTests()]
         cls.allTests = cls.functionalTests + cls.unitTests
         cls.app = QApplication(sys.argv)
         utilities.setUpEnv()
@@ -59,7 +55,6 @@ class TesterWidgetTests(unittest.TestCase):
         self.assertGreater(len(widget.report.results), 0)
         self.assertEqual(widget.report.results[0].status, TestResult.FAILED)
         self.assertEqual(widget.report.results[1].status, TestResult.PASSED)
-
 
     def testStartTesting_FunctionalTests(self):
         """test the run of the first functional tests setting up the result."""
