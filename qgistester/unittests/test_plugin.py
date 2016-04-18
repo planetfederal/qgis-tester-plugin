@@ -42,7 +42,7 @@ class TesterTests(unittest.TestCase):
         self.testerPlugin = TesterPlugin(self.IFACE_Mock)
         self.assertEqual(len(self.IFACE_Mock.mock_calls), 1)
         stringToFind = 'call.initializationCompleted.connect(<bound method TesterPlugin.hideWidget of <qgistester.plugin.TesterPlugin'
-        self.assertIn(stringToFind, str(self.IFACE_Mock.mock_calls[0]))
+        self.assertIn(stringToFind, str(self.IFACE_Mock.mock_calls[-1]))
 
         self.assertEqual(self.IFACE_Mock, self.testerPlugin.iface)
         self.assertEqual(self.testerPlugin.widget, None)
@@ -57,7 +57,7 @@ class TesterTests(unittest.TestCase):
         testerPlugin.hideWidget()
         self.assertEqual(len(testerPlugin.widget.mock_calls), 1)
         self.assertEqual('call.hide()',
-                         str(testerPlugin.widget.mock_calls[0]))
+                         str(testerPlugin.widget.mock_calls[-1]))
 
     def testUnload(self):
         """check if plugin unload is correctly executed. That means, menu
@@ -70,7 +70,7 @@ class TesterTests(unittest.TestCase):
         self.IFACE_Mock.reset_mock()
         testerPlugin.unload()
         self.assertIn("call.removePluginMenu(u'Tester'",
-                      str(self.IFACE_Mock.mock_calls[0]))
+                      str(self.IFACE_Mock.mock_calls[-1]))
         self.assertNotIn('action', testerPlugin.__dict__)
         self.assertIn('widget', testerPlugin.__dict__)
 
@@ -103,7 +103,7 @@ class TesterTests(unittest.TestCase):
         self.assertTrue(testerPlugin.action.receivers(
                         QtCore.SIGNAL('triggered()')) == 1)
         self.assertIn("call.addPluginToMenu(u'Tester'",
-                      str(testerPlugin.iface.mock_calls[3]))
+                      str(testerPlugin.iface.mock_calls[-1]))
 
 
     def testTest(self):
@@ -128,7 +128,7 @@ class TesterTests(unittest.TestCase):
         qmessageboxMock = mock.Mock(spec=QtGui.QMessageBox)
         with mock.patch('PyQt4.QtGui.QMessageBox', qmessageboxMock):
             testerPlugin.test()
-        self.assertIn("call.warning", str(qmessageboxMock.mock_calls[0]))
+        self.assertIn("call.warning", str(qmessageboxMock.mock_calls[-1]))
 
         # test 2.1)
         # preconditions: TestSelector constructor mock return a mock simulating
@@ -147,6 +147,7 @@ class TesterTests(unittest.TestCase):
         # test 2.2 and 2.3
         # preconditions: TestSelector constructor mock return a mock simulating
         # a QDialog
+        self.IFACE_Mock.reset_mock
         testselectorMock.reset_mock
         dlgMock.reset_mock
         dlgMock.tests = 'some tests'
@@ -160,6 +161,8 @@ class TesterTests(unittest.TestCase):
                             testerwidgetMock):
                 testerPlugin.test()
         self.assertIsNotNone(testerPlugin.widget)
+        self.assertIn('call.addDockWidget',
+                      str(testerPlugin.iface.mock_calls[-1]))
         expected = [call.exec_(), call.exec_(), call.show(),
                     call.setTests('some tests'), call.startTesting()]
         self.assertEqual(dlgMock.mock_calls, expected)
