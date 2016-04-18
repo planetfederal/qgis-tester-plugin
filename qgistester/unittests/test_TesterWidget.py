@@ -6,16 +6,32 @@
 #
 import unittest
 import sys
+import os
 import utilities
-
+from PyQt4.QtTest import QTest
+from PyQt4.QtGui import QApplication
+from qgistester.testerwidget import TesterWidget
+from qgistester.tests import findTests
+from qgistester.report import Report, TestResult
 
 class TesterWidgetTests(unittest.TestCase):
     """Tests for the TesterWidget class that create and mange the tester
     interface to execute tester plugin tests."""
 
     @classmethod
+    def getWidget(cls):
+        """Create and return a widget instance with tests loaded"""
+        cls.widget = TesterWidget()
+        cls.widget.setTests(cls.tests)
+        return cls.widget
+
+    @classmethod
     def setUpClass(cls):
         """Test setUp method."""
+        cls.tests = findTests(path=[os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')], prefix='data.')
+        cls.app = QApplication(sys.argv)
+        # Not part of the unit tests, just makes sure that some tests exists
+        assert(len(cls.tests) > 0)
         utilities.setUpEnv()
 
     @classmethod
@@ -29,11 +45,14 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testSetTests(self):
         """check if tests list is set."""
-        self.assertTrue(False)
+        self.assertEquals(self.getWidget().tests, self.tests)
 
     def testStartTesting(self):
-        """test the run of the fist test setting up the result."""
-        self.assertTrue(False)
+        """test the run of the first test setting up the result."""
+        widget = self.getWidget()
+        widget.startTesting()
+        self.assertTrue(isinstance(widget.report, Report))
+        self.assertEqual(widget.report.results, [])
 
     def testRunNextTest(self):
         """test jump to the run of the next test."""
