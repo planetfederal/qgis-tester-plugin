@@ -9,10 +9,10 @@ from qgistester.test import Test
 
 def functionalTests():
     test = Test('Functional test')
-    test.addStep('Step Failed',
-                 prestep=lambda: lambda: False, isVerifyStep=True)
-    test.addStep('Step Passed',
-                 prestep=lambda: lambda: True, isVerifyStep=True)
+    test.addStep('Step 1',
+                 prestep=lambda: True, isVerifyStep=True)
+    test.addStep('Step 1',
+                 prestep=lambda: True, isVerifyStep=True)
     test.setIssueUrl("http://www.example.com")
     return [test]
 
@@ -31,7 +31,7 @@ class Plugin1Tests(unittest.TestCase):
         """Test that passes"""
         self.assertTrue(True)
 
-    def testFAiled(self):
+    def testFailed(self):
         """Test that fails"""
         self.assertTrue(False)
 
@@ -40,5 +40,4 @@ def unitTests():
     suite = unittest.makeSuite(Plugin1Tests, 'test')
     _tests = []
     _tests.extend(suite)
-
     return _tests

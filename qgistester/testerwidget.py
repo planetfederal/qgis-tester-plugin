@@ -39,6 +39,11 @@ class TesterWidget(BASE, WIDGET):
         self.report = Report()
         self.runNextTest()
 
+    def getReportDialog(self):
+        """Wrapper for easy mocking"""
+        self.reportDialog = ReportDialog(self.report)
+        return self.reportDialog
+
     def runNextTest(self):
         if self.currentTestResult:
             self.report.addTestResult(self.currentTestResult)
@@ -50,7 +55,7 @@ class TesterWidget(BASE, WIDGET):
             self.runNextStep()
         else:
             self.setVisible(False)
-            dlg = ReportDialog(self.report)
+            dlg = self.getReportDialog()
             dlg.exec_()
 
     def runNextStep(self):
