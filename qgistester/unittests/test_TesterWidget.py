@@ -44,8 +44,7 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testStartTesting_UnitTests(self):
         """test the run of the first unit tests setting up the result."""
-        dlgMock = mock.Mock()
-        dlgInstance = dlgMock()
+        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.unitTests)
         widget.getReportDialog = mock.Mock(return_value=dlgInstance)
@@ -58,8 +57,7 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testStartTesting_FunctionalTests(self):
         """test the run of the first functional tests setting up the result."""
-        dlgMock = mock.Mock()
-        dlgInstance = dlgMock()
+        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
         widget.getReportDialog = mock.Mock(return_value=dlgInstance)
@@ -75,8 +73,7 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testSkipTest(self):
         """test if test is skipped pressing skop test + relative cleanup."""
-        dlgMock = mock.Mock()
-        dlgInstance = dlgMock()
+        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
         widget.getReportDialog = mock.Mock(return_value=dlgInstance)
