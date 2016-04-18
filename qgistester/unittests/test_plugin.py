@@ -25,9 +25,9 @@ class TesterTests(unittest.TestCase):
         """Test setUp method."""
         utilities.setUpEnv()
         cls.QGIS_APP = start_app()
-        assert cls.QGIS_APP != None
+        assert cls.QGIS_APP is not None
         cls.IFACE_Mock = get_iface()
-        assert cls.IFACE_Mock != None
+        assert cls.IFACE_Mock is not None
 
     @classmethod
     def tearDownClass(cls):
