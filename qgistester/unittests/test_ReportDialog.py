@@ -8,6 +8,10 @@ import unittest
 import sys
 import utilities
 
+__author__ = 'Luigi Pirelli'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
 
 class ReportDialogTests(unittest.TestCase):
     """Tests for the Report class that provides QGIS User itnerface to run
