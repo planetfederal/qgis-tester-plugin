@@ -6,6 +6,7 @@
 #
 import unittest
 import sys
+import mock
 import utilities
 from qgistester.report import Report, TestResult
 from qgistester.test import Test, UnitTestWrapper
@@ -38,8 +39,10 @@ class ReportTests(unittest.TestCase):
     def testAddTestResult(self):
         """test if a test is added in the results array."""
         r = Report()
-        r.addTestResult('PASSED')
-        self.assertEqual(r.results[0], 'PASSED')
+        test = mock.Mock()
+        tr = TestResult(test)
+        r.addTestResult(tr)
+        self.assertEqual(r.results[0], tr)
         self.assertTrue(len(r.results) == 1)
 
 

@@ -21,7 +21,7 @@ __copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
 
 class TesterTests(unittest.TestCase):
-    """Tests for the TesterPlugin class that provides QGIS User itnerface to
+    """Tests for the TesterPlugin class that provides QGIS User interface to
     run tests."""
 
     @classmethod
