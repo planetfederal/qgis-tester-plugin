@@ -15,4 +15,5 @@ install:
     - sudo apt-get install python-qgis
 script:
     - PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/ python qgistester/unittests/test_TesterWidget.py
+    - PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/ python qgistester/unittests/test_report.py
     #- pep8 qgistester/*.py
