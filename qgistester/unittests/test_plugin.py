@@ -9,8 +9,8 @@ from mock import call
 import unittest
 import sys
 import utilities
-from qgis.testing import start_app, stop_app
-from qgis.testing.mocked import get_iface
+from qgistesting import start_app, stop_app
+from qgistesting.mocked import get_iface
 import qgistester
 from qgistester.plugin import TesterPlugin
 from PyQt4 import QtGui, QtCore

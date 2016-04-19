@@ -77,7 +77,7 @@ class TesterWidgetTests(unittest.TestCase):
             self.assertEqual(r.status, TestResult.PASSED)
 
     def testSkipTest(self):
-        """test if test is skipped pressing skop test + relative cleanup."""
+        """test if test is skipped pressing stop test + relative cleanup."""
         dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.functionalTests)

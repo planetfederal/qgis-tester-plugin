@@ -1,0 +1,18 @@
+language: python
+python:
+  - "2.7"
+virtualenv:
+      system_site_packages: true
+install:
+    #- pip install pep8
+    - echo "deb http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
+    - echo "deb-src http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
+    - gpg --keyserver keyserver.ubuntu.com --recv 997D3880
+    - gpg --export --armor 997D3880 | sudo apt-key add -
+    - sudo apt-get update -qq
+    - sudo apt-get install python-qt4
+    - sudo apt-get install qgis --force-yes
+    - sudo apt-get install python-qgis
+script:
+    - PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/ python qgistester/unittests/test_TesterWidget.py
+    #- pep8 qgistester/*.py
