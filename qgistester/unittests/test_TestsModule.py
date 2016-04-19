@@ -8,8 +8,11 @@ import os
 import unittest
 import sys
 import utilities
-
 from qgistester.tests import findTests, addTestModule
+
+__author__ = 'Alessandro Pasotti'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
 
 class StepTests(unittest.TestCase):

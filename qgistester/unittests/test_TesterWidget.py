@@ -14,6 +14,11 @@ from qgistester.testerwidget import TesterWidget
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
 from qgistester.report import Report, TestResult
 
+__author__ = 'Alessandro Pasotti'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
+
 class TesterWidgetTests(unittest.TestCase):
     """Tests for the TesterWidget class that create and mange the tester
     interface to execute tester plugin tests."""
