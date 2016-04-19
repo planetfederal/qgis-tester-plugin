@@ -4,17 +4,16 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import unittest
+import sys
+import utilities
+from qgistester.report import Report, TestResult
+from qgistester.test import Test, UnitTestWrapper
 
 __author__ = 'Alessandro Pasotti'
 __date__ = 'April 2016'
 __copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
-import unittest
-import sys
-import utilities
-from qgistester.utils import execute
-from qgistester.report import Report, TestResult
-from qgistester.test import Test, UnitTestWrapper
 
 class ReportTests(unittest.TestCase):
     """Tests for the Report class that provides QGIS User interface to run
