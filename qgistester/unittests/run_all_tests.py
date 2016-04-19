@@ -4,6 +4,7 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import utilities
 import unittest
 import sys
 from qgistester.unittests.test_plugin import suite as pluginTestsSuite
@@ -50,3 +51,7 @@ def runAllUnitTests():
     _suite.addTest(selectorTestsSuite())
     _suite.addTest(translationsTestsSuite())
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(_suite)
+
+
+if __name__ == '__main__':
+    runAllUnitTests()
