@@ -157,7 +157,6 @@ class TestRealRunner(unittest.TestCase):
         # Mimick the behaviour in testerwidget.py
         suite = unittest.makeSuite(TestFailed, 'test')
         result = self.runner(suite)
-        from IPython import embed; embed()
         self.assertEquals(result.status, result.FAILED)
 
 
