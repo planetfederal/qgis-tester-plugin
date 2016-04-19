@@ -8,6 +8,11 @@ import os
 import sys
 import logging
 import sip
+
+__author__ = 'Luigi Pirelli'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
 for api in ["QDate", "QDateTime", "QString", "QTextStream", "QTime", "QUrl",
             "QVariant"]:
     sip.setapi(api, 2)

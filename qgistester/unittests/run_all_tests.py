@@ -18,6 +18,10 @@ from qgistester.unittests.test_TestSelector import suite as \
 from qgistester.unittests.test_translations import suite as \
                                            translationsTestsSuite
 
+__author__ = 'Luigi Pirelli'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
 # Tests for the QGIS Tester plugin. To know more see
 # https://github.com/boundlessgeo/qgis-tester-plugin
 

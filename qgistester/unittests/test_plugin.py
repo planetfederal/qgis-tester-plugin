@@ -15,6 +15,10 @@ import qgistester
 from qgistester.plugin import TesterPlugin
 from PyQt4 import QtGui, QtCore
 
+__author__ = 'Luigi Pirelli'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
+
 
 class TesterTests(unittest.TestCase):
     """Tests for the TesterPlugin class that provides QGIS User itnerface to
