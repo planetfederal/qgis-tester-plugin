@@ -21,4 +21,5 @@ before_script:
 script:
     - python qgistester/unittests/test_TesterWidget.py
     - python qgistester/unittests/test_report.py
+    - python qgistester/unittests/test_ReportDialog.py
     #- pep8 qgistester/*.py
