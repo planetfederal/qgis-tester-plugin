@@ -8,8 +8,8 @@ import unittest
 import sys
 import utilities
 import mock
-from qgis.testing import start_app
-from qgis.testing.mocked import get_iface
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
 from PyQt4 import QtCore, QtGui, QtTest
 from qgistester.reportdialog import ReportDialog
 from qgistester.report import Report, TestResult
