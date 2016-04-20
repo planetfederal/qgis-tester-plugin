@@ -10,7 +10,7 @@ import utilities
 import mock
 from qgis.testing import start_app
 from qgis.testing.mocked import get_iface
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore, QtGui, QtTest
 from qgistester.reportdialog import ReportDialog
 from qgistester.report import Report, TestResult
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -85,7 +85,7 @@ class ReportDialogTests(unittest.TestCase):
             tr = TestResult(test)
             r.addTestResult(tr)
         dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
-        dlg.resultsTree.topLevelItem(0).child(1).setSelected(True)  # select 'Test that fails' that does NOT hav e url
+        dlg.resultsTree.topLevelItem(0).child(1).setSelected(True)  # select 'Test that fails' that does NOT have url
         # do test
         point = QtCore.QPoint(0, 0)
         qmenuMock = mock.Mock(spec=QtGui.QMenu)
@@ -121,12 +121,35 @@ class ReportDialogTests(unittest.TestCase):
                       str(qactionMock.mock_calls[1]))
 
     def testItemClicked(self):
-        """test the resul tis set to the ckicked value."""
-        self.assertTrue(False)
+        """test the result is set to the clicked value."""
+        # preconditions
+        r = Report()
+        for test in self.allTests:
+            tr = TestResult(test)
+            r.addTestResult(tr)
+        dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
+        # do test1
+        self.assertTrue(dlg.resultText.toPlainText() == '')
+        dlg.itemClicked()
+        self.assertTrue(dlg.resultText.toPlainText() == '')
+        # do test 2
+        currentItem = dlg.resultsTree.topLevelItem(0).child(0)
+        dlg.resultsTree.setCurrentItem(currentItem)
+        dlg.itemClicked()
+        self.assertIn('Test name: -Functional test',
+                      dlg.resultText.toPlainText())
+        self.assertIn('Test result:Test skipped', dlg.resultText.toPlainText())
 
     def testOkPressed(self):
         """test the widget is closed."""
-        self.assertTrue(False)
+        # preconditions
+        r = Report()
+        dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
+        dlg.show()
+        # do test
+        self.assertTrue(dlg.isVisible())
+        dlg.okPressed()
+        self.assertFalse(dlg.isVisible())
 
 
 ###############################################################################
