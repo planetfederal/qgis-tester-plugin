@@ -7,14 +7,13 @@
 import unittest
 import sys
 import utilities
-import traceback
 import mock
 from qgistester.test import Step
 from qgistester.test import Test
 from qgistester.test import UnitTestWrapper
 from qgistester.test import _TestRunner
 from qgistester.test import _TestResult
-from qgistester.unittests.data.plugin1 import functionalTests, unitTests
+from qgistester.unittests.data.plugin1 import unitTests
 
 class StepTests(unittest.TestCase):
     """Tests for the Step class that describes a test step."""
