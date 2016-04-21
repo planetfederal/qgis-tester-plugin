@@ -41,18 +41,27 @@ class UnitTestWrapper(Test):
     def __init__(self, test):
         Test.__init__(self, test.shortDescription() or test.id())
         self.test = test
-        def runTest():
-            suite = TestSuite()
-            suite.addTest(self.test)
-            runner = _TestRunner()
-            result = runner.run(suite)
-            if result.err is not None:
-                desc = result.err[1].message + "\n" + "".join(traceback.format_tb(result.err[2]))
-                raise Exception(desc)
-        self.steps.append(Step("Run unit test", runTest))
+        self.steps.append(Step("Run unit test", self._runTest))
 
     def setCleanup(self):
         pass
+
+    def _runTest(self):
+        """method usded to run a test.
+
+        It is a static method to allow simple testing with mock and unittest
+        framework, instead of aving it defined in the __init__ of the
+        UnitTestWrapper class."""
+        if not hasattr(self, 'test') or not self.test:
+            return
+        suite = TestSuite()
+        suite.addTest(self.test)
+        runner = _TestRunner()
+        result = runner.run(suite)
+        if result.err is not None:
+            desc = result.err[1].message + "\n" + \
+                   "".join(traceback.format_tb(result.err[2]))
+            raise Exception(desc)
 
 
 class _TestRunner(TextTestRunner):
@@ -65,6 +74,7 @@ class _TestRunner(TextTestRunner):
         test(result)
 
         return result
+
 
 class _TestResult(TestResult):
 
