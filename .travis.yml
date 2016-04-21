@@ -1,3 +1,5 @@
+sudo: required
+dist: trusty
 language: python
 python:
   - "2.7"
@@ -5,14 +7,15 @@ virtualenv:
       system_site_packages: true
 install:
     #- pip install pep8
+    - pip install nose2
     - echo "deb http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
     - echo "deb-src http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
     - gpg --keyserver keyserver.ubuntu.com --recv 997D3880
     - gpg --export --armor 997D3880 | sudo apt-key add -
-    - sudo apt-get update -qq
-    - sudo apt-get install python-qt4
-    - sudo apt-get install qgis --force-yes
-    - sudo apt-get install python-qgis
+    - sudo apt-get update
+    - sudo apt-get install python-qt4 -qq
+    - sudo apt-get install qgis --force-yes -qq
+    - sudo apt-get install python-qgis -qq
 before_script:
     # I need a (fake) display on Travis so I need to start a X server.
     - export DISPLAY=:99.0
