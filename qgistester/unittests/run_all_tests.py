@@ -18,6 +18,7 @@ from qgistester.unittests.test_TestSelector import suite as \
                                            selectorTestsSuite
 from qgistester.unittests.test_translations import suite as \
                                            translationsTestsSuite
+from qgistester.unittests.test_utils import suite as utilsTestsSuite
 
 __author__ = 'Luigi Pirelli'
 __date__ = 'April 2016'
@@ -37,6 +38,7 @@ def unitTests():
     _tests.extend(testerWidgetTestsSuite())
     _tests.extend(selectorTestsSuite())
     _tests.extend(translationsTestsSuite())
+    _tests.extend(utilsTestsSuite())
     return _tests
 
 
@@ -50,6 +52,7 @@ def runAllUnitTests():
     _suite.addTest(testerWidgetTestsSuite())
     _suite.addTest(selectorTestsSuite())
     _suite.addTest(translationsTestsSuite())
+    _suite.addTest(utilsTestsSuite())
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(_suite)
 
 
