@@ -48,8 +48,6 @@ class UnitTestWrapper(Test):
 
     def _runTest(self):
         """method usded to run a test."""
-        if not hasattr(self, 'test') or not self.test:
-            return
         suite = TestSuite()
         suite.addTest(self.test)
         runner = _TestRunner()
