@@ -47,11 +47,7 @@ class UnitTestWrapper(Test):
         pass
 
     def _runTest(self):
-        """method usded to run a test.
-
-        It is a static method to allow simple testing with mock and unittest
-        framework, instead of aving it defined in the __init__ of the
-        UnitTestWrapper class."""
+        """method usded to run a test."""
         if not hasattr(self, 'test') or not self.test:
             return
         suite = TestSuite()
