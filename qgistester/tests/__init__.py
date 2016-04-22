@@ -4,6 +4,7 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
+import sys
 import glob
 import importlib
 import pkgutil
@@ -24,9 +25,16 @@ def findTests(path=None, prefix=None):
         return _tests
     # parse tests of the module to look for unit and functional tests
     for importer, modname, ispkg in pkgutil.iter_modules(path, prefix):
+        print modname
         modtests = []
         group = modname.split(".")[-1]
-        module = __import__(modname, fromlist="dummy")
+        try:
+            module = __import__(modname, fromlist="dummy")
+        except ImportError:
+            # add path in python search path and try again
+            for p in path:
+                sys.path.append(p)
+            module = __import__(modname, fromlist="dummy")
         if "functionalTests" in dir(module):
             modtests.extend(module.functionalTests())
         if "unitTests" in dir(module):
