@@ -19,6 +19,7 @@ __author__ = 'Luigi Pirelli'
 __date__ = 'April 2016'
 __copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
+
 class StepTests(unittest.TestCase):
     """Tests for the Step class that describes a test step."""
 
