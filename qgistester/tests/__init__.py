@@ -13,7 +13,13 @@ from qgistester.test import Test, UnitTestWrapper
 
 
 def findTests(path=None, prefix=None):
-    """Search for tests in the given path and prefix"""
+    """Search for tests in the given path and prefix
+
+    :param path: list of paths. Have to bi a list
+    :param prefix: string e.g. "module." attached to the beginning of found
+                   modules
+    :return: list of tests extracted from the module(s)
+    """
     _tests = []
     if prefix is None:
         prefix = __name__ + "."
