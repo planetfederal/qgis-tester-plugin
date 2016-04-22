@@ -31,7 +31,6 @@ def findTests(path=None, prefix=None):
         return _tests
     # parse tests of the module to look for unit and functional tests
     for importer, modname, ispkg in pkgutil.iter_modules(path, prefix):
-        print modname
         modtests = []
         group = modname.split(".")[-1]
         try:
