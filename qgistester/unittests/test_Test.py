@@ -87,9 +87,7 @@ class TestTests(unittest.TestCase):
         description1 = "this is a step description"
         description2 = "this is a step description"
         preStep = Step(description1, testFunction1)
-        s2 = Step(description2, testFunction2, preStep, True)
-        name = "this is the test name"
-        t = Test(name)
+        t = Test('this is the test name')
         # do test
         t.addStep(description2, testFunction2, preStep, True)
         self.assertEqual(len(t.steps), 1)
