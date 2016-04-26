@@ -43,7 +43,7 @@ To add a step to the test, the *addStep()* method is used. It accepts four param
 
 The first one is mandatory and is a string with the description of the test. The second one is optional and should be a function. If this parameters is passed, the function will be executed at that step, and it will be an automated step. If no function is passed, the step will be considered a manual one. The description will be shown to the user and he will perform the step manually.
 
-If once the manual step has been performed, the tester has to verify something, the ``isVerifyStep`` parameter should receive True. That will cause the "Step passes" and "Step fails" cuttons to be active, instead of the simple "Next step" one.
+If once the manual step has been performed, the tester has to verify something, the ``isVerifyStep`` parameter should receive True. That will cause the "Step passes" and "Step fails" buttons to be active, instead of the simple "Next step" one.
 
 If you require a prestep to be executed before actually entering this step, pass the corresponding function using the ``prestep`` parameters.
 
@@ -52,4 +52,4 @@ You can add a cleanup task to be performed when the test is finished (or skipped
 Issue URL
 *********
 
-You can define a issue URL for each test, using the ``Test.setIssueURL(url)`` method, in case you are using a testinbg platform to keep traack of test executions.
+You can define a issue URL for each test, using the ``Test.setIssueURL(url)`` method, in case you are using a testinbg platform to keep track of test executions.
