@@ -36,7 +36,7 @@ class TestSelector(BASE, WIDGET):
                 groupItem.addChild(testItem)
             self.testsTree.addTopLevelItem(groupItem)
 
-        self.testsTree.expandAll()
+        #self.testsTree.expandAll()
 
         self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
         self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
