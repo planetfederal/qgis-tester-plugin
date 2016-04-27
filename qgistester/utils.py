@@ -92,10 +92,11 @@ def execute(func, message = None):
         QtCore.QCoreApplication.processEvents()
         if not waitCursor:
             QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+
+        t = ExecutorThread(func)
+        loop = QtCore.QEventLoop()
+        t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
         if message is not None:
-            t = ExecutorThread(func)
-            loop = QtCore.QEventLoop()
-            t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
             if _dialog is None:
                 dialogCreated = True
                 _dialog = QtGui.QProgressDialog(message, "Running", 0, 0, iface.mainWindow())
@@ -109,14 +110,12 @@ def execute(func, message = None):
             else:
                 oldText = _dialog.labelText()
                 _dialog.setLabelText(message)
-            QtGui.QApplication.processEvents()
-            t.start()
-            loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
-            if t.exception is not None:
-                raise t.exception
-            return t.returnValue
-        else:
-            return func()
+        QtGui.QApplication.processEvents()
+        t.start()
+        loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
+        if t.exception is not None:
+            raise t.exception
+        return t.returnValue
     finally:
         if message is not None:
             if dialogCreated:
