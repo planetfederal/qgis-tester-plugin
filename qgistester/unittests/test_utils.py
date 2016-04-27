@@ -18,9 +18,7 @@ from qgis.core import (QgsVectorLayer,
                        QgsMapLayerRegistry,
                        QgsVectorFileWriter)
 from qgistester.utils import (layerFromName,
-                              loadLayer,
                               loadLayerNoCrsDialog,
-                              ExecutorThread,
                               execute)
 import qgistester.utils as utils
 
@@ -73,9 +71,13 @@ class UtilsTests(unittest.TestCase):
         layer = layerFromName('unexist')
         self.assertIsNone(layer)
 
+    @unittest.skip
     def testLoadLayer(self):
-        """check load layer from file (raster or vector) returning layer
-        instance."""
+        """load a lyer or exception. Tested using testLoadLayerNoCrsDialog."""
+        self.assertTrue(False)
+
+    def testLoadLayerNoCrsDialog(self):
+        """load a layer file without opening CRS dialog."""
         # preconditions
         tf = tempfile.NamedTemporaryFile()
         tempFileName = tf.name + '.shp'
@@ -85,23 +87,27 @@ class UtilsTests(unittest.TestCase):
         basename = os.path.basename(tempFileName)
         name = os.path.splitext(basename)[0]
         # test 1: load vector layer
-        layer = loadLayer(tempFileName)
+        settings = QtCore.QSettings()
+        enterSetting = settings.value('/Projections/defaultBehaviour')
+        layer = loadLayerNoCrsDialog(tempFileName)
+        exitSetting = settings.value('/Projections/defaultBehaviour')
+        self.assertEqual(enterSetting, exitSetting)
         self.assertEqual(layer.name(), name)
-        # test 2: load a vector layre giving a layer name
-        wouldHaveName = "pippo"
-        layer = loadLayer(tempFileName, wouldHaveName)
+        # test 2: load a vector layer giving a layer name
+        wouldHaveName = "expected layer name"
+        layer = loadLayerNoCrsDialog(tempFileName, wouldHaveName)
         self.assertEqual(layer.name(), wouldHaveName)
         # test 3: load raster layer (the plugin png)
         rasterFileName = os.path.abspath(os.path.join(
                                          os.path.dirname(__file__),
                                          os.path.pardir,
                                          'plugin.png'))
-        layer = loadLayer(rasterFileName)
+        layer = loadLayerNoCrsDialog(rasterFileName)
         self.assertEqual(layer.name(), 'plugin')
         # test 4: load an unexistent layer
         rasterFileName = rasterFileName + '_unexistent'
         try:
-            layer = loadLayer(rasterFileName)
+            layer = loadLayerNoCrsDialog(rasterFileName)
         except RuntimeError:
             # test success
             pass
@@ -109,14 +115,6 @@ class UtilsTests(unittest.TestCase):
             self.assertTrue(False, msg='Received unexpected exception type')
         else:
             self.assertTrue(False, msg='Expected RuntimeError but not rised')
-
-    def testLoadLayerNoCrsDialog(self):
-        """load a layer file without opening CRS dialog."""
-        self.assertTrue(False)
-
-    def testExecutorThread(self):
-        """Test wrapper to QThread to manage some vars and events."""
-        self.assertTrue(False)
 
     def testExecute(self):
         """Test execution of long time task managing dialog to show progress.
@@ -274,7 +272,7 @@ class UtilsTests(unittest.TestCase):
 
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
-    tests = ['testExecute']
+    tests = ['testLayerFromName']
     suite = unittest.TestSuite(map(UtilsTests, tests))
     return suite
 
@@ -297,4 +295,4 @@ def run_subset():
     unittest.TextTestRunner(verbosity=3, stream=sys.stdout).run(suiteSubset())
 
 if __name__ == "__main__":
-    run_subset()
+    run_all()
