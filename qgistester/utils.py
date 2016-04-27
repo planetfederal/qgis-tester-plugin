@@ -46,7 +46,7 @@ def loadLayerNoCrsDialog(filename, name=None):
     Same as the loadLayer method, but it does not ask for CRS, regardless of current
     configuration in QGIS settings
     '''
-    settings = QSettings()
+    settings = QtCore.QSettings()
     prjSetting = settings.value('/Projections/defaultBehaviour')
     settings.setValue('/Projections/defaultBehaviour', '')
     layer = loadLayer(filename, name)
@@ -55,7 +55,7 @@ def loadLayerNoCrsDialog(filename, name=None):
 
 _dialog = None
 
-class ExecutorThread(QtCore.QThread):
+class _ExecutorThread(QtCore.QThread):
 
     finished = QtCore.pyqtSignal()
 
@@ -93,7 +93,7 @@ def execute(func, message = None):
         if not waitCursor:
             QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
 
-        t = ExecutorThread(func)
+        t = _ExecutorThread(func)
         loop = QtCore.QEventLoop()
         t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
         if message is not None:
