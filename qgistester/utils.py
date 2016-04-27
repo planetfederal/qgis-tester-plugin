@@ -49,8 +49,10 @@ def loadLayerNoCrsDialog(filename, name=None):
     settings = QtCore.QSettings()
     prjSetting = settings.value('/Projections/defaultBehaviour')
     settings.setValue('/Projections/defaultBehaviour', '')
-    layer = loadLayer(filename, name)
-    settings.setValue('/Projections/defaultBehaviour', prjSetting)
+    try:
+        layer = loadLayer(filename, name)
+    finally:
+        settings.setValue('/Projections/defaultBehaviour', prjSetting)
     return layer
 
 _dialog = None
