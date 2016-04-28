@@ -71,7 +71,7 @@ class UtilsTests(unittest.TestCase):
         layer = layerFromName('unexist')
         self.assertIsNone(layer)
 
-    @unittest.skip
+    @unittest.skip("Skip test tested using testLoadLayerNoCrsDialog")
     def testLoadLayer(self):
         """load a lyer or exception. Tested using testLoadLayerNoCrsDialog."""
         self.assertTrue(False)
