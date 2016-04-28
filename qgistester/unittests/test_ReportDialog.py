@@ -10,7 +10,7 @@ import utilities
 import mock
 from qgistesting import start_app
 from qgistesting.mocked import get_iface
-from PyQt4 import QtCore, QtGui, QtTest
+from PyQt4 import QtCore, QtGui
 from qgistester.reportdialog import ReportDialog
 from qgistester.report import Report, TestResult
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
