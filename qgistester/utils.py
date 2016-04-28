@@ -46,16 +46,18 @@ def loadLayerNoCrsDialog(filename, name=None):
     Same as the loadLayer method, but it does not ask for CRS, regardless of current
     configuration in QGIS settings
     '''
-    settings = QSettings()
+    settings = QtCore.QSettings()
     prjSetting = settings.value('/Projections/defaultBehaviour')
     settings.setValue('/Projections/defaultBehaviour', '')
-    layer = loadLayer(filename, name)
-    settings.setValue('/Projections/defaultBehaviour', prjSetting)
+    try:
+        layer = loadLayer(filename, name)
+    finally:
+        settings.setValue('/Projections/defaultBehaviour', prjSetting)
     return layer
 
 _dialog = None
 
-class ExecutorThread(QtCore.QThread):
+class _ExecutorThread(QtCore.QThread):
 
     finished = QtCore.pyqtSignal()
 
@@ -92,10 +94,11 @@ def execute(func, message = None):
         QtCore.QCoreApplication.processEvents()
         if not waitCursor:
             QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+
+        t = _ExecutorThread(func)
+        loop = QtCore.QEventLoop()
+        t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
         if message is not None:
-            t = ExecutorThread(func)
-            loop = QtCore.QEventLoop()
-            t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
             if _dialog is None:
                 dialogCreated = True
                 _dialog = QtGui.QProgressDialog(message, "Running", 0, 0, iface.mainWindow())
@@ -109,14 +112,12 @@ def execute(func, message = None):
             else:
                 oldText = _dialog.labelText()
                 _dialog.setLabelText(message)
-            QtGui.QApplication.processEvents()
-            t.start()
-            loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
-            if t.exception is not None:
-                raise t.exception
-            return t.returnValue
-        else:
-            return func()
+        QtGui.QApplication.processEvents()
+        t.start()
+        loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
+        if t.exception is not None:
+            raise t.exception
+        return t.returnValue
     finally:
         if message is not None:
             if dialogCreated:

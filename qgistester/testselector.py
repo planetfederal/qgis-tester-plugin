@@ -65,4 +65,3 @@ class TestSelector(BASE, WIDGET):
                 if testItem.checkState(0) == QtCore.Qt.Checked:
                     self.tests.append(testItem.test)
         self.close()
-

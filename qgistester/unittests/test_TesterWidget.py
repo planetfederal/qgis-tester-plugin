@@ -6,7 +6,18 @@
 #
 import unittest
 import sys
-from qgistester.unittests import utils
+import mock
+import utilities
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
+from qgistester.test import UnitTestWrapper
+from qgistester.testerwidget import TesterWidget
+from qgistester.unittests.data.plugin1 import functionalTests, unitTests
+from qgistester.report import Report, TestResult
+
+__author__ = 'Alessandro Pasotti'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
 
 class TesterWidgetTests(unittest.TestCase):
@@ -16,49 +27,78 @@ class TesterWidgetTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        cls.functionalTests = functionalTests()
+        cls.unitTests = [UnitTestWrapper(unit) for unit in unitTests()]
+        cls.allTests = cls.functionalTests + cls.unitTests
+        cls.QGIS_APP = start_app()
+        assert cls.QGIS_APP is not None
+        cls.IFACE_Mock = get_iface()
+        assert cls.IFACE_Mock is not None
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
-    def testInit(self):
+    def __testInit(self):
         """check if __init__ is correctly executed."""
         self.assertTrue(False)
 
     def testSetTests(self):
         """check if tests list is set."""
-        self.assertTrue(False)
+        widget = TesterWidget()
+        widget.setTests(self.allTests)
+        self.assertEquals(widget.tests, self.allTests)
 
-    def testStartTesting(self):
-        """test the run of the fist test setting up the result."""
-        self.assertTrue(False)
+    def testStartTesting_UnitTests(self):
+        """test the run of the first unit tests setting up the result."""
+        widget = TesterWidget()
+        widget.setTests(self.unitTests)
+        widget.getReportDialog = mock.Mock()
+        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
+            widget.startTesting()
+        self.assertEqual(widget.getReportDialog.call_count, 1)
+        self.assertIsInstance(widget.report, Report)
+        self.assertEqual(len(widget.report.results), 2)
+        self.assertEqual(widget.report.results[0].status, TestResult.FAILED)
+        self.assertEqual(widget.report.results[1].status, TestResult.PASSED)
 
-    def testRunNextTest(self):
-        """test jump to the run of the next test."""
-        self.assertTrue(False)
-
-    def testRunNextStep(self):
-        """test jump to the next step of a test."""
-        self.assertTrue(False)
-
-    def testTestPasses(self):
-        """test if test step passed ckicking passes button + relative
-        cleanup."""
-        self.assertTrue(False)
-
-    def testTestFails(self):
-        """test if test step failed ckicking fail button + relative cleanup."""
-        self.assertTrue(False)
+    def testStartTesting_FunctionalTests(self):
+        """test the run of the first functional tests setting up the result."""
+        widget = TesterWidget()
+        widget.setTests(self.functionalTests)
+        widget.getReportDialog = mock.Mock()
+        widget.startTesting()
+        for t in widget.tests:
+            for s in t.steps:
+                widget.testPasses()
+        self.assertEqual(widget.getReportDialog.call_count, 1)
+        self.assertIsInstance(widget.report, Report)
+        self.assertGreater(len(widget.report.results), 0)
+        for r in widget.report.results:
+            self.assertEqual(r.status, TestResult.PASSED)
 
     def testSkipTest(self):
-        """test if test is kipped pressing skop test + relative cleanup."""
-        self.assertTrue(False)
+        """test if test is skipped pressing stop test + relative cleanup."""
+        widget = TesterWidget()
+        widget.setTests(self.functionalTests)
+        widget.getReportDialog = mock.Mock()
+        widget.startTesting()
+        for t in widget.tests:
+            widget.skipTest()
+        self.assertEqual(widget.getReportDialog.call_count, 1)
+        self.assertIsInstance(widget.report, Report)
+        self.assertGreater(len(widget.report.results), 0)
+        for r in widget.report.results:
+            self.assertEqual(r.status, TestResult.SKIPPED)
 
     def testCancelTesting(self):
         """test if a test set invisible."""
-        self.assertTrue(False)
+        widget = TesterWidget()
+        widget.setVisible = mock.Mock()
+        widget.cancelTesting()
+        self.assertEqual(widget.setVisible.call_count, 1)
 
 
 ###############################################################################

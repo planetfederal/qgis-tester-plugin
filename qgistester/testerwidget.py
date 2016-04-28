@@ -14,7 +14,12 @@ from utils import execute
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
 
+
 class TesterWidget(BASE, WIDGET):
+
+    currentTestResult = None
+    currentTest = 0
+    currentTestStep = 0
 
     def __init__(self):
         QtGui.QWidget.__init__(self)
@@ -29,15 +34,16 @@ class TesterWidget(BASE, WIDGET):
     def setTests(self, tests):
         self.tests = tests
 
-    currentTestResult = None
-    currentTest = 0;
     def startTesting(self):
         self.currentTest = 0
         self.report = Report()
-
         self.runNextTest()
 
-    currentTestStep = 0
+    def getReportDialog(self):
+        """Wrapper for easy mocking"""
+        self.reportDialog = ReportDialog(self.report)
+        return self.reportDialog
+
     def runNextTest(self):
         if self.currentTestResult:
             self.report.addTestResult(self.currentTestResult)
@@ -49,7 +55,7 @@ class TesterWidget(BASE, WIDGET):
             self.runNextStep()
         else:
             self.setVisible(False)
-            dlg = ReportDialog(self.report)
+            dlg = self.getReportDialog()
             dlg.exec_()
 
     def runNextStep(self):
@@ -160,8 +166,3 @@ class TesterWidget(BASE, WIDGET):
 
     def cancelTesting(self):
         self.setVisible(False)
-
-
-
-
-

@@ -29,7 +29,7 @@ class Test():
     def addStep(self, description, function=None, prestep=None, isVerifyStep=False):
         self.steps.append(Step(description, function, prestep, isVerifyStep))
 
-    def setCleanup(self,function):
+    def setCleanup(self, function):
         self.cleanup = function
 
     def setIssueUrl(self, url):
@@ -41,18 +41,21 @@ class UnitTestWrapper(Test):
     def __init__(self, test):
         Test.__init__(self, test.shortDescription() or test.id())
         self.test = test
-        def runTest():
-            suite = TestSuite()
-            suite.addTest(self.test)
-            runner = _TestRunner()
-            result = runner.run(suite)
-            if result.err is not None:
-                desc = result.err[1].message + "\n" + "".join(traceback.format_tb(result.err[2]))
-                raise Exception(desc)
-        self.steps.append(Step("Run unit test", runTest))
+        self.steps.append(Step("Run unit test", self._runTest))
 
     def setCleanup(self):
         pass
+
+    def _runTest(self):
+        """method usded to run a test."""
+        suite = TestSuite()
+        suite.addTest(self.test)
+        runner = _TestRunner()
+        result = runner.run(suite)
+        if result.err is not None:
+            desc = result.err[1].message + "\n" + \
+                   "".join(traceback.format_tb(result.err[2]))
+            raise Exception(desc)
 
 
 class _TestRunner(TextTestRunner):
@@ -65,6 +68,7 @@ class _TestRunner(TextTestRunner):
         test(result)
 
         return result
+
 
 class _TestResult(TestResult):
 
@@ -80,4 +84,3 @@ class _TestResult(TestResult):
 
     def addFailure(self, test, err):
         self.err = err
-

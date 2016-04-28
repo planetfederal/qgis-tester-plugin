@@ -24,6 +24,7 @@ The project committers:
 
 * `Victor Olaya <https://github.com/volaya>`_ (Boundless)
 * `Luigi Pirelli <https://github.com/luipir>`_ (Boundless)
+* `Alessandro Pasotti <https://github.com/elpaso>`_ (Boundless)
 
 This is a small project that communicates via pull request.
 

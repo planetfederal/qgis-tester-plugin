@@ -15,9 +15,10 @@ class Report():
 class TestResult():
 
     PASSED, FAILED, SKIPPED = range(3)
+
     def __init__(self, test):
         self.test = test
-        self.state = self.SKIPPED
+        self.status = self.SKIPPED
         self.errorStep = None
         self.errorMessage = None
 

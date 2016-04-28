@@ -6,7 +6,18 @@
 #
 import unittest
 import sys
-from qgistester.unittests import utils
+import utilities
+import mock
+from qgistester.test import Step
+from qgistester.test import Test
+from qgistester.test import UnitTestWrapper
+from qgistester.test import _TestRunner
+from qgistester.test import _TestResult
+from qgistester.unittests.data.plugin1 import unitTests
+
+__author__ = 'Luigi Pirelli'
+__date__ = 'April 2016'
+__copyright__ = '(C) 2016 Boundless, http://boundlessgeo.com'
 
 
 class StepTests(unittest.TestCase):
@@ -15,16 +26,30 @@ class StepTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        def testFunction1():
+            pass
+
+        def testFunction2():
+            pass
+
+        description1 = "this is a step description"
+        description2 = "this is a step description"
+        preStep = Step(description1, testFunction1)
+        # do test
+        s2 = Step(description2, testFunction2, preStep, True)
+        self.assertTrue(s2.description == description2)
+        self.assertTrue(s2.function == testFunction2)
+        self.assertTrue(s2.prestep == preStep)
+        self.assertTrue(s2.isVerifyStep is True)
 
 
 class TestTests(unittest.TestCase):
@@ -33,28 +58,63 @@ class TestTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        name = "this is the test name"
+        t = Test(name)
+        self.assertEqual(len(t.steps), 0)
+        self.assertEqual(t.name, name)
+        self.assertEqual(t.group, '')
+        self.assertIn('<function <lambda> at ', str(t.cleanup))
+        self.assertIsNone(t.cleanup())
+        self.assertIsNone(t.issueUrl)
 
     def testAddStep(self):
         """check if a test is correclty added."""
-        self.assertTrue(False)
+        def testFunction1():
+            pass
+
+        def testFunction2():
+            pass
+
+        description1 = "this is a step description"
+        description2 = "this is a step description"
+        preStep = Step(description1, testFunction1)
+        t = Test('this is the test name')
+        # do test
+        t.addStep(description2, testFunction2, preStep, True)
+        self.assertEqual(len(t.steps), 1)
+        s = t.steps[0]
+        self.assertTrue(s.description == description2)
+        self.assertTrue(s.function == testFunction2)
+        self.assertTrue(s.prestep == preStep)
+        self.assertTrue(s.isVerifyStep is True)
 
     def testSetCleanup(self):
         """test the cleanup function is set."""
-        self.assertTrue(False)
+        def testFunction1():
+            pass
+        name = "this is the test name"
+        t = Test(name)
+        # do test
+        t.setCleanup(testFunction1)
+        self.assertEqual(t.cleanup, testFunction1)
 
     def testSetIssueUrl(self):
         """test the issue url is set."""
-        self.assertTrue(False)
+        issueUrl = 'http://www.example.com'
+        name = "this is the test name"
+        t = Test(name)
+        # do test
+        t.setIssueUrl(issueUrl)
+        self.assertEqual(t.issueUrl, issueUrl)
 
 
 class UnitTestWrapperTests(unittest.TestCase):
@@ -64,20 +124,77 @@ class UnitTestWrapperTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        # preconditions
+        unitTest = unitTests()[0]
+        # do test
+        utw = UnitTestWrapper(unitTest)
+        self.assertTrue(isinstance(utw, Test))
+        self.assertEqual(utw.test, unitTest)
+        self.assertEqual(len(utw.steps), 1)
+        step = utw.steps[0]
+        self.assertEqual(step.description, 'Run unit test')
+        self.assertEqual(step.function, utw._runTest)
 
     def testSetCleanup(self):
-        """check if cleanup is set."""
-        self.assertTrue(False)
+        """check if cleanup is set (do nothing now => pass)."""
+        pass
+
+    def test_runTest(self):
+        """check if _runTest is set."""
+        # preconditions
+        unitTest = unitTests()[0]
+        utw = UnitTestWrapper(unitTest)
+        # do test 1: _TestRunner.run return None
+        resultMock = mock.Mock(spect=_TestResult)
+        resultMock.err = None
+        _TestRunnerMock = mock.Mock(spect=_TestRunner)
+        _TestRunnerMock.run.return_value = resultMock
+        with mock.patch('qgistester.test._TestRunner',
+                        mock.Mock(return_value=_TestRunnerMock)):
+            try:
+                utw._runTest()
+            except:
+                # if exception then error
+                self.assertTrue(False)
+            self.assertIn('call.run', str(_TestRunnerMock.mock_calls[0]))
+
+        # preconditions
+        unitTest = unitTests()[0]
+        utw = UnitTestWrapper(unitTest)
+        # do test 2: _TestRunner.run return something
+        err = []
+        uknownContent = "I don't know the type of the first element"
+        attrs = {'message': "this is the error message"}
+        errMessage = type('errMessage', (object,), attrs)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+
+        err.append(uknownContent)
+        err.append(errMessage)
+        err.append(exc_traceback)
+
+        resultMock = mock.Mock(spect=_TestResult)
+        resultMock.err = err
+        _TestRunnerMock = mock.Mock(spect=_TestRunner)
+        _TestRunnerMock.run.return_value = resultMock
+        with mock.patch('qgistester.test._TestRunner',
+                        mock.Mock(return_value=_TestRunnerMock)):
+            try:
+                utw._runTest()
+            except:
+                pass
+            else:
+                # if NO exception then error
+                self.assertTrue(False)
+            self.assertIn('call.run', str(_TestRunnerMock.mock_calls[0]))
 
 
 class _TestRunnerTests(unittest.TestCase):
@@ -87,20 +204,28 @@ class _TestRunnerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        runner = _TestRunner()
+        self.assertIsInstance(runner, unittest.runner.TextTestRunner)
 
     def testRun(self):
-        """check if rest is run setting resul."""
-        self.assertTrue(False)
+        """check if test is run setting result."""
+        # preconditions
+        unitTestMock = mock.Mock(spec=unittest.TestCase)
+        runner = _TestRunner()
+        # do test
+        result = runner.run(unitTestMock)
+        self.assertIsInstance(result, _TestResult)
+        self.assertIn('call(<qgistester.test._TestResult run=0 errors=0 failures=0>)',
+                      str(unitTestMock.mock_calls[0]))
 
 
 class _TestResultTests(unittest.TestCase):
@@ -109,28 +234,47 @@ class _TestResultTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Test setUp method."""
-        utils.setUpEnv()
+        utilities.setUpEnv()
 
     @classmethod
     def tearDownClass(cls):
         """Test tearDown method."""
-        utils.cleanUpEnv()
+        utilities.cleanUpEnv()
 
     def testInit(self):
         """check if __init__ is correctly executed."""
-        self.assertTrue(False)
+        runner = _TestResult()
+        self.assertIsInstance(runner, unittest.result.TestResult)
+        self.assertIsNone(runner.err)
 
     def testAddSuccess(self):
-        """check if success state is added."""
-        self.assertTrue(False)
+        """check if success state is added (do nothing => pass)."""
+        pass
 
     def testAddError(self):
         """test the error state is added."""
-        self.assertTrue(False)
+        # preconditions
+        unitTestMock = mock.Mock(spec=unittest.TestCase)
+        errMock = mock.Mock()  # overengineered but I can't understand the type used for err
+        tr = _TestResult()
+        # do test
+        tr.addError(unitTestMock, errMock)
+        self.assertTrue(len(unitTestMock.mock_calls) == 0)
+        self.assertEqual(tr.err, errMock)
 
     def testAddFailure(self):
         """test the failure state is added."""
-        self.assertTrue(False)
+        """This test is alamost similar to testAddError because the code to test
+        is the same. Probably the differenziacion would be based on passed
+        data."""
+        # preconditions
+        unitTestMock = mock.Mock(spec=unittest.TestCase)
+        errMock = mock.Mock()  # overengineered but I can't understand the type used for err
+        tr = _TestResult()
+        # do test
+        tr.addError(unitTestMock, errMock)
+        self.assertTrue(len(unitTestMock.mock_calls) == 0)
+        self.assertEqual(tr.err, errMock)
 
 
 ###############################################################################
