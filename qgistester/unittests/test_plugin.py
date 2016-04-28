@@ -9,7 +9,7 @@ from mock import call
 import unittest
 import sys
 import utilities
-from qgistesting import start_app, stop_app
+from qgistesting import start_app
 from qgistesting.mocked import get_iface
 import qgistester
 from qgistester.plugin import TesterPlugin
@@ -37,7 +37,6 @@ class TesterTests(unittest.TestCase):
     def tearDownClass(cls):
         """Test tearDown method."""
         utilities.cleanUpEnv()
-        stop_app()
 
     def testInit(self):
         """check if plugin is loaded and present in qgis loaded plugins."""
