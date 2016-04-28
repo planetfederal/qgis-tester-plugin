@@ -8,7 +8,8 @@ import unittest
 import sys
 import mock
 import utilities
-from PyQt4.QtGui import QApplication
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
 from qgistester.test import UnitTestWrapper
 from qgistester.testerwidget import TesterWidget
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -29,7 +30,10 @@ class TesterWidgetTests(unittest.TestCase):
         cls.functionalTests = functionalTests()
         cls.unitTests = [UnitTestWrapper(unit) for unit in unitTests()]
         cls.allTests = cls.functionalTests + cls.unitTests
-        cls.app = QApplication(sys.argv)
+        cls.QGIS_APP = start_app()
+        assert cls.QGIS_APP is not None
+        cls.IFACE_Mock = get_iface()
+        assert cls.IFACE_Mock is not None
         utilities.setUpEnv()
 
     @classmethod
@@ -49,23 +53,22 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testStartTesting_UnitTests(self):
         """test the run of the first unit tests setting up the result."""
-        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.unitTests)
-        widget.getReportDialog = mock.Mock(return_value=dlgInstance)
-        widget.startTesting()
+        widget.getReportDialog = mock.Mock()
+        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
+            widget.startTesting()
         self.assertEqual(widget.getReportDialog.call_count, 1)
         self.assertIsInstance(widget.report, Report)
-        self.assertGreater(len(widget.report.results), 0)
+        self.assertEqual(len(widget.report.results), 2)
         self.assertEqual(widget.report.results[0].status, TestResult.FAILED)
         self.assertEqual(widget.report.results[1].status, TestResult.PASSED)
 
     def testStartTesting_FunctionalTests(self):
         """test the run of the first functional tests setting up the result."""
-        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
-        widget.getReportDialog = mock.Mock(return_value=dlgInstance)
+        widget.getReportDialog = mock.Mock()
         widget.startTesting()
         for t in widget.tests:
             for s in t.steps:
@@ -78,10 +81,9 @@ class TesterWidgetTests(unittest.TestCase):
 
     def testSkipTest(self):
         """test if test is skipped pressing stop test + relative cleanup."""
-        dlgInstance = mock.Mock()
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
-        widget.getReportDialog = mock.Mock(return_value=dlgInstance)
+        widget.getReportDialog = mock.Mock()
         widget.startTesting()
         for t in widget.tests:
             widget.skipTest()
