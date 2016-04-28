@@ -52,7 +52,7 @@ class TestSelectorTests(unittest.TestCase):
             self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == QtCore.Qt.Checked)
             self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == QtCore.Qt.Checked)
             self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == QtCore.Qt.Checked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).isExpanded())
+            self.assertFalse(ts.testsTree.topLevelItem(0).isExpanded())
             self.assertTrue(ts.selectAllLabel.receivers(QtCore.SIGNAL('linkActivated(const QString &)')) == 1)
             self.assertTrue(ts.unselectAllLabel.receivers(QtCore.SIGNAL('linkActivated(const QString &)')) == 1)
             self.assertTrue(ts.buttonBox.receivers(QtCore.SIGNAL('accepted()')) == 1)
