@@ -80,7 +80,7 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    execute(step.function, runInThread=step.runInThread)
+                    execute(step.function)
                     self.testPasses()
                 except:
                     self.testFails(traceback.format_exc())
@@ -103,7 +103,7 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setEnabled(False)
                 QtCore.QCoreApplication.processEvents()
                 try:
-                    execute(step.function, runInThread=step.runInThread)
+                    execute(step.function)
                     self.currentTestStep += 1
                     self.runNextStep()
                 except:
