@@ -118,18 +118,13 @@ class UtilsTests(unittest.TestCase):
             self.assertTrue(False, msg='Expected RuntimeError but not rised')
 
     def testExecute(self):
-        """Test execution of long time task managing dialog to show progress.
-
-        It will be created a lenghty task and will be tested if it is run
-        thanks to the event it emits"""
+        """Test execution of long time task managing"""
         # precondition
         self.lenghtyFuncRunningFailed = False
         self.lenghtyFuncRunningFailedMessage = ''
         self.threadStartedFlag = False
         self.threadTerminatedFlag = False
         self.threadRunningCounter = 0
-        self.message1 = 'progess bar message'
-        self.message2 = 'new progess bar message'
 
         def lenghtyFuncStarted():
             self.threadStartedFlag = True
@@ -140,55 +135,9 @@ class UtilsTests(unittest.TestCase):
         def lenghtyFuncRunning(step):
             self.threadRunningCounter = step
 
-        def lenghtyFuncRunningTest1():
-            '''function to do tests when thread is in execution'''
-            print "test1 during thread execution"
-            try:
-                # check the WaitCursor is set
-                cursor = QtGui.QApplication.overrideCursor()
-                self.assertEqual(cursor.shape(), QtCore.Qt.WaitCursor)
-                # check if PrograssBar is available
-                mw = self.IFACE_Mock.mainWindow()
-                pb = mw.findChildren(QtGui.QProgressDialog)
-                self.assertEqual(len(pb), 1)
-                self.assertEqual(pb[0].labelText(), self.message1)
-            except AssertionError:
-                self.lenghtyFuncRunningFailed = True
-                self.lenghtyFuncRunningFailedMessage = traceback.format_exc()
-
-        def lenghtyFuncRunningTest2():
-            '''function to do tests when thread is in execution'''
-            print "test2 during thread execution"
-            try:
-                # check the WaitCursor is set
-                cursor = QtGui.QApplication.overrideCursor()
-                self.assertEqual(cursor.shape(), QtCore.Qt.WaitCursor)
-                # check if PrograssBar is available
-                mw = self.IFACE_Mock.mainWindow()
-                pb = mw.findChildren(QtGui.QProgressDialog)
-                self.assertEqual(len(pb), 2)  # remained first progress bar not removed with deleteLater()
-                self.assertEqual(pb[1].labelText(), self.message2)
-            except AssertionError:
-                self.lenghtyFuncRunningFailed = True
-                self.lenghtyFuncRunningFailedMessage = traceback.format_exc()
-
-        def lenghtyFuncRunningTest3():
-            '''function to do tests when thread is in execution'''
-            print "test3 during thread execution"
-            try:
-                # check the WaitCursor is set
-                cursor = QtGui.QApplication.overrideCursor()
-                self.assertEqual(cursor.shape(), QtCore.Qt.WaitCursor)
-                # check if PrograssBar is available
-                mw = self.IFACE_Mock.mainWindow()
-                pb = mw.findChildren(QtGui.QProgressDialog)
-                self.assertEqual(len(pb), 1)  # remained first progress bar not removed with deleteLater()
-            except AssertionError:
-                self.lenghtyFuncRunningFailed = True
-                self.lenghtyFuncRunningFailedMessage = traceback.format_exc()
-
         class RunningClass(QtCore.QObject):
-
+            '''added signals to check that the function is executed in the
+            main thread.'''
             threadStarted = QtCore.pyqtSignal()
             threadTerminated = QtCore.pyqtSignal()
             threadRunning = QtCore.pyqtSignal(int)
@@ -203,73 +152,6 @@ class UtilsTests(unittest.TestCase):
                 if threading.current_thread().name != 'MainThread':
                     self.threadTerminated.emit()
 
-        # tes1 preconditions
-        self.threadStartedFlag = False
-        self.threadTerminatedFlag = False
-        self.threadRunningCounter = 0
-        rc = RunningClass()
-        rc.threadStarted.connect(lenghtyFuncStarted)
-        rc.threadTerminated.connect(lenghtyFuncTerminated)
-        rc.threadRunning.connect(lenghtyFuncRunning)
-        rc.threadRunning.connect(lenghtyFuncRunningTest1)
-        # do test1: dialog is not present => create it
-        self.assertIsNone(utils._dialog)
-        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc, message=self.message1, runInThread=True)
-        self.assertTrue(self.threadStartedFlag)
-        self.assertTrue(self.threadTerminatedFlag)
-        self.assertEqual(self.threadRunningCounter, 5)
-        self.assertIsNone(utils._dialog)
-        self.assertFalse(self.lenghtyFuncRunningFailed,
-                         msg=self.lenghtyFuncRunningFailedMessage)
-
-        # tes2 preconditions
-        self.threadStartedFlag = False
-        self.threadTerminatedFlag = False
-        self.threadRunningCounter = 0
-        rc = RunningClass()
-        rc.threadStarted.connect(lenghtyFuncStarted)
-        rc.threadTerminated.connect(lenghtyFuncTerminated)
-        rc.threadRunning.connect(lenghtyFuncRunning)
-        rc.threadRunning.connect(lenghtyFuncRunningTest2)
-        # do test2: dialog is present => avoid to create it and overload the
-        # message
-        utils._dialog = QtGui.QProgressDialog("old message", "Running", 0, 0,
-                                              self.IFACE_Mock.mainWindow())
-        utils._dialog.show()
-        self.assertIsNotNone(utils._dialog)
-        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc, message=self.message2, runInThread=True)
-        self.assertTrue(self.threadStartedFlag)
-        self.assertTrue(self.threadTerminatedFlag)
-        self.assertEqual(self.threadRunningCounter, 5)
-        self.assertIsNotNone(utils._dialog)
-        self.assertFalse(self.lenghtyFuncRunningFailed,
-                         msg=self.lenghtyFuncRunningFailedMessage)
-
-        # test3 preconditions
-        self.threadStartedFlag = False
-        self.threadTerminatedFlag = False
-        self.threadRunningCounter = 0
-        rc = RunningClass()
-        rc.threadStarted.connect(lenghtyFuncStarted)
-        rc.threadTerminated.connect(lenghtyFuncTerminated)
-        rc.threadRunning.connect(lenghtyFuncRunning)
-        rc.threadRunning.connect(lenghtyFuncRunningTest3)
-        if utils._dialog:
-            utils._dialog.deleteLater()
-            utils._dialog = None
-        # do test3: dialog is not present => avoid to create it
-        self.assertIsNone(utils._dialog)
-        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc, runInThread=True)
-        self.assertTrue(self.threadStartedFlag)
-        self.assertTrue(self.threadTerminatedFlag)
-        self.assertEqual(self.threadRunningCounter, 5)
-        self.assertIsNone(utils._dialog)
-        self.assertFalse(self.lenghtyFuncRunningFailed,
-                         msg=self.lenghtyFuncRunningFailedMessage)
-
         # test4 preconditions
         self.threadStartedFlag = False
         self.threadTerminatedFlag = False
@@ -278,17 +160,12 @@ class UtilsTests(unittest.TestCase):
         rc.threadStarted.connect(lenghtyFuncStarted)
         rc.threadTerminated.connect(lenghtyFuncTerminated)
         rc.threadRunning.connect(lenghtyFuncRunning)
-        if utils._dialog:
-            utils._dialog.deleteLater()
-            utils._dialog = None
         # do test4: run function not in a thread
-        self.assertIsNone(utils._dialog)
         with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
             execute(rc.lenghtyFunc)
         self.assertFalse(self.threadStartedFlag)
         self.assertFalse(self.threadTerminatedFlag)
         self.assertEqual(self.threadRunningCounter, 0)
-        self.assertIsNone(utils._dialog)
         self.assertFalse(self.lenghtyFuncRunningFailed,
                          msg=self.lenghtyFuncRunningFailedMessage)
 
