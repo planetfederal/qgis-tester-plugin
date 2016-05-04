@@ -11,12 +11,11 @@ import traceback
 class Step():
 
     def __init__(self, description, function=None, prestep=None,
-                 isVerifyStep=False, runInThread=False):
+                 isVerifyStep=False):
         self.description = description
         self.function = function
         self.prestep = prestep
         self.isVerifyStep = isVerifyStep
-        self.runInThread = runInThread
 
 
 class Test():
@@ -29,9 +28,8 @@ class Test():
         self.issueUrl = None
 
     def addStep(self, description, function=None, prestep=None,
-                isVerifyStep=False, runInThread=False):
-        self.steps.append(Step(description, function, prestep, isVerifyStep,
-                          runInThread))
+                isVerifyStep=False):
+        self.steps.append(Step(description, function, prestep, isVerifyStep))
 
     def setCleanup(self, function):
         self.cleanup = function
