@@ -58,7 +58,6 @@ def loadLayerNoCrsDialog(filename, name=None):
 def execute(func):
     QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
     try:
-        func()
+        return func()
     finally:
         QtGui.QApplication.restoreOverrideCursor()
-        return
