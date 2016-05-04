@@ -75,7 +75,7 @@ class _ExecutorThread(QtCore.QThread):
         finally:
             self.finished.emit()
 
-def execute(func, message = None):
+def execute(func, message=None, runInThread=False):
     '''
     Executes a lengthy tasks in a separate thread and displays a waiting dialog if needed.
     Sets the cursor to wait cursor while the task is running.
@@ -95,36 +95,41 @@ def execute(func, message = None):
         if not waitCursor:
             QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
 
-        t = _ExecutorThread(func)
-        loop = QtCore.QEventLoop()
-        t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
-        if message is not None:
-            if _dialog is None:
-                dialogCreated = True
-                _dialog = QtGui.QProgressDialog(message, "Running", 0, 0, iface.mainWindow())
-                _dialog.setWindowTitle("Running")
-                _dialog.setWindowModality(QtCore.Qt.WindowModal);
-                _dialog.setMinimumDuration(1000)
-                _dialog.setMaximum(100)
-                _dialog.setValue(0)
-                _dialog.setMaximum(0)
-                _dialog.setCancelButton(None)
-            else:
-                oldText = _dialog.labelText()
-                _dialog.setLabelText(message)
-        QtGui.QApplication.processEvents()
-        t.start()
-        loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
-        if t.exception is not None:
-            raise t.exception
-        return t.returnValue
+        if runInThread:
+            t = _ExecutorThread(func)
+            loop = QtCore.QEventLoop()
+            t.finished.connect(loop.exit, QtCore.Qt.QueuedConnection)
+            if message is not None:
+                if _dialog is None:
+                    dialogCreated = True
+                    _dialog = QtGui.QProgressDialog(message, "Running", 0, 0, iface.mainWindow())
+                    _dialog.setWindowTitle("Running")
+                    _dialog.setWindowModality(QtCore.Qt.WindowModal);
+                    _dialog.setMinimumDuration(1000)
+                    _dialog.setMaximum(100)
+                    _dialog.setValue(0)
+                    _dialog.setMaximum(0)
+                    _dialog.setCancelButton(None)
+                else:
+                    oldText = _dialog.labelText()
+                    _dialog.setLabelText(message)
+            QtGui.QApplication.processEvents()
+            t.start()
+            loop.exec_(flags = QtCore.QEventLoop.ExcludeUserInputEvents)
+            if t.exception is not None:
+                raise t.exception
+            return t.returnValue
+        else:
+            return func()
     finally:
         if message is not None:
             if dialogCreated:
                 _dialog.reset()
                 _dialog = None
             else:
-                _dialog.setLabelText(oldText)
+                if  _dialog:
+                    _dialog.setLabelText(oldText)
+
         if not waitCursor:
             QtGui.QApplication.restoreOverrideCursor()
         QtCore.QCoreApplication.processEvents()

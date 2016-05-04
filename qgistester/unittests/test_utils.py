@@ -12,6 +12,7 @@ import tempfile
 import mock
 import time
 import traceback
+import threading
 from qgistesting import start_app
 from qgistesting.mocked import get_iface
 from qgis.core import (QgsVectorLayer,
@@ -193,11 +194,14 @@ class UtilsTests(unittest.TestCase):
             threadRunning = QtCore.pyqtSignal(int)
 
             def lenghtyFunc(self):
-                self.threadStarted.emit()
+                if threading.current_thread().name != 'MainThread':
+                    self.threadStarted.emit()
                 for i in range(1,6):
                     time.sleep(0.5)
-                    self.threadRunning.emit(i)
-                self.threadTerminated.emit()
+                    if threading.current_thread().name != 'MainThread':
+                        self.threadRunning.emit(i)
+                if threading.current_thread().name != 'MainThread':
+                    self.threadTerminated.emit()
 
         # tes1 preconditions
         self.threadStartedFlag = False
@@ -211,7 +215,7 @@ class UtilsTests(unittest.TestCase):
         # do test1: dialog is not present => create it
         self.assertIsNone(utils._dialog)
         with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc, message=self.message1)
+            execute(rc.lenghtyFunc, message=self.message1, runInThread=True)
         self.assertTrue(self.threadStartedFlag)
         self.assertTrue(self.threadTerminatedFlag)
         self.assertEqual(self.threadRunningCounter, 5)
@@ -235,7 +239,7 @@ class UtilsTests(unittest.TestCase):
         utils._dialog.show()
         self.assertIsNotNone(utils._dialog)
         with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc, message=self.message2)
+            execute(rc.lenghtyFunc, message=self.message2, runInThread=True)
         self.assertTrue(self.threadStartedFlag)
         self.assertTrue(self.threadTerminatedFlag)
         self.assertEqual(self.threadRunningCounter, 5)
@@ -243,7 +247,7 @@ class UtilsTests(unittest.TestCase):
         self.assertFalse(self.lenghtyFuncRunningFailed,
                          msg=self.lenghtyFuncRunningFailedMessage)
 
-        # tes3 preconditions
+        # test3 preconditions
         self.threadStartedFlag = False
         self.threadTerminatedFlag = False
         self.threadRunningCounter = 0
@@ -255,11 +259,10 @@ class UtilsTests(unittest.TestCase):
         if utils._dialog:
             utils._dialog.deleteLater()
             utils._dialog = None
-        # do test2: dialog is present => avoid to create it and overload the
-        # message
+        # do test3: dialog is not present => avoid to create it
         self.assertIsNone(utils._dialog)
         with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
-            execute(rc.lenghtyFunc)
+            execute(rc.lenghtyFunc, runInThread=True)
         self.assertTrue(self.threadStartedFlag)
         self.assertTrue(self.threadTerminatedFlag)
         self.assertEqual(self.threadRunningCounter, 5)
@@ -267,6 +270,27 @@ class UtilsTests(unittest.TestCase):
         self.assertFalse(self.lenghtyFuncRunningFailed,
                          msg=self.lenghtyFuncRunningFailedMessage)
 
+        # test4 preconditions
+        self.threadStartedFlag = False
+        self.threadTerminatedFlag = False
+        self.threadRunningCounter = 0
+        rc = RunningClass()
+        rc.threadStarted.connect(lenghtyFuncStarted)
+        rc.threadTerminated.connect(lenghtyFuncTerminated)
+        rc.threadRunning.connect(lenghtyFuncRunning)
+        if utils._dialog:
+            utils._dialog.deleteLater()
+            utils._dialog = None
+        # do test4: run function not in a thread
+        self.assertIsNone(utils._dialog)
+        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
+            execute(rc.lenghtyFunc)
+        self.assertFalse(self.threadStartedFlag)
+        self.assertFalse(self.threadTerminatedFlag)
+        self.assertEqual(self.threadRunningCounter, 0)
+        self.assertIsNone(utils._dialog)
+        self.assertFalse(self.lenghtyFuncRunningFailed,
+                         msg=self.lenghtyFuncRunningFailedMessage)
 
 ###############################################################################
 

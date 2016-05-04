@@ -45,11 +45,12 @@ class StepTests(unittest.TestCase):
         description2 = "this is a step description"
         preStep = Step(description1, testFunction1)
         # do test
-        s2 = Step(description2, testFunction2, preStep, True)
+        s2 = Step(description2, testFunction2, preStep, True, True)
         self.assertTrue(s2.description == description2)
         self.assertTrue(s2.function == testFunction2)
         self.assertTrue(s2.prestep == preStep)
-        self.assertTrue(s2.isVerifyStep is True)
+        self.assertTrue(s2.isVerifyStep)
+        self.assertTrue(s2.runInThread)
 
 
 class TestTests(unittest.TestCase):
@@ -89,13 +90,14 @@ class TestTests(unittest.TestCase):
         preStep = Step(description1, testFunction1)
         t = Test('this is the test name')
         # do test
-        t.addStep(description2, testFunction2, preStep, True)
+        t.addStep(description2, testFunction2, preStep, True, True)
         self.assertEqual(len(t.steps), 1)
         s = t.steps[0]
         self.assertTrue(s.description == description2)
         self.assertTrue(s.function == testFunction2)
         self.assertTrue(s.prestep == preStep)
-        self.assertTrue(s.isVerifyStep is True)
+        self.assertTrue(s.isVerifyStep)
+        self.assertTrue(s.runInThread)
 
     def testSetCleanup(self):
         """test the cleanup function is set."""
