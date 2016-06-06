@@ -3,19 +3,32 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtGui, uic, QtCore
+
 import os
 import tests
 from collections import defaultdict
 
+from PyQt4 import uic
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTreeWidgetItem, QDialog
+
+from qgis.core import QgsApplication
+
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testselector.ui'))
+
 
 class TestSelector(BASE, WIDGET):
 
     def __init__(self):
-        QtGui.QDialog.__init__(self)
+        super(TestSelector, self).__init__()
         self.setupUi(self)
+
+        self.actionSelectAll.setIcon(QgsApplication.getThemeIcon('/mActionSelectAll.svg'))
+        self.actionClearSelection.setIcon(QgsApplication.getThemeIcon('/mActionDeselectAll.svg'))
+
+        self.actionSelectAll.triggered.connect(lambda: self.checkTests(True))
+        self.actionClearSelection.triggered.connect(lambda: self.checkTests(False))
 
         self.tests = None
 
@@ -24,13 +37,13 @@ class TestSelector(BASE, WIDGET):
             allTests[test.group].append(test)
 
         for group, groupTests in allTests.iteritems():
-            groupItem = QtGui.QTreeWidgetItem()
+            groupItem = QTreeWidgetItem()
             groupItem.setText(0, group)
-            groupItem.setFlags(groupItem.flags() | QtCore.Qt.ItemIsTristate);
+            groupItem.setFlags(groupItem.flags() | Qt.ItemIsTristate);
             for test in groupTests:
-                testItem = QtGui.QTreeWidgetItem()
-                testItem.setFlags(testItem.flags() | QtCore.Qt.ItemIsUserCheckable);
-                testItem.setCheckState(0, QtCore.Qt.Checked);
+                testItem = QTreeWidgetItem()
+                testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
+                testItem.setCheckState(0, Qt.Checked);
                 testItem.test = test
                 testItem.setText(0, test.name)
                 groupItem.addChild(testItem)
@@ -38,30 +51,20 @@ class TestSelector(BASE, WIDGET):
 
         #self.testsTree.expandAll()
 
-        self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
-        self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
-
-        self.buttonBox.accepted.connect(self.okPressed)
-        self.buttonBox.rejected.connect(self.cancelPressed)
-
-
     def checkTests(self, b):
-        state = QtCore.Qt.Checked if b else QtCore.Qt.Unchecked
+        state = Qt.Checked if b else Qt.Unchecked
         for i in xrange(self.testsTree.topLevelItemCount()):
             item = self.testsTree.topLevelItem(i)
             for j in xrange(item.childCount()):
                 child = item.child(j)
                 child.setCheckState(0, state)
 
-    def cancelPressed(self):
-        self.close()
-
-    def okPressed(self):
+    def accept(self):
         self.tests = []
         for i in xrange(self.testsTree.topLevelItemCount()):
             groupItem = self.testsTree.topLevelItem(i)
             for j in xrange(groupItem.childCount()):
                 testItem = groupItem.child(j)
-                if testItem.checkState(0) == QtCore.Qt.Checked:
+                if testItem.checkState(0) == Qt.Checked:
                     self.tests.append(testItem.test)
-        self.close()
+        QDialog.accept(self)

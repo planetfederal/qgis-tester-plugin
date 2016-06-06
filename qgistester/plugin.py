@@ -30,16 +30,15 @@ class TesterPlugin:
         self.action.triggered.connect(self.test)
         self.iface.addPluginToMenu(u"Tester", self.action)
 
-
     def test(self):
         if self.widget is not None and self.widget.isVisible():
             QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
             return
         dlg = TestSelector()
-        dlg.exec_()
-        if dlg.tests:
-            self.widget = TesterWidget()
-            self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
-            self.widget.show()
-            self.widget.setTests(dlg.tests)
-            self.widget.startTesting()
+        if dlg.exec_():
+            if dlg.tests:
+                self.widget = TesterWidget()
+                self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
+                self.widget.show()
+                self.widget.setTests(dlg.tests)
+                self.widget.startTesting()
