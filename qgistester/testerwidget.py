@@ -24,7 +24,7 @@ class TesterWidget(BASE, WIDGET):
     def __init__(self):
         QtGui.QWidget.__init__(self)
         self.setupUi(self)
-
+        self.setObjectName("TesterPluginPanel")
         self.btnCancel.clicked.connect(self.cancelTesting)
         self.btnTestOk.clicked.connect(self.testPasses)
         self.btnTestFailed.clicked.connect(self.testFails)
