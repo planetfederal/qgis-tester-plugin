@@ -46,6 +46,9 @@ class TestSelector(BASE, WIDGET):
 
         self.filterUnitTests()
 
+        self.buttonBox.accepted.connect(self.okPressed)
+        self.buttonBox.rejected.connect(self.cancelPressed)
+
         self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
         self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
         self.showUnitTestsCheck.stateChanged.connect(self.filterUnitTests)
@@ -68,7 +71,10 @@ class TestSelector(BASE, WIDGET):
                 child = item.child(j)
                 child.setCheckState(0, state)
 
-    def accept(self):
+    def cancelPressed(self):
+        self.close()
+
+    def okPressed(self):
         self.tests = []
         for i in xrange(self.testsTree.topLevelItemCount()):
             groupItem = self.testsTree.topLevelItem(i)
@@ -76,4 +82,4 @@ class TestSelector(BASE, WIDGET):
                 testItem = groupItem.child(j)
                 if testItem.checkState(0) == Qt.Checked and not testItem.isHidden():
                     self.tests.append(testItem.test)
-        QDialog.accept(self)
+        self.close()

@@ -35,10 +35,10 @@ class TesterPlugin:
             QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
             return
         dlg = TestSelector()
-        if dlg.exec_():
-            if dlg.tests:
-                self.widget = TesterWidget()
-                self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
-                self.widget.show()
-                self.widget.setTests(dlg.tests)
-                self.widget.startTesting()
+        dlg.exec_()
+        if dlg.tests:
+            self.widget = TesterWidget()
+            self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
+            self.widget.show()
+            self.widget.setTests(dlg.tests)
+            self.widget.startTesting()
