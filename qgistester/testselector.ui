@@ -6,40 +6,54 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>472</width>
-    <height>372</height>
+    <width>400</width>
+    <height>491</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Test selector</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
-    <number>6</number>
-   </property>
    <item>
-    <widget class="QToolBar" name="toolBar">
-     <property name="iconSize">
-      <size>
-       <width>16</width>
-       <height>16</height>
-      </size>
-     </property>
-     <property name="floatable">
-      <bool>false</bool>
-     </property>
-     <addaction name="actionSelectAll"/>
-     <addaction name="actionClearSelection"/>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="selectAllLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;All&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="unselectAllLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;None&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="showUnitTestsCheck">
+       <property name="text">
+        <string>Show unit tests</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QTreeWidget" name="testsTree">
-     <property name="editTriggers">
-      <set>QAbstractItemView::NoEditTriggers</set>
-     </property>
-     <property name="alternatingRowColors">
-      <bool>true</bool>
-     </property>
      <attribute name="headerVisible">
       <bool>false</bool>
      </attribute>
@@ -56,61 +70,12 @@
       <enum>Qt::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Close|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
-  <action name="actionSelectAll">
-   <property name="text">
-    <string/>
-   </property>
-   <property name="toolTip">
-    <string>Select all tests</string>
-   </property>
-  </action>
-  <action name="actionClearSelection">
-   <property name="text">
-    <string/>
-   </property>
-   <property name="statusTip">
-    <string>Clear selection</string>
-   </property>
-  </action>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>199</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>245</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>199</x>
-     <y>468</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>199</x>
-     <y>245</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

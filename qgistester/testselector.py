@@ -7,6 +7,7 @@
 import os
 import tests
 from collections import defaultdict
+from test import UnitTestWrapper
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt
@@ -23,12 +24,6 @@ class TestSelector(BASE, WIDGET):
     def __init__(self):
         super(TestSelector, self).__init__()
         self.setupUi(self)
-
-        self.actionSelectAll.setIcon(QgsApplication.getThemeIcon('/mActionSelectAll.svg'))
-        self.actionClearSelection.setIcon(QgsApplication.getThemeIcon('/mActionDeselectAll.svg'))
-
-        self.actionSelectAll.triggered.connect(lambda: self.checkTests(True))
-        self.actionClearSelection.triggered.connect(lambda: self.checkTests(False))
 
         self.tests = None
 
@@ -49,7 +44,21 @@ class TestSelector(BASE, WIDGET):
                 groupItem.addChild(testItem)
             self.testsTree.addTopLevelItem(groupItem)
 
-        #self.testsTree.expandAll()
+        self.filterUnitTests()
+
+        self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
+        self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
+        self.showUnitTestsCheck.stateChanged.connect(self.filterUnitTests)
+
+
+    def filterUnitTests(self):
+        hidden = not self.showUnitTestsCheck.isChecked()
+        for i in xrange(self.testsTree.topLevelItemCount()):
+            item = self.testsTree.topLevelItem(i)
+            for j in xrange(item.childCount()):
+                child = item.child(j)
+                if isinstance(child.test, UnitTestWrapper):
+                    child.setHidden(hidden)
 
     def checkTests(self, b):
         state = Qt.Checked if b else Qt.Unchecked
@@ -65,6 +74,6 @@ class TestSelector(BASE, WIDGET):
             groupItem = self.testsTree.topLevelItem(i)
             for j in xrange(groupItem.childCount()):
                 testItem = groupItem.child(j)
-                if testItem.checkState(0) == Qt.Checked:
+                if testItem.checkState(0) == Qt.Checked and not testItem.isHidden():
                     self.tests.append(testItem.test)
         QDialog.accept(self)
