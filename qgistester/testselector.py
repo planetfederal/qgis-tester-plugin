@@ -10,7 +10,7 @@ from collections import defaultdict
 from test import UnitTestWrapper
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QSettings
 from PyQt4.QtGui import QTreeWidgetItem, QDialog
 
 from qgis.core import QgsApplication
@@ -44,7 +44,11 @@ class TestSelector(BASE, WIDGET):
                 groupItem.addChild(testItem)
             self.testsTree.addTopLevelItem(groupItem)
 
-        self.filterUnitTests()
+        settings = QSettings('Boundless', 'qgistester')
+        showUnitTests = settings.value('showUnittests', False, bool)
+        self.showUnitTestsCheck.setChecked(showUnitTests)
+        if not showUnitTests:
+            self.filterUnitTests()
 
         self.buttonBox.accepted.connect(self.okPressed)
         self.buttonBox.rejected.connect(self.cancelPressed)
@@ -52,7 +56,6 @@ class TestSelector(BASE, WIDGET):
         self.selectAllLabel.linkActivated.connect(lambda: self.checkTests(True))
         self.unselectAllLabel.linkActivated.connect(lambda: self.checkTests(False))
         self.showUnitTestsCheck.stateChanged.connect(self.filterUnitTests)
-
 
     def filterUnitTests(self):
         hidden = not self.showUnitTestsCheck.isChecked()
@@ -72,6 +75,7 @@ class TestSelector(BASE, WIDGET):
                 child.setCheckState(0, state)
 
     def cancelPressed(self):
+        self.saveSettings()
         self.close()
 
     def okPressed(self):
@@ -82,4 +86,9 @@ class TestSelector(BASE, WIDGET):
                 testItem = groupItem.child(j)
                 if testItem.checkState(0) == Qt.Checked and not testItem.isHidden():
                     self.tests.append(testItem.test)
+        self.saveSettings()
         self.close()
+
+    def saveSettings(self):
+        settings = QSettings('Boundless', 'qgistester')
+        settings.setValue('showUnittests', self.showUnitTestsCheck.isChecked())
