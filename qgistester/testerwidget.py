@@ -20,10 +20,8 @@ class TesterWidget(BASE, WIDGET):
     currentTestResult = None
     currentTest = 0
     currentTestStep = 0
-    currentBlinkingTime = 0
 
     BLINKING_INTERVAL = 1000
-    BLINKING_MAX = 5
 
     buttonColors = ["", 'QPushButton {color: yellow;}']
                     #[QtGui.QPushButton().palette().color(QtGui.QPalette.Button),
@@ -56,14 +54,10 @@ class TesterWidget(BASE, WIDGET):
 
     def _blink(self):
         self.currentBlinkingTime += 1
-        if self.currentBlinkingTime > self.BLINKING_MAX:
-            self.blinkTimer.stop()
-            self.stopBlinking()
-        else:
-            color = self.buttonColors[self.currentBlinkingTime % 2]
-            for button in self.buttons:
-                if button.isEnabled():
-                    button.setStyleSheet(color)
+        color = self.buttonColors[self.currentBlinkingTime % 2]
+        for button in self.buttons:
+            if button.isEnabled():
+                button.setStyleSheet(color)
 
     def setTests(self, tests):
         self.tests = tests
