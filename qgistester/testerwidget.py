@@ -20,6 +20,15 @@ class TesterWidget(BASE, WIDGET):
     currentTestResult = None
     currentTest = 0
     currentTestStep = 0
+    currentBlinkingTime = 0
+
+    BLINKING_INTERVAL = 1000
+    BLINKING_MAX = 5
+
+    buttonColors = ["", 'QPushButton {color: yellow;}']
+                    #[QtGui.QPushButton().palette().color(QtGui.QPalette.Button),
+                    #QtGui.QColor.fromRgb(200,200,0)]
+
 
     def __init__(self):
         QtGui.QWidget.__init__(self)
@@ -30,6 +39,31 @@ class TesterWidget(BASE, WIDGET):
         self.btnTestFailed.clicked.connect(self.testFails)
         self.btnSkip.clicked.connect(self.skipTest)
         self.btnNextStep.clicked.connect(self.runNextStep)
+        self.buttons = [self.btnTestOk, self.btnTestFailed, self.btnNextStep]
+
+        self.blinkTimer = QtCore.QTimer()
+        self.blinkTimer.timeout.connect(self._blink)
+
+
+    def startBlinking(self):
+        self.currentBlinkingTime = 0
+        self.blinkTimer.start(self.BLINKING_INTERVAL)
+
+    def stopBlinking(self):
+        self.blinkTimer.stop()
+        for button in self.buttons:
+            button.setStyleSheet(self.buttonColors[0])
+
+    def _blink(self):
+        self.currentBlinkingTime += 1
+        if self.currentBlinkingTime > self.BLINKING_MAX:
+            self.blinkTimer.stop()
+            self.stopBlinking()
+        else:
+            color = self.buttonColors[self.currentBlinkingTime % 2]
+            for button in self.buttons:
+                if button.isEnabled():
+                    button.setStyleSheet(color)
 
     def setTests(self, tests):
         self.tests = tests
@@ -59,6 +93,7 @@ class TesterWidget(BASE, WIDGET):
             dlg.exec_()
 
     def runNextStep(self):
+        self.stopBlinking()
         test = self.tests[self.currentTest]
         step = test.steps[self.currentTestStep]
         self.btnSkip.setEnabled(True)
@@ -68,7 +103,10 @@ class TesterWidget(BASE, WIDGET):
                 html = "".join(f.readlines())
             self.webView.setHtml(html, QtCore.QUrl.fromUserInput(step.description))
         else:
-            self.webView.setHtml(step.description)
+            if step.function is not None:
+                self.webView.setHtml(step.description + "<p><b>[This is an automated step. Please, wait until it has been completed]</b></p>")
+            else:
+                self.webView.setHtml(step.description + "<p><b>[Click on the right-hand side buttons once you have performed this step]</b></p>")
         QtCore.QCoreApplication.processEvents()
         if self.currentTestStep == len(test.steps) - 1:
             if step.function is not None:
@@ -122,6 +160,8 @@ class TesterWidget(BASE, WIDGET):
                     self.btnTestFailed.setEnabled(False)
                 if step.prestep:
                     step.prestep()
+        if step.function is None:
+            self.startBlinking()
 
     def testPasses(self):
         test = self.tests[self.currentTest]
