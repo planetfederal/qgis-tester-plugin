@@ -11,7 +11,7 @@ from test import UnitTestWrapper
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings
-from PyQt4.QtGui import QTreeWidgetItem, QDialog
+from PyQt4.QtGui import QTreeWidgetItem, QDialog, QDialogButtonBox
 
 from qgis.core import QgsApplication
 
@@ -58,6 +58,7 @@ class TestSelector(BASE, WIDGET):
             self.testsTree.addTopLevelItem(groupItem)
             groupItem.setExpanded(True)
 
+        self.buttonBox.button(QDialogButtonBox.Ok).setText("Run selected tests")
         self.buttonBox.accepted.connect(self.okPressed)
         self.buttonBox.rejected.connect(self.cancelPressed)
 
