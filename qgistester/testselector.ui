@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>491</height>
+    <width>650</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -31,6 +31,20 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="onlyManualLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;Only manual tests&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="onlyUnitLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;Only unit tests&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -43,14 +57,7 @@
        </property>
       </spacer>
      </item>
-     <item>
-      <widget class="QCheckBox" name="showUnitTestsCheck">
-       <property name="text">
-        <string>Show unit tests</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+     </layout>
    </item>
    <item>
     <widget class="QTreeWidget" name="testsTree">
