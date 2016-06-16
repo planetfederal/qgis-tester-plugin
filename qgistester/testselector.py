@@ -88,7 +88,6 @@ class TestSelector(BASE, WIDGET):
                     child.setCheckState(0, condition(subchild.test))
 
     def cancelPressed(self):
-        self.saveSettings()
         self.close()
 
     def okPressed(self):
