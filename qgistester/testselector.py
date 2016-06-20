@@ -36,10 +36,10 @@ class TestSelector(BASE, WIDGET):
             groupItem.setText(0, group)
             groupItem.setFlags(groupItem.flags() | Qt.ItemIsTristate);
             unitItem = QTreeWidgetItem()
-            unitItem.setText(0, "Unit tests")
+            unitItem.setText(0, "Fully automated tests")
             unitItem.setFlags(unitItem.flags() | Qt.ItemIsTristate);
             manualItem = QTreeWidgetItem()
-            manualItem.setText(0, "Manual tests")
+            manualItem.setText(0, "Manual and semi-automated tests")
             manualItem.setFlags(manualItem.flags() | Qt.ItemIsTristate);
             for test in groupTests:
                 testItem = QTreeWidgetItem()
