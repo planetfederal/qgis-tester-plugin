@@ -4,8 +4,10 @@
 Usage
 =========
 
+This document explains how to execute tests using the tester plugin.
 
-Running the test suite
+
+Running tests
 ########################
 
 To start a test cycle, select the "Plugins/Tester/Start testing" menu
@@ -15,7 +17,11 @@ A window will be shown with the available tests grouped in categories.
 .. image:: testselector.png
 	:align: center
 
-Select the tests that you want to be executed and then click on run
+The list of available tests depend on the active plugins. The tester plugin itself contains no tests. Tests are added by plugins when they are loaded.
+
+If a plugin is active but its tests are not available in the tester plugin, it might be because the plugin was activated before the tester plugin was loaded. Try disabling and enabling the plugin to add its tests again, and then reopen the tester plugin test selector.
+
+Select the tests that you want to be executed and then click on *Run selected tests*
 
 In the upper part of the QGIS window you will see the testing panel.
 
@@ -31,7 +37,6 @@ Automated tests
 ----------------
 
 Automated tests have no user interaction. The tester plugin will take care of running the test and checking that the conditions defined to pass the test are met.
-
 
 
 Semi-automated tests
