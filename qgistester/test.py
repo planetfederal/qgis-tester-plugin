@@ -27,6 +27,9 @@ class Test():
         self.cleanup = lambda: None
         self.issueUrl = None
 
+    def __eq__(self, o):
+        return o.name == self.name and o.group == self.group
+
     def addStep(self, description, function=None, prestep=None,
                 isVerifyStep=False):
         self.steps.append(Step(description, function, prestep, isVerifyStep))

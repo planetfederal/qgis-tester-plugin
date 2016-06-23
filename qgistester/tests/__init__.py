@@ -15,7 +15,7 @@ from qgistester.test import Test, UnitTestWrapper
 def findTests(path=None, prefix=None):
     """Search for tests in the given path and prefix
 
-    :param path: list of paths. Have to bi a list
+    :param path: list of paths.
     :param prefix: string e.g. "module." attached to the beginning of found
                    modules
     :return: list of tests extracted from the module(s)
@@ -51,13 +51,25 @@ def findTests(path=None, prefix=None):
 
 tests = findTests()
 
-def addTestModule(module, group = None):
+def _testsFromModule(module, group = None):
     modtests = []
     group = group or module.__name__.split(".")[-1]
     if "functionalTests" in dir(module):
         modtests.extend(module.functionalTests())
     if "unitTests" in dir(module):
         modtests.extend([UnitTestWrapper(unit) for unit in module.unitTests()])
+    return modtests
+
+def addTestModule(module, group = None):
+    modtests = _testsFromModule(module, group)
     for t in modtests:
         t.group = group
-    tests.extend(modtests)
+        if t not in tests:
+            tests.append(t)
+
+def removeTestModule(module, group = None):
+    modtests = _testsFromModule(module, group)
+    for t in modtests:
+        t.group = group
+        if t in tests:
+            tests.remove(t)
