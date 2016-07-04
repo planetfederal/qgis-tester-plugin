@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>650</width>
-    <height>500</height>
+    <width>566</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,28 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="unselectAllLabel">
-       <property name="text">
-        <string>&lt;a href='#'&gt;None&lt;/a&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="onlyManualLabel">
-       <property name="text">
-        <string>&lt;a href='#'&gt;Only manual tests&lt;/a&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="onlyUnitLabel">
-       <property name="text">
-        <string>&lt;a href='#'&gt;Only unit tests&lt;/a&gt;</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -57,7 +36,54 @@
        </property>
       </spacer>
      </item>
-     </layout>
+     <item>
+      <widget class="QLabel" name="unselectAllLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;None&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_3">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="onlyManualLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;Manual&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_4">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QLabel" name="onlyUnitLabel">
+       <property name="text">
+        <string>&lt;a href='#'&gt;Automated&lt;/a&gt;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QTreeWidget" name="testsTree">
