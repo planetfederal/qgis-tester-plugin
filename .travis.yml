@@ -26,4 +26,3 @@ script:
     - python qgistester/unittests/test_report.py
     - python qgistester/unittests/test_ReportDialog.py
     - python qgistester/unittests/test_plugin.py
-    #- pep8 qgistester/*.py

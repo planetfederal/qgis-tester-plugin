@@ -108,8 +108,9 @@ class ReportDialogTests(unittest.TestCase):
         point = QtCore.QPoint(0, 0)
         qmenuMock = mock.Mock(spec=QtGui.QMenu)
         qactionMock = mock.Mock(spec=QtGui.QAction)
-        with mock.patch('PyQt4.QtGui.QMenu', qmenuMock):
-            with mock.patch('PyQt4.QtGui.QAction', qactionMock):
+        with mock.patch('qgistester.reportdialog.QMenu', qmenuMock):
+            with mock.patch('qgistester.reportdialog.QAction', qactionMock):
+                self.assertEquals(dlg.resultsTree.selectedItems()[0].result.test.issueUrl, 'http://www.example.com')
                 dlg.showPopupMenu(point)
         self.assertIn('call()', str(qmenuMock.mock_calls[0]))
         self.assertIn('call().addAction', str(qmenuMock.mock_calls[1]))
@@ -148,7 +149,7 @@ class ReportDialogTests(unittest.TestCase):
         dlg.show()
         # do test
         self.assertTrue(dlg.isVisible())
-        dlg.okPressed()
+        dlg.close()
         self.assertFalse(dlg.isVisible())
 
 
