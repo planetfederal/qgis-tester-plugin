@@ -82,6 +82,7 @@ class TesterWidget(BASE, WIDGET):
             self.currentTestStep = 0
             self.runNextStep()
         else:
+            QtGui.QApplication.restoreOverrideCursor()
             self.setVisible(False)
             dlg = self.getReportDialog()
             dlg.exec_()
