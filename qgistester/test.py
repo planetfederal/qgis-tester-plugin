@@ -58,7 +58,7 @@ class UnitTestWrapper(Test):
         runner = _TestRunner()
         result = runner.run(suite)
         if result.err is not None:
-            desc = result.err[1].message + "\n" + \
+            desc = str(result.err) + "\n" + \
                    "".join(traceback.format_tb(result.err[2]))
             raise Exception(desc)
 
