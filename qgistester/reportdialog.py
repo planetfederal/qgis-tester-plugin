@@ -105,7 +105,7 @@ class ReportDialog(BASE, WIDGET):
                     out += '<li>[{}] {}'.format(self.resultTag[results.status], results.test.name)
                     if results.status == results.FAILED:
                         out += '<p>Failed at step {} with message</p>'.format(results.errorStep)
-                        out += '<code>{}</code>'.format(results.result)
+                        out += '<code>{}</code>'.format(results.errorMessage)
                     out += '</li>'
                 out += '</ul>'
         else:
