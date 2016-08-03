@@ -44,7 +44,7 @@ class TestSelector(BASE, WIDGET):
             for test in groupTests:
                 testItem = QTreeWidgetItem()
                 testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
-                testItem.setCheckState(0, Qt.Checked);
+                testItem.setCheckState(0, Qt.Unchecked);
                 testItem.test = test
                 testItem.setText(0, test.name)
                 if isinstance(test, UnitTestWrapper):
@@ -52,7 +52,7 @@ class TestSelector(BASE, WIDGET):
                 else:
                     manualItem.addChild(testItem)
             if manualItem.childCount():
-                groupItem.addChild(manualItem)                
+                groupItem.addChild(manualItem)
             if unitItem.childCount():
                 groupItem.addChild(unitItem)
             self.testsTree.addTopLevelItem(groupItem)
