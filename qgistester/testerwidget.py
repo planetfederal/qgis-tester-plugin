@@ -96,7 +96,7 @@ class TesterWidget(BASE, WIDGET):
         if os.path.exists(step.description):
             with open(step.description) as f:
                 html = "".join(f.readlines())
-            self.webView.setHtml(html, QtCore.QUrl.fromUserInput(step.description))
+            self.webView.setHtml(html)
         else:
             if step.function is not None:
                 self.webView.setHtml(step.description + "<p><b>[This is an automated step. Please, wait until it has been completed]</b></p>")
