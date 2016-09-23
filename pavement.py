@@ -21,15 +21,9 @@ options(
             '*.pro'
         ],
         # skip certain files inadvertently found by exclude pattern globbing
-        skip_exclude = []
+        skip_exclude = [],
     ),
 
-    plugin_server = Bunch(
-        server = 'qgis.boundlessgeo.com',
-        port = 80,
-        protocol = 'http',
-        end_point = '/RPC2/'
-    )
 )
 
 
@@ -69,6 +63,9 @@ def install_devtools():
 
 
 @task
+@cmdopts([
+    ('tests', 't', 'Package tests with plugin'),
+])
 def package(options):
     """Create plugin package
     """

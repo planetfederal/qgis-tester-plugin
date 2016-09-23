@@ -1,28 +1,50 @@
 sudo: required
-dist: trusty
-language: python
-python:
-  - "2.7"
-virtualenv:
-      system_site_packages: true
+addons:
+  hosts:
+  - boundless-test
+services:
+- docker
+env:
+  global:
+  - PLUGIN_NAME=qgistester
+  - secure: kgSvdxUvaeJL74RUoGXJc+3e2jzc45YNk5RB9yPlAWSogLaG7ttAn7JDu67SjvXXXXRNvInyTZ9OGqLZNUXWTLjilsS8k46JXzSAVKmkqQ8ddahoZmx/4VC6nSRe+cpPqW9cimA9MzB9ayGRmlgB7L8SdQqtVmooyl0aBmlb86q+2ABQ7GNoSI8j98unYPUq0mutFPui1lXbEs2jWmrsAtxwcxTsgB5PMj/fJoqdxVkBuWMJxahnJUp2QZYQomQdtG1JoNv9yte7l0ZgzwxPI+p7Pip1vej+5D/KAy0TUrvdTJtx5G7vSgDV4zLaFwNE2jnqQ8jwe89TQ0DT8YluIXTw0LjOz4mc+CAh4vgyIqEZp8ie2piegEAmifNhM0igB4OTSqWAVDbho7FXv64guDcer7O5kT4vkAZDSLGdNqTu0dipDoOqrqXXjOBOPx5SiBO1VtAu7JIfoqLgXNosPVwrLGdarwIQMzoXYwD+sIcVAygRdDGCBGlI4QzTONe/iIuf1r8qAferMG5TQ5D+1wtGLWk/RlkaQb4pZQGKV2D6NCIkC7niI2tmV/yTYaYDqSzERXL2XBEDQ6Oqza+BCuvTI1O2gmvWSSQoiWDbfOQQbhtW3BAvyGKKXNFzDuh8oBKxz3ZdHBb/qymZVTcbIwR5uBewtBxXKB35fKGwUD4=
+  - secure: TFoPenas8glOT+8N1YCQH5rQDo+9TeGPnXVyMCh7JO5+8hV4EN3j+7CyNDhBLNqktEIjY5n90pGOokSJZR4/jne9xh4dAsvW5DW2za0FBo68LnB/0xVkudIUhw/d3zDCYqIQf1LqpDjTsJ5bo88lJnMtq/UFko9O2cxrybn86NhwPNuc4Ps0EwqjQFz+PBnjUOdI0jaiPjUqbtNYVl6jv6hIN38y+zBYVhxVDvQW8I7zbwUmz2kITjG4b8VbKaZRMIl4EDk2oGIRw6ACOVjgJCIgYE/1zJ34UmsZQ9G2md2/GuE0Pbf3W1dyeb/sFP5oa6oGhKc1tIC6qXndjtoMVBQKgX/l3WTDH4m4uQC2u+133OhnyCw4frssUim0uiqKhbCx4UszWJ4TwFbY/tIfZKfKk45E7AraemOuGa/jStrkDfKVTzTSdmXyYInM/cflVO8kY6Ia8LVOlFx271NGat5bo2XTHQHqlK3wnXcXzZ6ssPjUecLFiJtGX+pYtHvM8Oc1BtZw+en4IRJJGpgFqwh0YzTHquP51ogkWqknWJWRCQg7wFt4fEAep/5zw0ewtL2i+PK8ilAdDwEMwpO76nv3Xa4okx3CIjca2jW/EetphDk04mdQaUHccr10xUN+jZIr0V0G/GwNdayyYc84DL9rUzQM8GLF/aQGuh+NlhM=
+  matrix:
+  - QGIS_VERSION_TAG=release
+  - QGIS_VERSION_TAG=master_2
+  - QGIS_VERSION_TAG=master
+matrix:
+  allow_failures:
+  - env: QGIS_VERSION_TAG=master
+before_install:
+- docker pull boundlessgeo/qgis-testing-environment:latest
+- docker tag boundlessgeo/qgis-testing-environment:latest qgis-testing-environment
 install:
-    #- pip install pep8
-    - pip install nose2
-    - echo "deb http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
-    - echo "deb-src http://qgis.org/debian $(lsb_release -cs) main" | sudo tee -a /etc/apt/sources.list
-    - gpg --keyserver keyserver.ubuntu.com --recv 3FF5FFCAD71472C4
-    - gpg --export --armor 3FF5FFCAD71472C4 | sudo apt-key add -
-    - sudo apt-get update
-    - sudo apt-get install python-qt4 -qq
-    - sudo apt-get install qgis --force-yes -qq
-    - sudo apt-get install python-qgis -qq
-before_script:
-    # I need a (fake) display on Travis so I need to start a X server.
-    - export DISPLAY=:99.0
-    - export PYTHONPATH=$PYTHONPATH:/usr/share/qgis/python/
-    - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1400x900x24 -ac +extension GLX +render
+- docker run -d --name qgis-testing-environment -v ${TRAVIS_BUILD_DIR}:/tests_directory -e DISPLAY=:99 qgis-testing-environment
+- sleep 10
+- docker exec -it qgis-testing-environment sh -c "qgis_setup.sh ${PLUGIN_NAME}"
+- docker exec -it qgis-testing-environment sh -c "pip install paver"
+- docker exec -it qgis-testing-environment sh -c "cd /tests_directory && paver setup && paver package --tests"
+- docker exec -it qgis-testing-environment sh -c "ln -s /tests_directory/${PLUGIN_NAME} /root/.qgis2/python/plugins/${PLUGIN_NAME}"
 script:
-    - python qgistester/unittests/test_TesterWidget.py
-    - python qgistester/unittests/test_report.py
-    - python qgistester/unittests/test_ReportDialog.py
-    - python qgistester/unittests/test_plugin.py
+- docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_TesterWidget.py"
+- docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_report.py"
+- docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_ReportDialog.py"
+- docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_plugin.py"
+after_success:
+- mkdir /home/travis/.ssh/
+- chmod 700 /home/travis/.ssh/
+- openssl aes-256-cbc -K $encrypted_57d9326b0302_key -iv $encrypted_57d9326b0302_iv -in travis_secrets.tar.gz.enc -out travis_secrets.tar.gz -d
+- tar xzvf travis_secrets.tar.gz
+- mv id_rsa.qgisrepoguest /home/travis/.ssh/id_rsa.qgisrepoguest
+- mv ssh_config /home/travis/.ssh/config
+- chmod 600 /home/travis/.ssh/id_rsa.qgisrepoguest
+- chmod 600 /home/travis/.ssh/config
+- export RELEASE_ZIPNAME=${PLUGIN_NAME}.zip
+- echo "Uploading ${RELEASE_ZIPNAME} to QGIS Dev..."
+- scp ${PLUGIN_NAME}.zip qgisrepoguest:${UPLOADS}/${RELEASE_ZIPNAME}
+- export GIT_REV=$(git rev-parse --short HEAD)
+- ssh qgisrepoguest "${UPDATER} update --dev --role DesktopPartner,DesktopDeveloper --git-hash ${GIT_REV} ${RELEASE_ZIPNAME}"
+notifications:
+  slack:
+    secure: wWrVBOvKn8XkE2WFyR4QoqbAfaV4iU5kSQXJcA0D/E1I9WO8eUgK/rDQAQHizihR7FhUZTXlOLkGNKcUYxtiGinxRYd4MSHZoFuhu8KkSI79m70YEuvDwdOnqqJIhEqwaOFO8DWsFKEFZPxRo9a1oOH2PgdHQnYaCf+V91oPazmHSVMu2Oll5WoFzPTazNdIE60jNpc8ykr0lHuQOoSqSC67eK7+6MK/kprnFy3gZli/8A9O9Z+DRD749BBNzCnWH9R6PhICEhqdlWJoU9SRiqL4Su6tfy54jerm4cHApevWzKNhr/WkJOqiMH3lB6//lmO70IcqQfP875cLM70A2eWpLHmxAgebo9TW0NQgHgOwbhpTuYGBs6rOUkH21pdkDpJqIOW7kpdMJ4zPb4EzeaLfAHNoSAJDH2TNDUOg5Opq5MKAx8zTieX8ayn0YXNAiaoIJO8z69rVj+irZ57aDtI+jjroe94d3Yk1pjNq3tPqSnNl4Koa9IMEvNkR+or0DV/C8q93uvbBHLMrv57o8Pi1Aa12PwtnMBUVd1/umj9XzMsdELRXoTF5eLbXS+TFsFy2qZ3+mzjs0B0rBAZtrXinIyQlUSqHUXZS17zlKGA5o4WiIJuQ97MDGy7MTU7V0vAhFA6792Hpkx9M7U7Cd14HqcaUSQ0LeZA0CuTXNSQ=
