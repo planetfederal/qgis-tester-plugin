@@ -11,9 +11,10 @@ from test import UnitTestWrapper
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings
-from PyQt4.QtGui import QTreeWidgetItem, QDialog, QDialogButtonBox
+from PyQt4.QtGui import QTreeWidgetItem, QDialog, QDialogButtonBox, QSizePolicy, QApplication
 
 from qgis.core import QgsApplication
+from qgis.gui import QgsMessageBar
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testselector.ui'))
@@ -26,6 +27,10 @@ class TestSelector(BASE, WIDGET):
         self.setupUi(self)
 
         self.tests = None
+
+        self.bar = QgsMessageBar()
+        self.bar.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Fixed)
+        self.layout().insertWidget(1, self.bar)
 
         allTests = defaultdict(list)
         for test in tests.tests:
@@ -77,6 +82,23 @@ class TestSelector(BASE, WIDGET):
                 return Qt.Unchecked
         self.onlyUnitLabel.linkActivated.connect(lambda: self.checkTests(_onlyUnit))
 
+        self.exportButton.clicked.connect(self.export)
+
+    def export(self):
+        allTests = defaultdict(list)
+        for test in tests.tests:
+            allTests[test.group].append(test)
+
+        s = ""
+        for group, groupTests in allTests.iteritems():
+            s += "- %s\n" % group
+            for t in groupTests:
+                s += "\t- %s\n" % t.name
+                
+        cb = QApplication.clipboard()
+        cb.clear(mode=cb.Clipboard )
+        cb.setText(s, mode=cb.Clipboard)
+        self.bar.pushMessage("", "Tests list has been copied to your clipboard", level=QgsMessageBar.SUCCESS, duration=5)
 
     def checkTests(self, condition):
         for i in xrange(self.testsTree.topLevelItemCount()):
