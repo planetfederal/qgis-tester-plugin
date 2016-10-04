@@ -3,9 +3,11 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
+import os
 from PyQt4 import QtGui, QtCore
 from testerwidget import TesterWidget
 from testselector import TestSelector
+from settingswindow import SettingsWindow
 
 class TesterPlugin:
 
@@ -37,6 +39,16 @@ class TesterPlugin:
         dlg = TestSelector()
         dlg.exec_()
         if dlg.tests:
+            settings = {}
+            for test in dlg.tests:
+                settings.update(test.settings)
+            if settings:
+                settingsDlg = SettingsWindow(settings)
+                settingsDlg.exec_()
+                if not settingsDlg.settings:
+                    return
+                for key, value in settingsDlg.settings.iteritems():
+                    os.environ[key] = value
             self.widget = TesterWidget()
             self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
             self.widget.show()

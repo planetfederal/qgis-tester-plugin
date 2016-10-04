@@ -26,6 +26,7 @@ class Test():
         self.group = ""
         self.cleanup = lambda: None
         self.issueUrl = None
+        self.settings = {}
 
     def __eq__(self, o):
         return o.name == self.name and o.group == self.group
@@ -52,7 +53,7 @@ class UnitTestWrapper(Test):
         pass
 
     def _runTest(self):
-        """method usded to run a test."""
+        """method used to run a test."""
         suite = TestSuite()
         suite.addTest(self.test)
         runner = _TestRunner()
