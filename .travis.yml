@@ -32,19 +32,22 @@ script:
 - docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_ReportDialog.py"
 - docker exec -it qgis-testing-environment sh -c "python /tests_directory/qgistester/unittests/test_plugin.py"
 after_success:
-- mkdir /home/travis/.ssh/
-- chmod 700 /home/travis/.ssh/
-- openssl aes-256-cbc -K $encrypted_57d9326b0302_key -iv $encrypted_57d9326b0302_iv -in travis_secrets.tar.gz.enc -out travis_secrets.tar.gz -d
-- tar xzvf travis_secrets.tar.gz
-- mv id_rsa.qgisrepoguest /home/travis/.ssh/id_rsa.qgisrepoguest
-- mv ssh_config /home/travis/.ssh/config
-- chmod 600 /home/travis/.ssh/id_rsa.qgisrepoguest
-- chmod 600 /home/travis/.ssh/config
-- export RELEASE_ZIPNAME=${PLUGIN_NAME}.zip
-- echo "Uploading ${RELEASE_ZIPNAME} to QGIS Dev..."
-- scp ${PLUGIN_NAME}.zip qgisrepoguest:${UPLOADS}/${RELEASE_ZIPNAME}
-- export GIT_REV=$(git rev-parse --short HEAD)
-- ssh qgisrepoguest "${UPDATER} update --dev --role DesktopPartner,DesktopDeveloper --git-hash ${GIT_REV} ${RELEASE_ZIPNAME}"
+- |
+    if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+        mkdir /home/travis/.ssh/
+        chmod 700 /home/travis/.ssh/
+        openssl aes-256-cbc -K $encrypted_57d9326b0302_key -iv $encrypted_57d9326b0302_iv -in travis_secrets.tar.gz.enc -out travis_secrets.tar.gz -d
+        tar xzvf travis_secrets.tar.gz
+        mv id_rsa.qgisrepoguest /home/travis/.ssh/id_rsa.qgisrepoguest
+        mv ssh_config /home/travis/.ssh/config
+        chmod 600 /home/travis/.ssh/id_rsa.qgisrepoguest
+        chmod 600 /home/travis/.ssh/config
+        export RELEASE_ZIPNAME=${PLUGIN_NAME}.zip
+        echo "Uploading ${RELEASE_ZIPNAME} to QGIS Dev..."
+        scp ${PLUGIN_NAME}.zip qgisrepoguest:${UPLOADS}/${RELEASE_ZIPNAME}
+        export GIT_REV=$(git rev-parse --short HEAD)
+        ssh qgisrepoguest "${UPDATER} update --dev --role DesktopPartner,DesktopDeveloper --git-hash ${GIT_REV} ${RELEASE_ZIPNAME}"
+    fi
 notifications:
   slack:
     secure: wWrVBOvKn8XkE2WFyR4QoqbAfaV4iU5kSQXJcA0D/E1I9WO8eUgK/rDQAQHizihR7FhUZTXlOLkGNKcUYxtiGinxRYd4MSHZoFuhu8KkSI79m70YEuvDwdOnqqJIhEqwaOFO8DWsFKEFZPxRo9a1oOH2PgdHQnYaCf+V91oPazmHSVMu2Oll5WoFzPTazNdIE60jNpc8ykr0lHuQOoSqSC67eK7+6MK/kprnFy3gZli/8A9O9Z+DRD749BBNzCnWH9R6PhICEhqdlWJoU9SRiqL4Su6tfy54jerm4cHApevWzKNhr/WkJOqiMH3lB6//lmO70IcqQfP875cLM70A2eWpLHmxAgebo9TW0NQgHgOwbhpTuYGBs6rOUkH21pdkDpJqIOW7kpdMJ4zPb4EzeaLfAHNoSAJDH2TNDUOg5Opq5MKAx8zTieX8ayn0YXNAiaoIJO8z69rVj+irZ57aDtI+jjroe94d3Yk1pjNq3tPqSnNl4Koa9IMEvNkR+or0DV/C8q93uvbBHLMrv57o8Pi1Aa12PwtnMBUVd1/umj9XzMsdELRXoTF5eLbXS+TFsFy2qZ3+mzjs0B0rBAZtrXinIyQlUSqHUXZS17zlKGA5o4WiIJuQ97MDGy7MTU7V0vAhFA6792Hpkx9M7U7Cd14HqcaUSQ0LeZA0CuTXNSQ=
