@@ -58,6 +58,9 @@ def _testsFromModule(module, group = None):
         modtests.extend(module.functionalTests())
     if "unitTests" in dir(module):
         modtests.extend([UnitTestWrapper(unit) for unit in module.unitTests()])
+    if "settings" in dir(module):
+        for test in modtests:
+            test.settings = module.settings()
     return modtests
 
 def addTestModule(module, group = None):
