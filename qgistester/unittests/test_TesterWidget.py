@@ -55,10 +55,8 @@ class TesterWidgetTests(unittest.TestCase):
         """test the run of the first unit tests setting up the result."""
         widget = TesterWidget()
         widget.setTests(self.unitTests)
-        widget.getReportDialog = mock.Mock()
         with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
             widget.startTesting()
-        self.assertEqual(widget.getReportDialog.call_count, 1)
         self.assertIsInstance(widget.report, Report)
         self.assertEqual(len(widget.report.results), 2)
         self.assertEqual(widget.report.results[0].status, TestResult.FAILED)
@@ -68,12 +66,10 @@ class TesterWidgetTests(unittest.TestCase):
         """test the run of the first functional tests setting up the result."""
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
-        widget.getReportDialog = mock.Mock()
         widget.startTesting()
         for t in widget.tests:
             for s in t.steps:
                 widget.testPasses()
-        self.assertEqual(widget.getReportDialog.call_count, 1)
         self.assertIsInstance(widget.report, Report)
         self.assertGreater(len(widget.report.results), 0)
         for r in widget.report.results:
@@ -83,11 +79,9 @@ class TesterWidgetTests(unittest.TestCase):
         """test if test is skipped pressing stop test + relative cleanup."""
         widget = TesterWidget()
         widget.setTests(self.functionalTests)
-        widget.getReportDialog = mock.Mock()
         widget.startTesting()
         for t in widget.tests:
             widget.skipTest()
-        self.assertEqual(widget.getReportDialog.call_count, 1)
         self.assertIsInstance(widget.report, Report)
         self.assertGreater(len(widget.report.results), 0)
         for r in widget.report.results:

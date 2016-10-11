@@ -67,6 +67,7 @@ class TesterWidget(BASE, WIDGET):
         self.report = Report()
         self.runNextTest()
 
+
     def getReportDialog(self):
         """Wrapper for easy mocking"""
         self.reportDialog = ReportDialog(self.report)
@@ -84,8 +85,6 @@ class TesterWidget(BASE, WIDGET):
         else:
             QtGui.QApplication.restoreOverrideCursor()
             self.setVisible(False)
-            dlg = self.getReportDialog()
-            dlg.exec_()
 
     def runNextStep(self):
         self.stopBlinking()

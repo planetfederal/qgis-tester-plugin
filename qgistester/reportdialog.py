@@ -11,7 +11,8 @@ from collections import defaultdict
 
 from PyQt4 import uic
 from PyQt4.QtCore import Qt, QSettings, QFileInfo
-from PyQt4.QtGui import QTreeWidgetItem, QMenu, QAction, QFileDialog
+from PyQt4.QtGui import QTreeWidgetItem, QMenu, QAction, QFileDialog, QPushButton,\
+    QDialogButtonBox
 
 from qgis.core import QgsApplication
 
@@ -39,6 +40,8 @@ class ReportDialog(BASE, WIDGET):
 
         results = report.results
 
+        self.reopen = False
+
         allResults = defaultdict(list)
         for result in results:
             test = result.test
@@ -58,6 +61,16 @@ class ReportDialog(BASE, WIDGET):
         self.resultsTree.expandAll()
         self.resultsTree.itemClicked.connect(self.itemClicked)
         self.resultsTree.customContextMenuRequested.connect(self.showPopupMenu)
+
+        button = QPushButton("Re-open test selector");
+        def _reopen():
+            self.reopen = True
+            self.close()
+        button.clicked.connect(_reopen)
+
+        self.buttonBox.addButton(button, QDialogButtonBox.ActionRole);
+
+        self.buttonBox.rejected.connect(self.close)
 
     def showPopupMenu(self, point):
         item = self.resultsTree.selectedItems()[0]
