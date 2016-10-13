@@ -36,28 +36,32 @@ class TesterPlugin:
         if self.widget is not None and self.widget.isVisible():
             QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
             return
-        reopen = True
-        while reopen:
-            dlg = TestSelector()
-            dlg.exec_()
-            if dlg.tests:
-                settings = {}
-                for test in dlg.tests:
-                    settings.update(test.settings)
-                if settings:
-                    settingsDlg = SettingsWindow(settings)
-                    settingsDlg.exec_()
-                    if not settingsDlg.settings:
-                        return
-                    for key, value in settingsDlg.settings.iteritems():
-                        os.environ[key] = value
-                self.widget = TesterWidget()
-                self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
-                self.widget.show()
-                self.widget.setTests(dlg.tests)
-                self.widget.startTesting()
-                dlg = self.widget.getReportDialog()
-                dlg.exec_()
-                reopen = dlg.reopen
+        dlg = TestSelector()
+        dlg.exec_()
+        if dlg.tests:
+            settings = {}
+            for test in dlg.tests:
+                settings.update(test.settings)
+            if settings:
+                settingsDlg = SettingsWindow(settings)
+                settingsDlg.exec_()
+                if not settingsDlg.settings:
+                    return
+                for key, value in settingsDlg.settings.iteritems():
+                    os.environ[key] = value
+            self.widget = TesterWidget()
+            self.widget.testingFinished.connect(self.testingFinished)
+            self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
+            self.widget.show()
+            self.widget.setTests(dlg.tests)
+            self.widget.startTesting()
+
+    def testingFinished(self):
+        dlg = self.widget.getReportDialog()
+        dlg.exec_()
+        reopen = dlg.reopen
+        self.widget = None
+        if reopen:
+            self.test()
 
 

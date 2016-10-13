@@ -24,8 +24,8 @@ class TesterWidget(BASE, WIDGET):
     BLINKING_INTERVAL = 1000
 
     buttonColors = ["", 'QPushButton {color: yellow;}']
-                    #[QtGui.QPushButton().palette().color(QtGui.QPalette.Button),
-                    #QtGui.QColor.fromRgb(200,200,0)]
+
+    testingFinished = QtCore.pyqtSignal()
 
 
     def __init__(self):
@@ -67,7 +67,6 @@ class TesterWidget(BASE, WIDGET):
         self.report = Report()
         self.runNextTest()
 
-
     def getReportDialog(self):
         """Wrapper for easy mocking"""
         self.reportDialog = ReportDialog(self.report)
@@ -84,6 +83,7 @@ class TesterWidget(BASE, WIDGET):
             self.runNextStep()
         else:
             QtGui.QApplication.restoreOverrideCursor()
+            self.testingFinished.emit()
             self.setVisible(False)
 
     def runNextStep(self):
@@ -200,3 +200,4 @@ class TesterWidget(BASE, WIDGET):
 
     def cancelTesting(self):
         self.setVisible(False)
+        self.testingFinished.emit()
