@@ -74,6 +74,8 @@ class ReportDialog(BASE, WIDGET):
 
     def showPopupMenu(self, point):
         item = self.resultsTree.selectedItems()[0]
+        if not hasattr(item, 'result'):
+            return
         url = item.result.test.issueUrl
         if url:
             menu = QMenu()
