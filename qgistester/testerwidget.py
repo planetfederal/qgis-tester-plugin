@@ -115,7 +115,7 @@ class TesterWidget(BASE, WIDGET):
                     execute(step.function)
                     self.testPasses()
                 except Exception, e:
-                    self.testFails("%s\n%s" % (str(e), traceback.format_exc())):
+                    self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.btnTestOk.setEnabled(True)
                 self.btnTestOk.setText("Test passes")
@@ -139,7 +139,7 @@ class TesterWidget(BASE, WIDGET):
                     self.currentTestStep += 1
                     self.runNextStep()
                 except Exception, e:
-                    self.testFails("%s\n%s" % (str(e), traceback.format_exc())):
+                    self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.currentTestStep += 1
                 self.webView.setEnabled(True)
