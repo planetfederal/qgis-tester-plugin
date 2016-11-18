@@ -13,6 +13,7 @@ class TesterPlugin:
 
     def __init__(self, iface):
         self.iface = iface
+        self.lastSettings = {}
         self.widget = None
         self.iface.initializationCompleted.connect(self.hideWidget)
 
@@ -42,11 +43,13 @@ class TesterPlugin:
             settings = {}
             for test in dlg.tests:
                 settings.update(test.settings)
+            settings.update(self.lastSettings)
             if settings:
                 settingsDlg = SettingsWindow(settings)
                 settingsDlg.exec_()
                 if not settingsDlg.settings:
                     return
+                self.lastSettings = settingsDlg.settings
                 for key, value in settingsDlg.settings.iteritems():
                     os.environ[key] = value
             self.widget = TesterWidget()
