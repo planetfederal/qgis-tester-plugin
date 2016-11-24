@@ -121,11 +121,11 @@ def upload(options):
         info('Plugin ID: %s', pluginId)
         info('Version ID: %s', versionId)
         package_file.unlink()
-    except xmlrpclib.Fault, err:
+    except xmlrpclib.Fault as err:
         error('A fault occurred')
         error('Fault code: %d', err.faultCode)
         error('Fault string: %s', err.faultString)
-    except xmlrpclib.ProtocolError, err:
+    except xmlrpclib.ProtocolError as err:
         error('Protocol error')
         error('%s : %s', err.errcode, err.errmsg)
         if err.errcode == 403:
