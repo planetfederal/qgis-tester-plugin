@@ -9,7 +9,7 @@ from builtins import str
 #
 import unittest
 import sys
-from . import utilities
+import utilities
 import mock
 from qgistester.test import Step
 from qgistester.test import Test

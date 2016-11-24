@@ -9,11 +9,19 @@ from builtins import map
 #
 import unittest
 import sys
-from . import utilities
+import utilities
 import mock
-from .qgistesting import start_app
-from .qgistesting.mocked import get_iface
-from PyQt import QtCore, QtGui
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
+try:
+    from PyQt4.QtGui import QMenu, QAction
+    from PyQt4.QtCore import Qt, SIGNAL, QPoint
+    isPyQt4 = True
+except ImportError:
+    from PyQt5.QtWidgets import QMenu, QAction
+    from PyQt5.QtCore import Qt, QPoint
+    isPyQt4 = False
+
 from qgistester.reportdialog import ReportDialog
 from qgistester.report import Report, TestResult
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -54,12 +62,17 @@ class ReportDialogTests(unittest.TestCase):
         r = Report()  # => r.results is empty
         # do test
         dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
-        expectedColorList = [QtCore.Qt.green, QtCore.Qt.red, QtCore.Qt.gray]
+        expectedColorList = [Qt.green, Qt.red, Qt.gray]
         self.assertTrue(dlg.resultColor == expectedColorList)
         self.assertTrue(dlg.resultsTree.topLevelItemCount() == 0)
-        self.assertTrue(dlg.resultsTree.receivers(QtCore.SIGNAL('itemClicked(QTreeWidgetItem *, int)')) == 1)
-        self.assertTrue(dlg.resultsTree.receivers(QtCore.SIGNAL('customContextMenuRequested(const QPoint &)')) == 1)
-        self.assertTrue(dlg.buttonBox.receivers(QtCore.SIGNAL('accepted()')) == 1)
+        if isPyQt4:
+            self.assertTrue(dlg.resultsTree.receivers(SIGNAL('itemClicked(QTreeWidgetItem *, int)')) == 1)
+            self.assertTrue(dlg.resultsTree.receivers(SIGNAL('customContextMenuRequested(const QPoint &)')) == 1)
+            self.assertTrue(dlg.buttonBox.receivers(SIGNAL('accepted()')) == 1)
+        else:
+            self.assertTrue(dlg.resultsTree.receivers(dlg.resultsTree.itemClicked) == 1)
+            self.assertTrue(dlg.resultsTree.receivers(dlg.resultsTree.customContextMenuRequested) == 1)
+            self.assertTrue(dlg.buttonBox.receivers(dlg.buttonBox.accepted) == 1)
 
         # test2
         # preconditions: populate with tests results
@@ -90,12 +103,18 @@ class ReportDialogTests(unittest.TestCase):
         dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
         dlg.resultsTree.topLevelItem(0).child(1).setSelected(True)  # select 'Test that fails' that does NOT have url
         # do test
-        point = QtCore.QPoint(0, 0)
-        qmenuMock = mock.Mock(spec=QtGui.QMenu)
-        qactionMock = mock.Mock(spec=QtGui.QAction)
-        with mock.patch('PyQt4.QtGui.QMenu', qmenuMock):
-            with mock.patch('PyQt4.QtGui.QAction', qactionMock):
-                dlg.showPopupMenu(point)
+        point = QPoint(0, 0)
+        qmenuMock = mock.Mock(spec=QMenu)
+        qactionMock = mock.Mock(spec=QAction)
+        if isPyQt4:
+            with mock.patch('PyQt4.QtGui.QMenu', qmenuMock):
+                with mock.patch('PyQt4.QtGui.QAction', qactionMock):
+                    dlg.showPopupMenu(point)
+        else:
+            with mock.patch('PyQt5.QtWidgets.QMenu', qmenuMock):
+                with mock.patch('PyQt5.QtWidgets.QAction', qactionMock):
+                    dlg.showPopupMenu(point)
+
         self.assertTrue(qmenuMock.mock_calls == [])
         self.assertTrue(qactionMock.mock_calls == [])
 
@@ -108,17 +127,22 @@ class ReportDialogTests(unittest.TestCase):
         dlg = ReportDialog(r)  # dlg.resultsTree is a QTreeWidget
         dlg.resultsTree.topLevelItem(0).child(0).setSelected(True)  # select 'Functional tests' that does have url
         # do test
-        point = QtCore.QPoint(0, 0)
-        qmenuMock = mock.Mock(spec=QtGui.QMenu)
-        qactionMock = mock.Mock(spec=QtGui.QAction)
+        point = QPoint(0, 0)
+        qmenuMock = mock.Mock(spec=QMenu)
+        qactionMock = mock.Mock(spec=QAction)
         with mock.patch('qgistester.reportdialog.QMenu', qmenuMock):
             with mock.patch('qgistester.reportdialog.QAction', qactionMock):
-                self.assertEquals(dlg.resultsTree.selectedItems()[0].result.test.issueUrl, 'http://www.example.com')
+                self.assertEqual(dlg.resultsTree.selectedItems()[0].result.test.issueUrl, 'http://www.example.com')
                 dlg.showPopupMenu(point)
         self.assertIn('call()', str(qmenuMock.mock_calls[0]))
         self.assertIn('call().addAction', str(qmenuMock.mock_calls[1]))
-        self.assertIn('call().exec_(PyQt4.QtCore.QPoint())',
-                      str(qmenuMock.mock_calls[2]))
+        if isPyQt4:
+            self.assertIn('call().exec_(PyQt4.QtCore.QPoint())',
+                          str(qmenuMock.mock_calls[2]))
+        else:
+            self.assertIn('call().exec_(PyQt5.QtCore.QPoint())',
+                          str(qmenuMock.mock_calls[2]))
+
         self.assertIn("call('Open issue page', None)",
                       str(qactionMock.mock_calls[0]))
         self.assertIn("call().triggered.connect",

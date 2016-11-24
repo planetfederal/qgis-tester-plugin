@@ -9,9 +9,9 @@ from builtins import map
 import unittest
 import sys
 import mock
-from . import utilities
-from .qgistesting import start_app
-from .qgistesting.mocked import get_iface
+import utilities
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
 from qgistester.test import UnitTestWrapper
 from qgistester.testerwidget import TesterWidget
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -51,7 +51,7 @@ class TesterWidgetTests(unittest.TestCase):
         """check if tests list is set."""
         widget = TesterWidget()
         widget.setTests(self.allTests)
-        self.assertEquals(widget.tests, self.allTests)
+        self.assertEqual(widget.tests, self.allTests)
 
     def testStartTesting_UnitTests(self):
         """test the run of the first unit tests setting up the result."""

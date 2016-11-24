@@ -9,7 +9,7 @@ from builtins import map
 import os
 import unittest
 import sys
-from . import utilities
+import utilities
 from qgistester.tests import findTests, addTestModule
 
 __author__ = 'Alessandro Pasotti'

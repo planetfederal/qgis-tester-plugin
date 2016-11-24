@@ -11,12 +11,18 @@ import mock
 from mock import call
 import unittest
 import sys
-from . import utilities
-from .qgistesting import start_app
-from .qgistesting.mocked import get_iface
+import utilities
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
 import qgistester
 from qgistester.plugin import TesterPlugin
-from PyQt import QtGui, QtCore
+try:
+    from PyQt4.QtGui import QWidget, QAction, QMessageBox
+    from PyQt4.QtCore import SIGNAL
+    isPyQt4 = True
+except ImportError:
+    from PyQt5.QtWidgets import QWidget, QAction, QMessageBox
+    isPyQt4 = False
 
 __author__ = 'Luigi Pirelli'
 __date__ = 'April 2016'
@@ -57,7 +63,7 @@ class TesterTests(unittest.TestCase):
         """check if the widget is hided."""
         # precondition
         testerPlugin = TesterPlugin(self.IFACE_Mock)
-        testerPlugin.widget = mock.Mock(spec=QtGui.QWidget)
+        testerPlugin.widget = mock.Mock(spec=QWidget)
         self.assertEqual(len(testerPlugin.widget.mock_calls), 0)
         # do test
         testerPlugin.hideWidget()
@@ -70,7 +76,7 @@ class TesterTests(unittest.TestCase):
         remove is called and deleted relative QAction."""
         # preconditions
         testerPlugin = TesterPlugin(self.IFACE_Mock)
-        action = QtGui.QAction("Start testing", self.IFACE_Mock.mainWindow())
+        action = QAction("Start testing", self.IFACE_Mock.mainWindow())
         testerPlugin.action = action
         # do test 1) widget is None
         self.IFACE_Mock.reset_mock()
@@ -82,11 +88,11 @@ class TesterTests(unittest.TestCase):
 
         # preconditions
         testerPlugin = TesterPlugin(self.IFACE_Mock)
-        action = QtGui.QAction("Start testing", self.IFACE_Mock.mainWindow())
+        action = QAction("Start testing", self.IFACE_Mock.mainWindow())
         testerPlugin.action = action
         # do test 2) widget is available
         self.IFACE_Mock.reset_mock()
-        testerPlugin.widget = mock.MagicMock(QtGui.QWidget)
+        testerPlugin.widget = mock.MagicMock(QWidget)
         testerPlugin.unload()
         self.assertIn("call.removePluginMenu(u'Tester'",
                       str(self.IFACE_Mock.mock_calls[0]))
@@ -105,9 +111,14 @@ class TesterTests(unittest.TestCase):
         testerPlugin.iface.reset_mock
         testerPlugin.initGui()
         self.assertIsNotNone(testerPlugin.action)
-        self.assertTrue(isinstance(testerPlugin.action, QtGui.QAction))
-        self.assertTrue(testerPlugin.action.receivers(
-                        QtCore.SIGNAL('triggered()')) == 1)
+        self.assertTrue(isinstance(testerPlugin.action, QAction))
+        if isPyQt4:
+            self.assertTrue(testerPlugin.action.receivers(
+                            SIGNAL('triggered()')) == 1)
+        else:
+            self.assertTrue(testerPlugin.action.receivers(
+                            testerPlugin.action.triggered) == 1)
+
         self.assertIn("call.addPluginToMenu(u'Tester'",
                       str(testerPlugin.iface.mock_calls[-1]))
 
@@ -124,16 +135,20 @@ class TesterTests(unittest.TestCase):
         '''
         # test 1)
         # preconditions
-        qwidget = mock.Mock(spec=QtGui.QWidget)
+        qwidget = mock.Mock(spec=QWidget)
         qwidget.isVisible.return_value = True
         testerPlugin = TesterPlugin(self.IFACE_Mock)
         testerPlugin.widget = qwidget
         # do test1
         # I only test that PyQt4.QtGui.QMessageBox.warning is called in
         # the above preconditions
-        qmessageboxMock = mock.Mock(spec=QtGui.QMessageBox)
-        with mock.patch('PyQt4.QtGui.QMessageBox', qmessageboxMock):
-            testerPlugin.test()
+        qmessageboxMock = mock.Mock(spec=QMessageBox)
+        if isPyQt4:
+            with mock.patch('PyQt4.QtGui.QMessageBox', qmessageboxMock):
+                testerPlugin.test()
+        else:
+            with mock.patch('PyQt5.QtWidgets.QMessageBox', qmessageboxMock):
+                testerPlugin.test()
         self.assertIn("call.warning", str(qmessageboxMock.mock_calls[-1]))
 
         # test 2.1)

@@ -10,14 +10,14 @@ from builtins import range
 import unittest
 import sys
 import os
-from . import utilities
+import utilities
 import tempfile
 import mock
 import time
 import traceback
 import threading
-from .qgistesting import start_app
-from .qgistesting.mocked import get_iface
+from qgistesting import start_app
+from qgistesting.mocked import get_iface
 from qgis.core import (QgsVectorLayer,
                        QgsMapLayerRegistry,
                        QgsVectorFileWriter)
@@ -26,7 +26,10 @@ from qgistester.utils import (layerFromName,
                               execute)
 import qgistester.utils as utils
 
-from PyQt import QtCore, QtGui
+try:
+    from PyQt4.QtCore import QSettings, QObject, pyqtSignal
+except ImportError:
+    from PyQt5.QtCore import QSettings, QObject, pyqtSignal
 
 __author__ = 'Luigi Pirelli'
 __date__ = 'April 2016'
@@ -91,7 +94,7 @@ class UtilsTests(unittest.TestCase):
         basename = os.path.basename(tempFileName)
         name = os.path.splitext(basename)[0]
         # test 1: load vector layer
-        settings = QtCore.QSettings()
+        settings = QSettings()
         enterSetting = settings.value('/Projections/defaultBehaviour')
         layer = loadLayerNoCrsDialog(tempFileName)
         exitSetting = settings.value('/Projections/defaultBehaviour')
@@ -138,12 +141,12 @@ class UtilsTests(unittest.TestCase):
         def lenghtyFuncRunning(step):
             self.threadRunningCounter = step
 
-        class RunningClass(QtCore.QObject):
+        class RunningClass(QObject):
             '''added signals to check that the function is executed in the
             main thread.'''
-            threadStarted = QtCore.pyqtSignal()
-            threadTerminated = QtCore.pyqtSignal()
-            threadRunning = QtCore.pyqtSignal(int)
+            threadStarted = pyqtSignal()
+            threadTerminated = pyqtSignal()
+            threadRunning = pyqtSignal(int)
 
             def lenghtyFunc(self):
                 if threading.current_thread().name != 'MainThread':

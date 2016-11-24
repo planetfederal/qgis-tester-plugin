@@ -10,7 +10,7 @@ from builtins import str
 import unittest
 import sys
 import mock
-from . import utilities
+import utilities
 from qgistester.report import Report, TestResult
 from qgistester.test import Test, UnitTestWrapper
 
@@ -109,7 +109,7 @@ class TestResultTests(unittest.TestCase):
         t = Test('Test that skipped is set')
         t.addStep('Skipped', lambda: False)
         tr = TestResult(t)
-        self.assertEquals(u"%s" % tr, 'Test name: -Test that skipped is set\nTest result:Test skipped')
+        self.assertEqual(u"%s" % tr, 'Test name: -Test that skipped is set\nTest result:Test skipped')
 
 
 
@@ -151,7 +151,7 @@ class TestRealRunner(unittest.TestCase):
         # Mimick the behaviour in testerwidget.py
         suite = unittest.makeSuite(TestPassed, 'test')
         result = self.runner(suite)
-        self.assertEquals(result.status, result.PASSED)
+        self.assertEqual(result.status, result.PASSED)
 
     def testFailed(self):
         """Tests if a passed test correctly set FAILED in TestResult"""
@@ -163,7 +163,7 @@ class TestRealRunner(unittest.TestCase):
         # Mimick the behaviour in testerwidget.py
         suite = unittest.makeSuite(TestFailed, 'test')
         result = self.runner(suite)
-        self.assertEquals(result.status, result.FAILED)
+        self.assertEqual(result.status, result.FAILED)
 
 
 

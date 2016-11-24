@@ -86,7 +86,7 @@ class TestCase(_TestCase):
                 geom1 = feats[1].geometry().geometry().asWkt(precision)
             else:
                 geom1 = None
-            _TestCase.assertEquals(
+            _TestCase.assertEqual(
                 self,
                 geom0,
                 geom1,

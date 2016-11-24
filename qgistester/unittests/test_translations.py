@@ -16,7 +16,10 @@ from builtins import map
 import unittest
 import os
 import sys
-from qgis.PyQt.QtCore import QCoreApplication, QTranslator
+try:
+    from PyQt4.QtCore import QCoreApplication, QTranslator
+except ImportError:
+    from PyQt5.QtCore import QCoreApplication, QTranslator
 
 
 class SafeTranslationsTest(unittest.TestCase):

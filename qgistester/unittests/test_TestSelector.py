@@ -10,10 +10,15 @@ import unittest
 import sys
 import os
 import mock
-from . import utilities
-from PyQt import QtCore
-from .qgistesting import start_app, stop_app
-from .qgistesting.mocked import get_iface
+import utilities
+try:
+    from PyQt4.QtCore import Qt, SIGNAL
+    isPyQt4 = True
+except ImportError:
+    from PyQt5.QtCore import Qt
+    isPyQt4 = False
+from qgistesting import start_app, stop_app
+from qgistesting.mocked import get_iface
 from qgistester.unittests.data.plugin1 import unitTests
 from qgistester.tests import findTests
 from qgistester.testselector import TestSelector
@@ -51,15 +56,20 @@ class TestSelectorTests(unittest.TestCase):
                             'Test that fails')
             self.assertTrue(ts.testsTree.topLevelItem(0).child(2).text(0) ==
                             'Test that passes')
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == QtCore.Qt.Checked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == QtCore.Qt.Checked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == QtCore.Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == Qt.Checked)
             self.assertFalse(ts.testsTree.topLevelItem(0).isExpanded())
-            self.assertTrue(ts.selectAllLabel.receivers(QtCore.SIGNAL('linkActivated(const QString &)')) == 1)
-            self.assertTrue(ts.unselectAllLabel.receivers(QtCore.SIGNAL('linkActivated(const QString &)')) == 1)
-            self.assertTrue(ts.buttonBox.receivers(QtCore.SIGNAL('accepted()')) == 1)
-            self.assertTrue(ts.buttonBox.receivers(QtCore.SIGNAL('rejected()')) == 1)
-
+            if isPyQt4:
+                self.assertTrue(ts.selectAllLabel.receivers(SIGNAL('linkActivated(const QString &)')) == 1)
+                self.assertTrue(ts.unselectAllLabel.receivers(SIGNAL('linkActivated(const QString &)')) == 1)
+                self.assertTrue(ts.buttonBox.receivers(SIGNAL('accepted()')) == 1)
+                self.assertTrue(ts.buttonBox.receivers(SIGNAL('rejected()')) == 1)
+            else:
+                self.assertTrue(ts.selectAllLabel.receivers(ts.selectAllLabel.linkActivated) == 1)
+                self.assertTrue(ts.unselectAllLabel.receivers(ts.unselectAllLabel.linkActivated) == 1)
+                self.assertTrue(ts.buttonBox.receivers(ts.buttonBox.accepted) == 1)
+                self.assertTrue(ts.buttonBox.receivers(ts.buttonBox.rejected) == 1)
 
     def testCheckTests(self):
         """check if all tests are checked/unchecked dependin on previous
@@ -69,14 +79,14 @@ class TestSelectorTests(unittest.TestCase):
             # test 1: state = False (better first False because default all
             # items are checked)
             ts.checkTests(False)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == QtCore.Qt.Unchecked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == QtCore.Qt.Unchecked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == QtCore.Qt.Unchecked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == Qt.Unchecked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == Qt.Unchecked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == Qt.Unchecked)
             # test 2: state = True
             ts.checkTests(True)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == QtCore.Qt.Checked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == QtCore.Qt.Checked)
-            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == QtCore.Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(0).checkState(0) == Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(1).checkState(0) == Qt.Checked)
+            self.assertTrue(ts.testsTree.topLevelItem(0).child(2).checkState(0) == Qt.Checked)
 
 
     def testCancelPressed(self):
