@@ -1,10 +1,12 @@
+from builtins import range
+from builtins import object
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
 
-class Report():
+class Report(object):
 
     def __init__(self):
         self.results = []
@@ -13,9 +15,9 @@ class Report():
         self.results.append(result)
 
 
-class TestResult():
+class TestResult(object):
 
-    PASSED, FAILED, SKIPPED = range(3)
+    PASSED, FAILED, SKIPPED = list(range(3))
 
     def __init__(self, test):
         self.test = test

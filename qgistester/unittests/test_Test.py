@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 """Test test.py."""
+from __future__ import absolute_import
+from builtins import map
+from builtins import str
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
 import unittest
 import sys
-import utilities
+from . import utilities
 import mock
 from qgistester.test import Step
 from qgistester.test import Test
@@ -282,7 +285,7 @@ class _TestResultTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(StepTests, tests))
+    suite = unittest.TestSuite(list(map(StepTests, tests)))
     return suite
 
 

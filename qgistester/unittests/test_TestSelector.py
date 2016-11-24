@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test TestSelector.py."""
+from __future__ import absolute_import
+from builtins import map
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -8,10 +10,10 @@ import unittest
 import sys
 import os
 import mock
-import utilities
+from . import utilities
 from PyQt import QtCore
-from qgistesting import start_app, stop_app
-from qgistesting.mocked import get_iface
+from .qgistesting import start_app, stop_app
+from .qgistesting.mocked import get_iface
 from qgistester.unittests.data.plugin1 import unitTests
 from qgistester.tests import findTests
 from qgistester.testselector import TestSelector
@@ -125,7 +127,7 @@ class TestSelectorTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(TestSelectorTests, tests))
+    suite = unittest.TestSuite(list(map(TestSelectorTests, tests)))
     return suite
 
 

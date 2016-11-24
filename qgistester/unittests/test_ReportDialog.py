@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 """Test ReportDialog.py."""
+from __future__ import absolute_import
+from builtins import str
+from builtins import map
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
 import unittest
 import sys
-import utilities
+from . import utilities
 import mock
-from qgistesting import start_app
-from qgistesting.mocked import get_iface
-from PyQt4 import QtCore, QtGui
+from .qgistesting import start_app
+from .qgistesting.mocked import get_iface
+from PyQt import QtCore, QtGui
 from qgistester.reportdialog import ReportDialog
 from qgistester.report import Report, TestResult
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -158,7 +161,7 @@ class ReportDialogTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(ReportDialogTests, tests))
+    suite = unittest.TestSuite(list(map(ReportDialogTests, tests)))
     return suite
 
 

@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
@@ -22,7 +23,7 @@ def layerFromName(name):
     Returns None if no layer with that name is found
     If several layers with that name exist, only the first one is returned
     '''
-    layers = QgsMapLayerRegistry.instance().mapLayers().values()
+    layers = list(QgsMapLayerRegistry.instance().mapLayers().values())
     for layer in layers:
         if layer.name() == name:
             return layer
@@ -42,7 +43,7 @@ def loadLayer(filename, name = None):
     if not qgslayer.isValid():
         qgslayer = QgsRasterLayer(filename, name)
         if not qgslayer.isValid():
-            raise RuntimeError('Could not load layer: ' + unicode(filename))
+            raise RuntimeError('Could not load layer: ' + str(filename))
 
     return qgslayer
 

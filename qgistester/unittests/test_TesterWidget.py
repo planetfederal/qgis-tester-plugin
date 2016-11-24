@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test TesterWidget.py."""
+from __future__ import absolute_import
+from builtins import map
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -7,9 +9,9 @@
 import unittest
 import sys
 import mock
-import utilities
-from qgistesting import start_app
-from qgistesting.mocked import get_iface
+from . import utilities
+from .qgistesting import start_app
+from .qgistesting.mocked import get_iface
 from qgistester.test import UnitTestWrapper
 from qgistester.testerwidget import TesterWidget
 from qgistester.unittests.data.plugin1 import functionalTests, unitTests
@@ -100,7 +102,7 @@ class TesterWidgetTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(TesterWidgetTests, tests))
+    suite = unittest.TestSuite(list(map(TesterWidgetTests, tests)))
     return suite
 
 

@@ -1,3 +1,4 @@
+from builtins import object
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
@@ -13,7 +14,7 @@ from qgistester.testselector import TestSelector
 from qgistester.settingswindow import SettingsWindow
 
 
-class TesterPlugin:
+class TesterPlugin(object):
 
     def __init__(self, iface):
         self.iface = iface
@@ -54,7 +55,7 @@ class TesterPlugin:
                 if not settingsDlg.settings:
                     return
                 self.lastSettings = settingsDlg.settings
-                for key, value in settingsDlg.settings.iteritems():
+                for key, value in settingsDlg.settings.items():
                     os.environ[key] = value
             self.widget = TesterWidget()
             self.widget.testingFinished.connect(self.testingFinished)

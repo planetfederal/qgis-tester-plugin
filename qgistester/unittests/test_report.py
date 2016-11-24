@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """unittests for Report.py."""
+from __future__ import absolute_import
+from builtins import map
+from builtins import str
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -7,7 +10,7 @@
 import unittest
 import sys
 import mock
-import utilities
+from . import utilities
 from qgistester.report import Report, TestResult
 from qgistester.test import Test, UnitTestWrapper
 
@@ -123,7 +126,7 @@ class TestRealRunner(unittest.TestCase):
         try:
             step.function()
             result.passed()
-        except Exception, e:
+        except Exception as e:
             result.failed(test, str(e))
         report.addTestResult(result)
         return report.results[0]
@@ -169,7 +172,7 @@ class TestRealRunner(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(ReportTests, tests))
+    suite = unittest.TestSuite(list(map(ReportTests, tests)))
     return suite
 
 

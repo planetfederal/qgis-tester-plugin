@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """Test tests sumbmodule with methods in __init__.py and packaging.py."""
+from __future__ import absolute_import
+from builtins import map
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -7,7 +9,7 @@
 import os
 import unittest
 import sys
-import utilities
+from . import utilities
 from qgistester.tests import findTests, addTestModule
 
 __author__ = 'Alessandro Pasotti'
@@ -43,7 +45,7 @@ class StepTests(unittest.TestCase):
         from qgistester import tests
         if tests.tests is None:
             tests.tests = []
-        from data import plugin1
+        from .data import plugin1
         addTestModule(plugin1, 'Plugin1')
         test_names = [utw.name for utw in tests.tests]
         self.assertIn('Test that fails', test_names)
@@ -69,7 +71,7 @@ class StepTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suite for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(StepTests, tests))
+    suite = unittest.TestSuite(list(map(StepTests, tests)))
     return suite
 
 

@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import object
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
@@ -8,7 +10,7 @@ from unittest.result import TestResult
 from unittest.runner import TextTestRunner
 import traceback
 
-class Step():
+class Step(object):
 
     def __init__(self, description, function=None, prestep=None,
                  isVerifyStep=False):
@@ -18,7 +20,7 @@ class Step():
         self.isVerifyStep = isVerifyStep
 
 
-class Test():
+class Test(object):
 
     def __init__(self, name):
         self.steps = []
@@ -59,7 +61,7 @@ class UnitTestWrapper(Test):
         runner = _TestRunner()
         result = runner.run(suite)
         if result.err is not None:
-            desc = unicode(result.err) + "\n" + \
+            desc = str(result.err) + "\n" + \
                    "".join(traceback.format_tb(result.err[2]))
             raise Exception(desc)
 

@@ -1,3 +1,4 @@
+from builtins import range
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com

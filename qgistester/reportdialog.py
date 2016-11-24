@@ -1,3 +1,5 @@
+from builtins import str
+from builtins import range
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
@@ -51,7 +53,7 @@ class ReportDialog(BASE, WIDGET):
             test = result.test
             allResults[test.group].append(result)
 
-        for group, groupResults in allResults.iteritems():
+        for group, groupResults in allResults.items():
             groupItem = QTreeWidgetItem()
             groupItem.setText(0, group)
             for result in groupResults:
@@ -94,15 +96,20 @@ class ReportDialog(BASE, WIDGET):
             result= self.resultsTree.currentItem().result
         except:
             return
-        self.resultText.setText(unicode(result))
+        self.resultText.setText(result)
 
     def saveResults(self, saveAll=False):
         settings = QSettings('Boundless', 'qgistester')
-        lastDirectory = settings.value('lastDirectory', '.', str)
+        lastDirectory = settings.value('lastDirectory', '.')
         fileName = QFileDialog.getSaveFileName(self,
                                                self.tr('Save file'),
                                                lastDirectory,
                                                self.tr('HTML files (*.html)'))
+
+        # Needed to handle different return values in Qt4 and Qt5
+        if isinstance(fileName, tuple):
+            fileName = fileName[0]
+
         if fileName == '':
             return
 

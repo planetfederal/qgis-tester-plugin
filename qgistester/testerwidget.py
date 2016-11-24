@@ -1,3 +1,4 @@
+from builtins import str
 # -*- coding: utf-8 -*-
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
@@ -8,10 +9,10 @@ import sys
 import traceback
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import pyqtSignal, QCoreApplication
+from qgis.PyQt.QtCore import pyqtSignal, QCoreApplication, QTimer
 from qgis.PyQt.QtWidgets import QApplication
 
-from qgistester import report
+from qgistester.report import Report, TestResult
 from qgistester.reportdialog import ReportDialog
 from qgistester.utils import execute
 
@@ -43,7 +44,7 @@ class TesterWidget(BASE, WIDGET):
         self.btnNextStep.clicked.connect(self.runNextStep)
         self.buttons = [self.btnTestOk, self.btnTestFailed, self.btnNextStep]
 
-        self.blinkTimer = QtCore.QTimer()
+        self.blinkTimer = QTimer()
         self.blinkTimer.timeout.connect(self._blink)
 
     def startBlinking(self):

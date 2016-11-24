@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """Run all unit tests."""
+from __future__ import absolute_import
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-import utilities
+from . import utilities
 import unittest
 import sys
 from qgistester.unittests.test_plugin import suite as pluginTestsSuite

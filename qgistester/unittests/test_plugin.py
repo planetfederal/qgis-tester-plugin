@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test plugin.py."""
+from __future__ import absolute_import
+from builtins import str
+from builtins import map
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -8,12 +11,12 @@ import mock
 from mock import call
 import unittest
 import sys
-import utilities
-from qgistesting import start_app
-from qgistesting.mocked import get_iface
+from . import utilities
+from .qgistesting import start_app
+from .qgistesting.mocked import get_iface
 import qgistester
 from qgistester.plugin import TesterPlugin
-from PyQt4 import QtGui, QtCore
+from PyQt import QtGui, QtCore
 
 __author__ = 'Luigi Pirelli'
 __date__ = 'April 2016'
@@ -176,7 +179,7 @@ class TesterTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testInit']
-    suite = unittest.TestSuite(map(TesterTests, tests))
+    suite = unittest.TestSuite(list(map(TesterTests, tests)))
     return suite
 
 

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 """Test utils.py."""
+from __future__ import absolute_import
+from builtins import map
+from builtins import range
 #
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
@@ -7,14 +10,14 @@
 import unittest
 import sys
 import os
-import utilities
+from . import utilities
 import tempfile
 import mock
 import time
 import traceback
 import threading
-from qgistesting import start_app
-from qgistesting.mocked import get_iface
+from .qgistesting import start_app
+from .qgistesting.mocked import get_iface
 from qgis.core import (QgsVectorLayer,
                        QgsMapLayerRegistry,
                        QgsVectorFileWriter)
@@ -174,7 +177,7 @@ class UtilsTests(unittest.TestCase):
 def suiteSubset():
     """Setup a test suit for a subset of tests."""
     tests = ['testLayerFromName']
-    suite = unittest.TestSuite(map(UtilsTests, tests))
+    suite = unittest.TestSuite(list(map(UtilsTests, tests)))
     return suite
 
 
