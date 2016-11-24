@@ -9,10 +9,14 @@ import codecs
 import webbrowser
 from collections import defaultdict
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QFileInfo
-from PyQt4.QtGui import QTreeWidgetItem, QMenu, QAction, QFileDialog, QPushButton,\
-    QDialogButtonBox
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt, QSettings, QFileInfo
+from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
+                                 QMenu,
+                                 QAction,
+                                 QFileDialog,
+                                 QPushButton,
+                                 QDialogButtonBox)
 
 from qgis.core import QgsApplication
 
@@ -94,7 +98,7 @@ class ReportDialog(BASE, WIDGET):
 
     def saveResults(self, saveAll=False):
         settings = QSettings('Boundless', 'qgistester')
-        lastDirectory = settings.value('lastDirectory', '.', unicode)
+        lastDirectory = settings.value('lastDirectory', '.', str)
         fileName = QFileDialog.getSaveFileName(self,
                                                self.tr('Save file'),
                                                lastDirectory,
@@ -111,11 +115,11 @@ class ReportDialog(BASE, WIDGET):
         out += '<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body>'
 
         if saveAll:
-            for i in xrange(self.resultsTree.topLevelItemCount()):
+            for i in range(self.resultsTree.topLevelItemCount()):
                 groupItem = self.resultsTree.topLevelItem(i)
                 out += '<h3>{}</h3>'.format(groupItem.text(0))
                 out += '<ul>'
-                for j in xrange(groupItem.childCount()):
+                for j in range(groupItem.childCount()):
                     results = groupItem.child(j).result
                     out += '<li>[{}] {}'.format(self.resultTag[results.status], results.test.name)
                     if results.status == results.FAILED:

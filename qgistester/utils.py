@@ -3,12 +3,17 @@
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-from PyQt4 import QtCore, QtGui
-from qgis.utils import iface
-from qgis.core import *
+
 import os
 
-
+from qgis.PyQt.QtCore import Qt, QSettings
+from qgis.PyQt.QtGui import QCursor
+from qgis.PyQt.QtWidgets import QApplication
+from qgis.utils import iface
+from qgis.core import (QgsMapLayerRegistry,
+                       QgsVectorLayer,
+                       QgsRasterLayer,
+                      )
 
 
 def layerFromName(name):
@@ -21,6 +26,7 @@ def layerFromName(name):
     for layer in layers:
         if layer.name() == name:
             return layer
+
 
 def loadLayer(filename, name = None):
     '''
@@ -40,13 +46,14 @@ def loadLayer(filename, name = None):
 
     return qgslayer
 
+
 def loadLayerNoCrsDialog(filename, name=None):
     '''
     Tries to load a layer from the given file
     Same as the loadLayer method, but it does not ask for CRS, regardless of current
     configuration in QGIS settings
     '''
-    settings = QtCore.QSettings()
+    settings = QSettings()
     prjSetting = settings.value('/Projections/defaultBehaviour')
     settings.setValue('/Projections/defaultBehaviour', '')
     try:
@@ -55,9 +62,10 @@ def loadLayerNoCrsDialog(filename, name=None):
         settings.setValue('/Projections/defaultBehaviour', prjSetting)
     return layer
 
+
 def execute(func):
-    QtGui.QApplication.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor))
+    QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
     try:
         return func()
     finally:
-        QtGui.QApplication.restoreOverrideCursor()
+        QApplication.restoreOverrideCursor()

@@ -4,10 +4,14 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-from PyQt4 import QtGui, QtCore
-from testerwidget import TesterWidget
-from testselector import TestSelector
-from settingswindow import SettingsWindow
+
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QAction, QMessageBox
+
+from qgistester.testerwidget import TesterWidget
+from qgistester.testselector import TestSelector
+from qgistester.settingswindow import SettingsWindow
+
 
 class TesterPlugin:
 
@@ -29,13 +33,13 @@ class TesterPlugin:
             del self.widget
 
     def initGui(self):
-        self.action = QtGui.QAction("Start testing", self.iface.mainWindow())
+        self.action = QAction("Start testing", self.iface.mainWindow())
         self.action.triggered.connect(self.test)
         self.iface.addPluginToMenu(u"Tester", self.action)
 
     def test(self):
         if self.widget is not None and self.widget.isVisible():
-            QtGui.QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
+            QMessageBox.warning(self.iface.mainWindow(), "Tester plugin", "A test cycle is currently being run")
             return
         dlg = TestSelector()
         dlg.exec_()
@@ -54,7 +58,7 @@ class TesterPlugin:
                     os.environ[key] = value
             self.widget = TesterWidget()
             self.widget.testingFinished.connect(self.testingFinished)
-            self.iface.addDockWidget(QtCore.Qt.TopDockWidgetArea, self.widget)
+            self.iface.addDockWidget(Qt.TopDockWidgetArea, self.widget)
             self.widget.show()
             self.widget.setTests(dlg.tests)
             self.widget.startTesting()
@@ -66,5 +70,3 @@ class TesterPlugin:
         self.widget = None
         if reopen:
             self.test()
-
-

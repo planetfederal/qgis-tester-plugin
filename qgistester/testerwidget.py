@@ -4,12 +4,16 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-from PyQt4 import uic, QtGui, QtCore
-from report import *
-import traceback
 import sys
+import traceback
+
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import pyqtSignal, QCoreApplication
+from qgis.PyQt.QtWidgets import QApplication
+
+from qgistester import report
 from qgistester.reportdialog import ReportDialog
-from utils import execute
+from qgistester.utils import execute
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
@@ -25,11 +29,11 @@ class TesterWidget(BASE, WIDGET):
 
     buttonColors = ["", 'QPushButton {color: yellow;}']
 
-    testingFinished = QtCore.pyqtSignal()
+    testingFinished = pyqtSignal()
 
 
     def __init__(self):
-        QtGui.QWidget.__init__(self)
+        super(TesterWidget, self).__init__()
         self.setupUi(self)
         self.setObjectName("TesterPluginPanel")
         self.btnCancel.clicked.connect(self.cancelTesting)
@@ -41,7 +45,6 @@ class TesterWidget(BASE, WIDGET):
 
         self.blinkTimer = QtCore.QTimer()
         self.blinkTimer.timeout.connect(self._blink)
-
 
     def startBlinking(self):
         self.currentBlinkingTime = 0
@@ -82,7 +85,7 @@ class TesterWidget(BASE, WIDGET):
             self.currentTestStep = 0
             self.runNextStep()
         else:
-            QtGui.QApplication.restoreOverrideCursor()
+            QApplication.restoreOverrideCursor()
             self.testingFinished.emit()
             self.setVisible(False)
 
@@ -101,7 +104,7 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setHtml(step.description + "<p><b>[This is an automated step. Please, wait until it has been completed]</b></p>")
             else:
                 self.webView.setHtml(step.description + "<p><b>[Click on the right-hand side buttons once you have performed this step]</b></p>")
-        QtCore.QCoreApplication.processEvents()
+        QCoreApplication.processEvents()
         if self.currentTestStep == len(test.steps) - 1:
             if step.function is not None:
                 self.btnTestOk.setEnabled(False)
@@ -110,11 +113,11 @@ class TesterWidget(BASE, WIDGET):
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
                 self.webView.setEnabled(False)
-                QtCore.QCoreApplication.processEvents()
+                QCoreApplication.processEvents()
                 try:
                     execute(step.function)
                     self.testPasses()
-                except Exception, e:
+                except Exception as e:
                     self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.btnTestOk.setEnabled(True)
@@ -133,12 +136,12 @@ class TesterWidget(BASE, WIDGET):
                 self.btnSkip.setEnabled(False)
                 self.btnCancel.setEnabled(False)
                 self.webView.setEnabled(False)
-                QtCore.QCoreApplication.processEvents()
+                QCoreApplication.processEvents()
                 try:
                     execute(step.function)
                     self.currentTestStep += 1
                     self.runNextStep()
-                except Exception, e:
+                except Exception as e:
                     self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.currentTestStep += 1

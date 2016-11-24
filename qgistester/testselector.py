@@ -4,17 +4,24 @@
 # This code is licensed under the GPL 2.0 license.
 #
 
-import os
-import tests
-from collections import defaultdict
-from test import UnitTestWrapper
+from future.utils import iteritems
 
-from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings
-from PyQt4.QtGui import QTreeWidgetItem, QDialog, QDialogButtonBox, QSizePolicy, QApplication
+import os
+from collections import defaultdict
+
+from qgis.PyQt import uic
+from qgis.PyQt.QtCore import Qt, QSettings
+from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
+                                 QDialog,
+                                 QDialogButtonBox,
+                                 QSizePolicy,
+                                 QApplication)
 
 from qgis.core import QgsApplication
 from qgis.gui import QgsMessageBar
+
+import qgistester.tests as tests
+from qgistester.test import UnitTestWrapper
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testselector.ui'))
@@ -36,7 +43,7 @@ class TestSelector(BASE, WIDGET):
         for test in tests.tests:
             allTests[test.group].append(test)
 
-        for group, groupTests in allTests.iteritems():
+        for group, groupTests in iteritems(allTests):
             groupItem = QTreeWidgetItem()
             groupItem.setText(0, group)
             groupItem.setFlags(groupItem.flags() | Qt.ItemIsTristate);
@@ -90,22 +97,22 @@ class TestSelector(BASE, WIDGET):
             allTests[test.group].append(test)
 
         s = ""
-        for group, groupTests in allTests.iteritems():
+        for group, groupTests in iteritems(allTests.iteritems):
             s += "- %s\n" % group
             for t in groupTests:
                 s += "\t- %s\n" % t.name
-                
+
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard )
         cb.setText(s, mode=cb.Clipboard)
         self.bar.pushMessage("", "Tests list has been copied to your clipboard", level=QgsMessageBar.SUCCESS, duration=5)
 
     def checkTests(self, condition):
-        for i in xrange(self.testsTree.topLevelItemCount()):
+        for i in range(self.testsTree.topLevelItemCount()):
             item = self.testsTree.topLevelItem(i)
-            for j in xrange(item.childCount()):
+            for j in range(item.childCount()):
                 child = item.child(j)
-                for k in xrange(child.childCount()):
+                for k in range(child.childCount()):
                     subchild = child.child(k)
                     child.setCheckState(0, condition(subchild.test))
 
@@ -114,11 +121,11 @@ class TestSelector(BASE, WIDGET):
 
     def okPressed(self):
         self.tests = []
-        for i in xrange(self.testsTree.topLevelItemCount()):
+        for i in range(self.testsTree.topLevelItemCount()):
             groupItem = self.testsTree.topLevelItem(i)
-            for j in xrange(groupItem.childCount()):
+            for j in range(groupItem.childCount()):
                 subgroupItem = groupItem.child(j)
-                for k in xrange(subgroupItem.childCount()):
+                for k in range(subgroupItem.childCount()):
                     testItem = subgroupItem.child(k)
                     if testItem.checkState(0) == Qt.Checked:
                         self.tests.append(testItem.test)
