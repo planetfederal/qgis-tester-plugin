@@ -96,7 +96,7 @@ class ReportDialog(BASE, WIDGET):
             result= self.resultsTree.currentItem().result
         except:
             return
-        self.resultText.setText(result)
+        self.resultText.setText(str(result))
 
     def saveResults(self, saveAll=False):
         settings = QSettings('Boundless', 'qgistester')
