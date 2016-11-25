@@ -68,11 +68,11 @@ class ReportDialogTests(unittest.TestCase):
         if isPyQt4:
             self.assertTrue(dlg.resultsTree.receivers(SIGNAL('itemClicked(QTreeWidgetItem *, int)')) == 1)
             self.assertTrue(dlg.resultsTree.receivers(SIGNAL('customContextMenuRequested(const QPoint &)')) == 1)
-            self.assertTrue(dlg.buttonBox.receivers(SIGNAL('accepted()')) == 1)
+            self.assertTrue(dlg.buttonBox.receivers(SIGNAL('rejected()')) == 1)
         else:
             self.assertTrue(dlg.resultsTree.receivers(dlg.resultsTree.itemClicked) == 1)
             self.assertTrue(dlg.resultsTree.receivers(dlg.resultsTree.customContextMenuRequested) == 1)
-            self.assertTrue(dlg.buttonBox.receivers(dlg.buttonBox.accepted) == 1)
+            self.assertTrue(dlg.buttonBox.receivers(dlg.buttonBox.rejected) == 1)
 
         # test2
         # preconditions: populate with tests results
