@@ -142,14 +142,17 @@ class TesterTests(unittest.TestCase):
         # do test1
         # I only test that PyQt4.QtGui.QMessageBox.warning is called in
         # the above preconditions
-        qmessageboxMock = mock.Mock(spec=QMessageBox)
+        qmessageboxMock = mock.Mock(spec=QMessageBox.warning)
         if isPyQt4:
-            with mock.patch('PyQt4.QtGui.QMessageBox', qmessageboxMock):
+            with mock.patch('PyQt4.QtGui.QMessageBox.warning', qmessageboxMock):
                 testerPlugin.test()
+            self.assertEqual("Tester plugin", str(qmessageboxMock.call_args[0][1]))
+            self.assertEqual("A test cycle is currently being run", str(qmessageboxMock.call_args[0][2]))
         else:
-            with mock.patch('PyQt5.QtWidgets.QMessageBox', qmessageboxMock):
+            with mock.patch('PyQt5.QtWidgets.QMessageBox.warning', qmessageboxMock):
                 testerPlugin.test()
-        self.assertIn("call.warning", str(qmessageboxMock.mock_calls[-1]))
+            self.assertEqual("Tester plugin", str(qmessageboxMock.call_args[0][1]))
+            self.assertEqual("A test cycle is currently being run", str(qmessageboxMock.call_args[0][2]))
 
         # test 2.1)
         # preconditions: TestSelector constructor mock return a mock simulating
