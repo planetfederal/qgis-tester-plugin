@@ -16,6 +16,7 @@ from qgistesting import start_app
 from qgistesting.mocked import get_iface
 import qgistester
 from qgistester.plugin import TesterPlugin
+from qgistester.test import Test
 try:
     from PyQt4.QtGui import QWidget, QAction, QMessageBox
     from PyQt4.QtCore import SIGNAL
@@ -81,8 +82,13 @@ class TesterTests(unittest.TestCase):
         # do test 1) widget is None
         self.IFACE_Mock.reset_mock()
         testerPlugin.unload()
-        self.assertIn("call.removePluginMenu(u'Tester'",
-                      str(self.IFACE_Mock.mock_calls[-1]))
+        if isPyQt4:
+            self.assertIn("call.removePluginMenu(u'Tester'",
+                          str(self.IFACE_Mock.mock_calls[-1]))
+        else:
+            self.assertIn("call.removePluginMenu('Tester'",
+                          str(self.IFACE_Mock.mock_calls[-1]))
+
         self.assertNotIn('action', testerPlugin.__dict__)
         self.assertIn('widget', testerPlugin.__dict__)
 
@@ -94,8 +100,13 @@ class TesterTests(unittest.TestCase):
         self.IFACE_Mock.reset_mock()
         testerPlugin.widget = mock.MagicMock(QWidget)
         testerPlugin.unload()
-        self.assertIn("call.removePluginMenu(u'Tester'",
-                      str(self.IFACE_Mock.mock_calls[0]))
+        if isPyQt4:
+            self.assertIn("call.removePluginMenu(u'Tester'",
+                          str(self.IFACE_Mock.mock_calls[0]))
+        else:
+            self.assertIn("call.removePluginMenu('Tester'",
+                          str(self.IFACE_Mock.mock_calls[0]))
+
         self.assertNotIn('action', testerPlugin.__dict__)
         self.assertNotIn('widget', testerPlugin.__dict__)
         # I can not check if widget.hide has been called due to delete of
@@ -119,8 +130,12 @@ class TesterTests(unittest.TestCase):
             self.assertTrue(testerPlugin.action.receivers(
                             testerPlugin.action.triggered) == 1)
 
-        self.assertIn("call.addPluginToMenu(u'Tester'",
-                      str(testerPlugin.iface.mock_calls[-1]))
+        if isPyQt4:
+            self.assertIn("call.addPluginToMenu(u'Tester'",
+                          str(testerPlugin.iface.mock_calls[-1]))
+        else:
+            self.assertIn("call.addPluginToMenu('Tester'",
+                          str(testerPlugin.iface.mock_calls[-1]))
 
 
     def testTest(self):
@@ -174,7 +189,9 @@ class TesterTests(unittest.TestCase):
         self.IFACE_Mock.reset_mock
         testselectorMock.reset_mock
         dlgMock.reset_mock
-        dlgMock.tests = 'some tests'
+        mytest = Test("some tests")
+        mytest.settings = {}
+        dlgMock.tests = [mytest]
         testerwidgetMock = mock.Mock(spec=qgistester.testerwidget.TesterWidget,
                                      return_value=dlgMock)
         testerPlugin = TesterPlugin(self.IFACE_Mock)
@@ -187,8 +204,8 @@ class TesterTests(unittest.TestCase):
         self.assertIsNotNone(testerPlugin.widget)
         self.assertIn('call.addDockWidget',
                       str(testerPlugin.iface.mock_calls[-1]))
-        expected = [call.exec_(), call.exec_(), call.show(),
-                    call.setTests('some tests'), call.startTesting()]
+        expected = [call.exec_(), call.exec_(), call.testingFinished.connect(testerPlugin.testingFinished),
+                    call.show(), call.setTests([mytest]), call.startTesting()]
         self.assertEqual(dlgMock.mock_calls, expected)
 
 
