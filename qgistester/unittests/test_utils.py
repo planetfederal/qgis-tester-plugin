@@ -12,7 +12,10 @@ import sys
 import os
 import utilities
 import tempfile
-import mock
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 import time
 import traceback
 import threading

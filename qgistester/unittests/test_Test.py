@@ -10,7 +10,10 @@ from builtins import str
 import unittest
 import sys
 import utilities
-import mock
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 from qgistester.test import Step
 from qgistester.test import Test
 from qgistester.test import UnitTestWrapper

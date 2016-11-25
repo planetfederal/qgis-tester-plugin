@@ -7,8 +7,12 @@ from builtins import map
 # (c) 2016 Boundless, http://boundlessgeo.com
 # This code is licensed under the GPL 2.0 license.
 #
-import mock
-from mock import call
+try:
+    import mock
+    from mock import call
+except ImportError:
+    import unittest.mock as mock
+    from unittest.mock import call
 import unittest
 import sys
 import utilities

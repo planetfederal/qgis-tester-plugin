@@ -9,7 +9,10 @@ from builtins import map
 import unittest
 import sys
 import os
-import mock
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 import utilities
 try:
     from PyQt4.QtCore import Qt, SIGNAL

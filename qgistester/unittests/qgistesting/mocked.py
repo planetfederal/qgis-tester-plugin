@@ -27,7 +27,10 @@ __revision__ = ':%H$'
 
 import os
 import sys
-import mock
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 
 from qgis.gui import QgisInterface, QgsMapCanvas
 from qgis.core import QgsApplication

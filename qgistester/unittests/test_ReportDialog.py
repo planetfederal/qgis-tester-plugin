@@ -10,7 +10,10 @@ from builtins import map
 import unittest
 import sys
 import utilities
-import mock
+try:
+    import mock
+except ImportError:
+    import unittest.mock as mock
 from qgistesting import start_app
 from qgistesting.mocked import get_iface
 try:
