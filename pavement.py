@@ -4,7 +4,6 @@
 # This code is licensed under the GPL 2.0 license.
 #
 import os
-import xmlrpclib
 import zipfile
 
 from paver.easy import *
@@ -82,54 +81,6 @@ def package(options):
     with zipfile.ZipFile(package_file, 'w', zipfile.ZIP_DEFLATED) as zf:
         _make_zip(zf, options)
     return package_file
-
-
-@task
-@cmdopts([
-    ('user=', 'u', 'upload user'),
-    ('passwd=', 'p', 'upload password'),
-    ('server=', 's', 'alternate server'),
-    ('end_point=', 'e', 'alternate endpoint'),
-    ('port=', 't', 'alternate port'),
-])
-def upload(options):
-    """Upload the package to the server
-    """
-    package_file = package(options)
-    user = getattr(options, 'user', None),
-    passwd = getattr(options, 'passwd', None)
-    if not user or not passwd:
-        raise BuildFailure('Provide user and passwd options to upload task')
-    # create URL for XML-RPC calls
-    s = options.plugin_server
-    server = getattr(options, 'server', None)
-    end_point = getattr(options, 'end_point', None)
-    port = getattr(options, 'port', None)
-    if server == None:
-        server = s.server
-    if end_point == None:
-        end_point = s.end_point
-    if port == None:
-        port = s.port
-    uri = '%s://%s:%s@%s:%s%s' % (s.protocol, options['user'],
-                                  options['passwd'], server, port, end_point)
-    info('Uploading to %s', uri)
-    server = xmlrpclib.ServerProxy(uri, verbose=False)
-    try:
-        pluginId, versionId = server.plugin.upload(
-            xmlrpclib.Binary(package_file.bytes()))
-        info('Plugin ID: %s', pluginId)
-        info('Version ID: %s', versionId)
-        package_file.unlink()
-    except xmlrpclib.Fault as err:
-        error('A fault occurred')
-        error('Fault code: %d', err.faultCode)
-        error('Fault string: %s', err.faultString)
-    except xmlrpclib.ProtocolError as err:
-        error('Protocol error')
-        error('%s : %s', err.errcode, err.errmsg)
-        if err.errcode == 403:
-            error('Invalid name and password?')
 
 
 @task
