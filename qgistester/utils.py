@@ -11,7 +11,7 @@ from qgis.PyQt.QtCore import Qt, QSettings
 from qgis.PyQt.QtGui import QCursor
 from qgis.PyQt.QtWidgets import QApplication
 from qgis.utils import iface
-from qgis.core import (QgsMapLayerRegistry,
+from qgis.core import (QgsProject,
                        QgsVectorLayer,
                        QgsRasterLayer,
                       )
@@ -23,7 +23,7 @@ def layerFromName(name):
     Returns None if no layer with that name is found
     If several layers with that name exist, only the first one is returned
     '''
-    layers = list(QgsMapLayerRegistry.instance().mapLayers().values())
+    layers = list(QgsProject.instance().mapLayers().values())
     for layer in layers:
         if layer.name() == name:
             return layer

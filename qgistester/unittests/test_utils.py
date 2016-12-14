@@ -22,7 +22,7 @@ import threading
 from qgistesting import start_app
 from qgistesting.mocked import get_iface
 from qgis.core import (QgsVectorLayer,
-                       QgsMapLayerRegistry,
+                       QgsProject,
                        QgsVectorFileWriter)
 from qgistester.utils import (layerFromName,
                               loadLayerNoCrsDialog,
@@ -70,9 +70,9 @@ class UtilsTests(unittest.TestCase):
         self.assertIsNone(layer)
 
         # preconditions
-        QgsMapLayerRegistry.instance().addMapLayer(self.testFile1)
-        QgsMapLayerRegistry.instance().addMapLayer(self.testFile2)
-        QgsMapLayerRegistry.instance().addMapLayer(self.testFile3)
+        QgsProject.instance().addMapLayer(self.testFile1)
+        QgsProject.instance().addMapLayer(self.testFile2)
+        QgsProject.instance().addMapLayer(self.testFile3)
         # do test 2: look for the 'testFile2' that exists
         layer = layerFromName('testFile2')
         self.assertEqual(self.testFile2, layer)
