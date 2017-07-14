@@ -189,3 +189,18 @@ def _make_zip(zipFile, options):
             relpath = os.path.relpath(root)
             zipFile.write(path(root) / f, path(relpath) / f)
         filter_excludes(root, dirs)
+
+def read_requirements():
+    """Return a list of runtime and list of test requirements"""
+    lines = path('requirements.txt').lines()
+    lines = [ l for l in [ l.strip() for l in lines] if l ]
+    divider = '# test requirements'
+
+    try:
+        idx = lines.index(divider)
+    except ValueError:
+        raise BuildFailure(
+            'Expected to find "%s" in requirements.txt' % divider)
+
+    not_comments = lambda s,e: [ l for l in lines[s:e] if l[0] != '#']
+    return not_comments(0, idx), not_comments(idx+1, None)
