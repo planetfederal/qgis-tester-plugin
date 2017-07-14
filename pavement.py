@@ -14,8 +14,8 @@ options(
         name = 'qgistester',
         source_dir = path('qgistester'),
         package_dir = path('.'),
-        ext_libs = path('boundlessconnect/ext-libs'),
-        ext_src = path('boundlessconnect/ext-src'),
+        ext_libs = path('qgistester/ext-libs'),
+        ext_src = path('qgistester/ext-src'),
         excludes = [
             '*.pyc',
             '.git',
