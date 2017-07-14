@@ -28,8 +28,21 @@ options(
 
 @task
 def setup():
-    """Empty: to ensure we use the same build/install procedure for all our plugins"""
-    pass
+    """Install run-time dependencies"""
+    clean = getattr(options, 'clean', False)
+    ext_libs = options.plugin.ext_libs
+    ext_src = options.plugin.ext_src
+    if clean:
+        ext_libs.rmtree()
+    ext_libs.makedirs()
+
+    runtime, test = read_requirements()
+    os.environ['PYTHONPATH'] = ext_libs.abspath()
+    for req in runtime + test:
+        sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
+            'ext_libs': ext_libs.abspath(),
+            'dep': req
+        })
 
 def _install(folder):
     '''install plugin to qgis'''
