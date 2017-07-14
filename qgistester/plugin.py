@@ -13,6 +13,10 @@ from qgistester.testerwidget import TesterWidget
 from qgistester.testselector import TestSelector
 from qgistester.settingswindow import SettingsWindow
 
+from qgiscommons.gui import (addAboutMenu,
+                             removeAboutMenu,
+                             addHelpMenu,
+                             removeHelpMenu)
 
 class TesterPlugin(object):
 
@@ -27,7 +31,11 @@ class TesterPlugin(object):
             self.widget.hide()
 
     def unload(self):
-        self.iface.removePluginMenu(u"Tester", self.action)
+        self.iface.removePluginMenu("Tester", self.action)
+
+        removeHelpMenu("Tester")
+        removeAboutMenu("Tester")
+
         del self.action
         if self.widget:
             self.widget.hide()
@@ -36,7 +44,10 @@ class TesterPlugin(object):
     def initGui(self):
         self.action = QAction("Start testing", self.iface.mainWindow())
         self.action.triggered.connect(self.test)
-        self.iface.addPluginToMenu(u"Tester", self.action)
+        self.iface.addPluginToMenu("Tester", self.action)
+
+        addHelpMenu("Tester", self.iface.addPluginToMenu)
+        addAboutMenu("Tester", self.iface.addPluginToMenu)
 
     def test(self):
         if self.widget is not None and self.widget.isVisible():
