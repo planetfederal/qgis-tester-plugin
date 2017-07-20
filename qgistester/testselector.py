@@ -54,16 +54,26 @@ class TestSelector(BASE, WIDGET):
             manualItem = QTreeWidgetItem()
             manualItem.setText(0, "Manual and semi-automated tests")
             manualItem.setFlags(manualItem.flags() | Qt.ItemIsTristate);
+            unitTestsByCategories = defaultdict(list)
+            manualTestsByCategories = defaultdict(list)
             for test in groupTests:
-                testItem = QTreeWidgetItem()
-                testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
-                testItem.setCheckState(0, Qt.Unchecked);
-                testItem.test = test
-                testItem.setText(0, test.name)
                 if isinstance(test, UnitTestWrapper):
-                    unitItem.addChild(testItem)
+                    unitTestsByCategories[test.category].append(test)
                 else:
-                    manualItem.addChild(testItem)
+                    manualTestsByCategories[test.category].append(test)
+            for testsList, parentItem in [(unitTestsByCategories, unitItem), (manualTestsByCategories, manualItem)]:
+                for cat, catTests in iteritems(testsList):
+                    categoryItem = QTreeWidgetItem()
+                    categoryItem.setText(0, cat)
+                    categoryItem.setFlags(manualItem.flags() | Qt.ItemIsTristate);
+                    for test in catTests:
+                        testItem = QTreeWidgetItem()
+                        testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
+                        testItem.setCheckState(0, Qt.Unchecked);
+                        testItem.test = test
+                        testItem.setText(0, test.name)
+                        categoryItem.addChild(testItem)
+                    parentItem.addChild(categoryItem)
             if manualItem.childCount():
                 groupItem.addChild(manualItem)
             if unitItem.childCount():

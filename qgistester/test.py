@@ -22,10 +22,11 @@ class Step(object):
 
 class Test(object):
 
-    def __init__(self, name):
+    def __init__(self, name, category="General"):
         self.steps = []
         self.name = name
         self.group = ""
+        self.category = category
         self.cleanup = lambda: None
         self.issueUrl = None
         self.settings = {}
