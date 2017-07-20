@@ -40,6 +40,7 @@ class TesterWidget(BASE, WIDGET):
         self.btnCancel.clicked.connect(self.cancelTesting)
         self.btnTestOk.clicked.connect(self.testPasses)
         self.btnTestFailed.clicked.connect(self.testFails)
+        self.btnRestartTest.clicked.connect(self.restartTest)
         self.btnSkip.clicked.connect(self.skipTest)
         self.btnNextStep.clicked.connect(self.runNextStep)
         self.buttons = [self.btnTestOk, self.btnTestFailed, self.btnNextStep]
@@ -75,6 +76,10 @@ class TesterWidget(BASE, WIDGET):
         """Wrapper for easy mocking"""
         self.reportDialog = ReportDialog(self.report)
         return self.reportDialog
+
+    def restartTest(self):
+        self.currentTestResult = None
+        self.runNextTest()
 
     def runNextTest(self):
         if self.currentTestResult:
