@@ -28,8 +28,8 @@ WIDGET, BASE = uic.loadUiType(
 
 class ReportDialog(BASE, WIDGET):
 
-    resultColor = [Qt.green, Qt.red, Qt.gray]
-    resultTag = ['PASSED', 'FAILED', 'SKIPPED']
+    resultColor = [Qt.green, Qt.red, Qt.gray, Qt.orange, Qt.yellow]
+    resultTag = ['PASSED', 'FAILED', 'SKIPPED', 'CONTAINS_ERROR', 'FAILED_AT_SETUP']
 
     def __init__(self, report):
         super(ReportDialog, self).__init__()
