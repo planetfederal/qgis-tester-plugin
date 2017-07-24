@@ -12,6 +12,8 @@ from qgis.PyQt.QtWidgets import QAction, QMessageBox
 from qgistester.testerwidget import TesterWidget
 from qgistester.testselector import TestSelector
 from qgistester.settingswindow import SettingsWindow
+from qgistester.tests import addTestModule
+from qgistester.manualtests import manualtests
 
 from qgiscommons.gui import (addAboutMenu,
                              removeAboutMenu,
@@ -25,6 +27,8 @@ class TesterPlugin(object):
         self.lastSettings = {}
         self.widget = None
         self.iface.initializationCompleted.connect(self.hideWidget)
+
+        addTestModule(manualtests, "Tester Plugin")
 
     def hideWidget(self):
         if self.widget:

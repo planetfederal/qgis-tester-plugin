@@ -14,7 +14,7 @@ from qgis.PyQt.QtWidgets import QApplication
 
 from qgistester.report import Report, TestResult
 from qgistester.reportdialog import ReportDialog
-from giscommons.gui import execute
+from qgiscommons.gui import execute
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
