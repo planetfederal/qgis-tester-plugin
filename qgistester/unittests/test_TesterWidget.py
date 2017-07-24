@@ -60,7 +60,7 @@ class TesterWidgetTests(unittest.TestCase):
         """test the run of the first unit tests setting up the result."""
         widget = TesterWidget()
         widget.setTests(self.unitTests)
-        with mock.patch('qgistester.utils.iface', self.IFACE_Mock):
+        with mock.patch('qgis.utils.iface', self.IFACE_Mock):
             widget.startTesting()
         self.assertIsInstance(widget.report, Report)
         self.assertEqual(len(widget.report.results), 2)

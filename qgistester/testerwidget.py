@@ -127,7 +127,7 @@ class TesterWidget(BASE, WIDGET):
                     if isinstance(e, AssertionError):
                         self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
                     else:
-                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.btnTestOk.setEnabled(True)
                 self.btnTestOk.setText("Test passes")
@@ -141,7 +141,7 @@ class TesterWidget(BASE, WIDGET):
                     except Exception as e:
                         self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
                     else:
-                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
         else:
             if step.function is not None:
                 self.btnTestOk.setEnabled(False)

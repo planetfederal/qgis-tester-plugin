@@ -13,6 +13,7 @@ from collections import defaultdict
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, QSettings
 from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
+                                 QTreeWidgetItemIterator,
                                  QDialog,
                                  QDialogButtonBox,
                                  QSizePolicy,
@@ -132,12 +133,11 @@ class TestSelector(BASE, WIDGET):
 
     def okPressed(self):
         self.tests = []
-        for i in range(self.testsTree.topLevelItemCount()):
-            groupItem = self.testsTree.topLevelItem(i)
-            for j in range(groupItem.childCount()):
-                subgroupItem = groupItem.child(j)
-                for k in range(subgroupItem.childCount()):
-                    testItem = subgroupItem.child(k)
-                    if testItem.checkState(0) == Qt.Checked:
-                        self.tests.append(testItem.test)
+        iterator = QTreeWidgetItemIterator(self.testsTree)
+        item = iterator.value()
+        while item:
+            if item.checkState(0) == Qt.Checked and item.childCount() == 0:
+                self.tests.append(item.test)
+            iterator +=1
+            item = iterator.value()
         self.close()
