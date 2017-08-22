@@ -1,0 +1,3 @@
+qgiscommons
+
+# test requirements

@@ -14,7 +14,7 @@ from qgis.PyQt.QtWidgets import QApplication
 
 from qgistester.report import Report, TestResult
 from qgistester.reportdialog import ReportDialog
-from qgistester.utils import execute
+from qgiscommons.gui import execute
 
 WIDGET, BASE = uic.loadUiType(
     os.path.join(os.path.dirname(__file__), 'testerwidget.ui'))
@@ -40,6 +40,7 @@ class TesterWidget(BASE, WIDGET):
         self.btnCancel.clicked.connect(self.cancelTesting)
         self.btnTestOk.clicked.connect(self.testPasses)
         self.btnTestFailed.clicked.connect(self.testFails)
+        self.btnRestartTest.clicked.connect(self.restartTest)
         self.btnSkip.clicked.connect(self.skipTest)
         self.btnNextStep.clicked.connect(self.runNextStep)
         self.buttons = [self.btnTestOk, self.btnTestFailed, self.btnNextStep]
@@ -75,6 +76,10 @@ class TesterWidget(BASE, WIDGET):
         """Wrapper for easy mocking"""
         self.reportDialog = ReportDialog(self.report)
         return self.reportDialog
+
+    def restartTest(self):
+        self.currentTestResult = None
+        self.runNextTest()
 
     def runNextTest(self):
         if self.currentTestResult:
@@ -119,7 +124,10 @@ class TesterWidget(BASE, WIDGET):
                     execute(step.function)
                     self.testPasses()
                 except Exception as e:
-                    self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
+                    if isinstance(e, AssertionError):
+                        self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
+                    else:
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.btnTestOk.setEnabled(True)
                 self.btnTestOk.setText("Test passes")
@@ -128,7 +136,12 @@ class TesterWidget(BASE, WIDGET):
                 self.webView.setEnabled(True)
                 self.btnNextStep.setEnabled(False)
                 if step.prestep:
-                    step.prestep()
+                    try:
+                        execute(step.prestep)
+                    except Exception as e:
+                        self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
+                    else:
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
         else:
             if step.function is not None:
                 self.btnTestOk.setEnabled(False)
@@ -143,7 +156,10 @@ class TesterWidget(BASE, WIDGET):
                     self.currentTestStep += 1
                     self.runNextStep()
                 except Exception as e:
-                    self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
+                    if isinstance(e, AssertionError):
+                        self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
+                    else:
+                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.currentTestStep += 1
                 self.webView.setEnabled(True)
@@ -157,7 +173,12 @@ class TesterWidget(BASE, WIDGET):
                     self.btnTestOk.setEnabled(False)
                     self.btnTestFailed.setEnabled(False)
                 if step.prestep:
-                    step.prestep()
+                    try:
+                        execute(step.prestep)
+                    except Exception as e:
+                        self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
+                    else:
+                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
         if step.function is None:
             self.startBlinking()
 
@@ -184,6 +205,34 @@ class TesterWidget(BASE, WIDGET):
         else:
             desc = test.steps[self.currentTestStep].description
         self.currentTestResult.failed(desc, msg)
+        try:
+            test.cleanup()
+        except:
+            pass
+        self.currentTest +=1
+        self.runNextTest()
+
+    def testFailsAtSetup(self, msg = ""):
+        test = self.tests[self.currentTest]
+        if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
+            desc = test.steps[self.currentTestStep - 1].description
+        else:
+            desc = test.steps[self.currentTestStep].description
+        self.currentTestResult.setupFailed(desc, msg)
+        try:
+            test.cleanup()
+        except:
+            pass
+        self.currentTest +=1
+        self.runNextTest()
+
+    def testContainsError(self, msg = ""):
+        test = self.tests[self.currentTest]
+        if self.btnTestOk.isEnabled() and self.btnTestOk.text() == "Step passes":
+            desc = test.steps[self.currentTestStep - 1].description
+        else:
+            desc = test.steps[self.currentTestStep].description
+        self.currentTestResult.containsError(desc, msg)
         try:
             test.cleanup()
         except:

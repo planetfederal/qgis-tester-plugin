@@ -17,7 +17,7 @@ class Report(object):
 
 class TestResult(object):
 
-    PASSED, FAILED, SKIPPED = list(range(3))
+    PASSED, FAILED, SKIPPED, CONTAINS_ERROR, FAILED_AT_SETUP = list(range(5))
 
     def __init__(self, test):
         self.test = test
@@ -27,6 +27,16 @@ class TestResult(object):
 
     def failed(self, step, message):
         self.status = self.FAILED
+        self.errorStep = step
+        self.errorMessage = message
+
+    def containsError(self, step, message):
+        self.status = self.CONTAINS_ERROR
+        self.errorStep = step
+        self.errorMessage = message
+
+    def setupFailed(self, step, message):
+        self.status = self.FAILED_AT_SETUP
         self.errorStep = step
         self.errorMessage = message
 
@@ -42,6 +52,10 @@ class TestResult(object):
             s+= "Test skipped"
         elif self.status == self.PASSED:
             s+= "Test passed correctly"
+        elif self.status == self.CONTAINS_ERROR:
+            s+= "Test contains an error at step '%s':\n%s" %(self.errorStep, self.errorMessage)
+        elif self.status == self.FAILED_AT_SETUP:
+            s+= "Test step '%s' failed at setup:\n%s" %(self.errorStep, self.errorMessage)
         else:
             s+= "Test failed at step '%s' with message:\n%s" %(self.errorStep, self.errorMessage)
         return s

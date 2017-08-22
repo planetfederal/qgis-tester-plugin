@@ -13,6 +13,7 @@ from collections import defaultdict
 from qgis.PyQt import uic
 from qgis.PyQt.QtCore import Qt, QSettings
 from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
+                                 QTreeWidgetItemIterator,
                                  QDialog,
                                  QDialogButtonBox,
                                  QSizePolicy,
@@ -54,16 +55,26 @@ class TestSelector(BASE, WIDGET):
             manualItem = QTreeWidgetItem()
             manualItem.setText(0, "Manual and semi-automated tests")
             manualItem.setFlags(manualItem.flags() | Qt.ItemIsTristate);
+            unitTestsByCategories = defaultdict(list)
+            manualTestsByCategories = defaultdict(list)
             for test in groupTests:
-                testItem = QTreeWidgetItem()
-                testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
-                testItem.setCheckState(0, Qt.Unchecked);
-                testItem.test = test
-                testItem.setText(0, test.name)
                 if isinstance(test, UnitTestWrapper):
-                    unitItem.addChild(testItem)
+                    unitTestsByCategories[test.category].append(test)
                 else:
-                    manualItem.addChild(testItem)
+                    manualTestsByCategories[test.category].append(test)
+            for testsList, parentItem in [(unitTestsByCategories, unitItem), (manualTestsByCategories, manualItem)]:
+                for cat, catTests in iteritems(testsList):
+                    categoryItem = QTreeWidgetItem()
+                    categoryItem.setText(0, cat)
+                    categoryItem.setFlags(manualItem.flags() | Qt.ItemIsTristate);
+                    for test in catTests:
+                        testItem = QTreeWidgetItem()
+                        testItem.setFlags(testItem.flags() | Qt.ItemIsUserCheckable);
+                        testItem.setCheckState(0, Qt.Unchecked);
+                        testItem.test = test
+                        testItem.setText(0, test.name)
+                        categoryItem.addChild(testItem)
+                    parentItem.addChild(categoryItem)
             if manualItem.childCount():
                 groupItem.addChild(manualItem)
             if unitItem.childCount():
@@ -122,12 +133,11 @@ class TestSelector(BASE, WIDGET):
 
     def okPressed(self):
         self.tests = []
-        for i in range(self.testsTree.topLevelItemCount()):
-            groupItem = self.testsTree.topLevelItem(i)
-            for j in range(groupItem.childCount()):
-                subgroupItem = groupItem.child(j)
-                for k in range(subgroupItem.childCount()):
-                    testItem = subgroupItem.child(k)
-                    if testItem.checkState(0) == Qt.Checked:
-                        self.tests.append(testItem.test)
+        iterator = QTreeWidgetItemIterator(self.testsTree)
+        item = iterator.value()
+        while item:
+            if item.checkState(0) == Qt.Checked and item.childCount() == 0:
+                self.tests.append(item.test)
+            iterator +=1
+            item = iterator.value()
         self.close()
