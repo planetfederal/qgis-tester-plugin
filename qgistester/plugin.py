@@ -15,7 +15,7 @@ from qgistester.settingswindow import SettingsWindow
 from qgistester.tests import addTestModule
 from qgistester.manualtests import manualtests
 
-from qgiscommons.gui import (addAboutMenu,
+from qgiscommons2.gui import (addAboutMenu,
                              removeAboutMenu,
                              addHelpMenu,
                              removeHelpMenu)

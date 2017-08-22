@@ -14,7 +14,7 @@ options(
         name = 'qgistester',
         source_dir = path('qgistester'),
         package_dir = path('.'),
-        ext_libs = path('qgistester/ext-libs'),
+        ext_libs = path('qgistester/extlibs'),
         ext_src = path('qgistester/ext-src'),
         excludes = [
             '*.pyc',
