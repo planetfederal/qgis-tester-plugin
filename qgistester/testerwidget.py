@@ -159,7 +159,7 @@ class TesterWidget(BASE, WIDGET):
                     if isinstance(e, AssertionError):
                         self.testFails("%s\n%s" % (str(e), traceback.format_exc()))
                     else:
-                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
             else:
                 self.currentTestStep += 1
                 self.webView.setEnabled(True)
@@ -178,7 +178,7 @@ class TesterWidget(BASE, WIDGET):
                     except Exception as e:
                         self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
                     else:
-                        self.containsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
         if step.function is None:
             self.startBlinking()
 
