@@ -129,7 +129,7 @@ class ReportDialog(BASE, WIDGET):
                 for j in range(groupItem.childCount()):
                     results = groupItem.child(j).result
                     out += '<li>[{}] {}'.format(self.resultTag[results.status], results.test.name)
-                    if results.status == results.FAILED:
+                    if results.status not in [results.SKIPPED, results.PASSED]:
                         out += '<p>Failed at step {} with message</p>'.format(results.errorStep)
                         out += '<code>{}</code>'.format(results.errorMessage)
                     out += '</li>'
@@ -139,7 +139,7 @@ class ReportDialog(BASE, WIDGET):
             out += '<h3>{}</h3>'.format(results.test.group)
             out += '<ul>'
             out += '<li>[{}] {}'.format(self.resultTag[results.status], results.test.name)
-            if results.status == results.FAILED:
+            if results.status not in [results.SKIPPED, results.PASSED]:
                 out += '<p>Failed at step {} with message</p>'.format(results.errorStep)
                 out += '<code>{}</code>'.format(results.errorMessage)
             out += '</li></ul>'
