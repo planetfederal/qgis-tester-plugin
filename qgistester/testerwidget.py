@@ -139,9 +139,10 @@ class TesterWidget(BASE, WIDGET):
                     try:
                         execute(step.prestep)
                     except Exception as e:
-                        self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
-                    else:
-                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        if isinstance(e, AssertionError):
+                            self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
+                        else:
+                            self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
         else:
             if step.function is not None:
                 self.btnTestOk.setEnabled(False)
@@ -176,9 +177,10 @@ class TesterWidget(BASE, WIDGET):
                     try:
                         execute(step.prestep)
                     except Exception as e:
-                        self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
-                    else:
-                        self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
+                        if isinstance(e, AssertionError):
+                            self.testFailsAtSetup("%s\n%s" % (str(e), traceback.format_exc()))
+                        else:
+                            self.testContainsError("%s\n%s" % (str(e), traceback.format_exc()))
         if step.function is None:
             self.startBlinking()
 
