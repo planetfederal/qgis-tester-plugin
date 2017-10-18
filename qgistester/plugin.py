@@ -7,6 +7,7 @@ from builtins import object
 import os
 
 from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction, QMessageBox
 
 from qgistester.testerwidget import TesterWidget
@@ -19,6 +20,9 @@ from qgiscommons2.gui import (addAboutMenu,
                              removeAboutMenu,
                              addHelpMenu,
                              removeHelpMenu)
+
+pluginPath = os.path.dirname(__file__)
+
 
 class TesterPlugin(object):
 
@@ -46,7 +50,10 @@ class TesterPlugin(object):
             del self.widget
 
     def initGui(self):
-        self.action = QAction("Start testing", self.iface.mainWindow())
+        self.action = QAction(
+            QIcon(os.path.join(pluginPath, "plugin.png")),
+            "Start testing",
+            self.iface.mainWindow())
         self.action.triggered.connect(self.test)
         self.iface.addPluginToMenu("Tester", self.action)
 
