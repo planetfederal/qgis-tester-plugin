@@ -9,11 +9,12 @@ Welcome to QGIS Tester Plugin's documentation!
 Contents:
 
 .. toctree::
+   :glob:
    :maxdepth: 2
 
    usage
    writing_tests
-
+   *
 
 Indices and tables
 ==================
