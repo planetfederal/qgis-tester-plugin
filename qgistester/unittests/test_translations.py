@@ -17,7 +17,7 @@ import unittest
 import os
 import sys
 try:
-    from PyQt4.QtCore import QCoreApplication, QTranslator
+    from qgis.PyQt.QtCore import QCoreApplication, QTranslator
 except ImportError:
     from PyQt5.QtCore import QCoreApplication, QTranslator
 
@@ -27,12 +27,12 @@ class SafeTranslationsTest(unittest.TestCase):
 
     def setUp(self):
         """Run before each test."""
-        if 'LANG' in iter(os.environ.keys()):
+        if 'LANG' in iter(list(os.environ.keys())):
             os.environ.__delitem__('LANG')
 
     def tearDown(self):
         """Run after each test."""
-        if 'LANG' in iter(os.environ.keys()):
+        if 'LANG' in iter(list(os.environ.keys())):
             os.environ.__delitem__('LANG')
 
     @unittest.skip('Skip until locale translation will be set')

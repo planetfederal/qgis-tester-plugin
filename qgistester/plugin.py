@@ -77,7 +77,7 @@ class TesterPlugin(object):
                 if not settingsDlg.settings:
                     return
                 self.lastSettings = settingsDlg.settings
-                for key, value in settingsDlg.settings.items():
+                for key, value in list(settingsDlg.settings.items()):
                     os.environ[key] = value
             self.widget = TesterWidget()
             self.widget.testingFinished.connect(self.testingFinished)

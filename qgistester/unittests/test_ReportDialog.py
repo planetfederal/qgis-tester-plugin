@@ -17,8 +17,8 @@ except ImportError:
 from qgistesting import start_app
 from qgistesting.mocked import get_iface
 try:
-    from PyQt4.QtGui import QMenu, QAction
-    from PyQt4.QtCore import Qt, SIGNAL, QPoint
+    from qgis.PyQt.QtWidgets import QMenu, QAction
+    from qgis.PyQt.QtCore import Qt, QPoint
     isPyQt4 = True
 except ImportError:
     from PyQt5.QtWidgets import QMenu, QAction

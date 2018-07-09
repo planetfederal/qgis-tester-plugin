@@ -53,7 +53,7 @@ class ReportDialog(BASE, WIDGET):
             test = result.test
             allResults[test.group].append(result)
 
-        for group, groupResults in allResults.items():
+        for group, groupResults in list(allResults.items()):
             groupItem = QTreeWidgetItem()
             groupItem.setText(0, group)
             for result in groupResults:
@@ -101,7 +101,7 @@ class ReportDialog(BASE, WIDGET):
     def saveResults(self, saveAll=False):
         settings = QSettings('Boundless', 'qgistester')
         lastDirectory = settings.value('lastDirectory', '.')
-        fileName = QFileDialog.getSaveFileName(self,
+        fileName, __ = QFileDialog.getSaveFileName(self,
                                                self.tr('Save file'),
                                                lastDirectory,
                                                self.tr('HTML files (*.html)'))

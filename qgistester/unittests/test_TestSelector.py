@@ -15,7 +15,7 @@ except ImportError:
     import unittest.mock as mock
 import utilities
 try:
-    from PyQt4.QtCore import Qt, SIGNAL
+    from qgis.PyQt.QtCore import Qt
     isPyQt4 = True
 except ImportError:
     from PyQt5.QtCore import Qt

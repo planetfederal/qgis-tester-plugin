@@ -22,8 +22,8 @@ import qgistester
 from qgistester.plugin import TesterPlugin
 from qgistester.test import Test
 try:
-    from PyQt4.QtGui import QWidget, QAction, QMessageBox
-    from PyQt4.QtCore import SIGNAL
+    from qgis.PyQt.QtWidgets import QWidget, QAction, QMessageBox
+
     isPyQt4 = True
 except ImportError:
     from PyQt5.QtWidgets import QWidget, QAction, QMessageBox
