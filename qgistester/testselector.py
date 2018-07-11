@@ -109,7 +109,7 @@ class TestSelector(BASE, WIDGET):
             allTests[test.group].append(test)
 
         s = ""
-        for group, groupTests in iteritems(allTests.iteritems):
+        for group, groupTests in allTests.items():
             s += "- %s\n" % group
             for t in groupTests:
                 s += "\t- %s\n" % t.name
