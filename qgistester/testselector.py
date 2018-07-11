@@ -19,7 +19,7 @@ from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QSizePolicy,
                                  QApplication)
 
-from qgis.core import QgsApplication
+from qgis.core import QgsApplication, Qgis
 from qgis.gui import QgsMessageBar
 
 import qgistester.tests as tests
@@ -117,16 +117,21 @@ class TestSelector(BASE, WIDGET):
         cb = QApplication.clipboard()
         cb.clear(mode=cb.Clipboard )
         cb.setText(s, mode=cb.Clipboard)
-        self.bar.pushMessage("", "Tests list has been copied to your clipboard", level=QgsMessageBar.SUCCESS, duration=5)
+        self.bar.pushMessage("", "Tests list has been copied to your clipboard", level=Qgis.Success, duration=5)
 
     def checkTests(self, condition):
-        for i in range(self.testsTree.topLevelItemCount()):
-            item = self.testsTree.topLevelItem(i)
-            for j in range(item.childCount()):
-                child = item.child(j)
-                for k in range(child.childCount()):
-                    subchild = child.child(k)
-                    child.setCheckState(0, condition(subchild.test))
+        self.checkTest(self.testsTree.invisibleRootItem(), condition)
+
+    def checkTest(self, item, condition):
+        count = item.childCount()
+        if count:
+            for i in range(count):
+                self.checkTest(item.child(i), condition)
+        else:
+            try:
+                item.setCheckState(0, condition(item.test))
+            except:
+                pass                
 
     def cancelPressed(self):
         self.close()
