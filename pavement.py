@@ -35,30 +35,35 @@ options(
 
 )
 
-
 @task
+@cmdopts([
+    ('clean', 'c', 'clean out dependencies first'),
+])
 def setup():
-    """Install run-time dependencies"""
     clean = getattr(options, 'clean', False)
     ext_libs = options.plugin.ext_libs
     ext_src = options.plugin.ext_src
     if clean:
         ext_libs.rmtree()
     ext_libs.makedirs()
-
     runtime, test = read_requirements()
-    os.environ['PYTHONPATH'] = ext_libs.abspath()
+    os.environ['PYTHONPATH']=ext_libs.abspath()
     for req in runtime + test:
         sh('easy_install -a -d %(ext_libs)s %(dep)s' % {
-            'ext_libs': ext_libs.abspath(),
-            'dep': req
+            'ext_libs' : ext_libs.abspath(),
+            'dep' : req
         })
 
-def _install(folder):
+@task
+def install(options):
     '''install plugin to qgis'''
+    builddocs(options)
     plugin_name = options.plugin.name
     src = path(__file__).dirname() / plugin_name
-    dst = path('~').expanduser() / folder / 'python' / 'plugins' / plugin_name
+    if os.name == 'nt':
+        dst = path('~/AppData/Roaming/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
+    else:
+        dst = path('~/.local/share/QGIS/QGIS3/profiles/default/python/plugins').expanduser() / plugin_name
     src = src.abspath()
     dst = dst.abspath()
     if not hasattr(os, 'symlink'):
@@ -66,19 +71,14 @@ def _install(folder):
         src.copytree(dst)
     elif not dst.exists():
         src.symlink(dst)
-
-@task
-def install(options):
-    _install(".qgis2")
-
-@task
-def installdev(options):
-    _install(".qgis-dev")
-
-@task
-def install3(options):
-    _install(".qgis3")
-
+        # Symlink the build folder to the parent
+        docs = path('..') / '..' / "docs" / 'build' / 'html'
+        docs_dest = path(__file__).dirname() / plugin_name / "docs"
+        docs_link = docs_dest / 'html'
+        if not docs_dest.exists():
+            docs_dest.mkdir()
+        if not docs_link.islink():
+            docs.symlink(docs_link)
 
 @task
 def install_devtools():
