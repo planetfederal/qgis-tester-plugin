@@ -18,7 +18,8 @@ from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QAction,
                                  QFileDialog,
                                  QPushButton,
-                                 QDialogButtonBox)
+                                 QDialogButtonBox,
+                                 QMessageBox)
 
 from qgis.core import QgsApplication
 
@@ -99,6 +100,11 @@ class ReportDialog(BASE, WIDGET):
         self.resultText.setText(str(result))
 
     def saveResults(self, saveAll=False):
+        currentItem = self.resultsTree.currentItem()
+        if not hasattr(currentItem, "result"):
+            QMessageBox.warning(self, "Save results", "No test item selected")
+            return
+
         settings = QSettings('Boundless', 'qgistester')
         lastDirectory = settings.value('lastDirectory', '.')
         fileName, __ = QFileDialog.getSaveFileName(self,
