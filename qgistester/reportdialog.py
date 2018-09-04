@@ -101,7 +101,7 @@ class ReportDialog(BASE, WIDGET):
 
     def saveResults(self, saveAll=False):
         currentItem = self.resultsTree.currentItem()
-        if not hasattr(currentItem, "result"):
+        if not saveAll and not hasattr(currentItem, "result"):
             QMessageBox.warning(self, "Save results", "No test item selected")
             return
 
