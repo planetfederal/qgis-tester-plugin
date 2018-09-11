@@ -7,6 +7,7 @@ from builtins import range
 #
 
 import os
+import json
 import codecs
 import webbrowser
 from collections import defaultdict
@@ -47,6 +48,8 @@ class ReportDialog(BASE, WIDGET):
 
         results = report.results
 
+        self.saveFailed(results)
+
         self.reopen = False
 
         allResults = defaultdict(list)
@@ -78,6 +81,26 @@ class ReportDialog(BASE, WIDGET):
         self.buttonBox.addButton(button, QDialogButtonBox.ActionRole);
 
         self.buttonBox.rejected.connect(self.close)
+
+    def saveFailed(self, results):
+        allFailed = {} 
+        allResults = defaultdict(list)
+        for result in results:
+            test = result.test
+            allResults[test.group].append(result)
+        for group, groupResults in list(allResults.items()):
+            failed = []
+            for result in groupResults:
+                if result.status in [1, 3, 4]:
+                    failed.append(result.test.name)
+            allFailed[group] = failed
+        folder = os.path.expanduser("~/.testerplugin")
+        if not os.path.exists(folder):
+            os.makedirs(folder)
+        filepath = os.path.join(folder, "failed.txt")
+        with open(filepath, "w") as f:
+            json.dump(allFailed, f)
+
 
     def showPopupMenu(self, point):
         item = self.resultsTree.selectedItems()[0]

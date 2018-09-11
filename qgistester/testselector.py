@@ -8,6 +8,7 @@ from builtins import range
 from future.utils import iteritems
 
 import os
+import json
 from collections import defaultdict
 
 from qgis.PyQt import uic
@@ -100,6 +101,21 @@ class TestSelector(BASE, WIDGET):
             else:
                 return Qt.Unchecked
         self.onlyUnitLabel.linkActivated.connect(lambda: self.checkTests(_onlyUnit))
+
+        filepath = os.path.expanduser("~/.testerplugin/failed.txt")
+        if os.path.exists(filepath):
+            with open(filepath) as f:
+                failed = json.load(f)
+        else:
+            failed = []
+        def _onlyLastFailures(t):
+            if t.group in failed and t.name in failed[t.group]:
+                return Qt.Checked
+            else:
+                return Qt.Unchecked
+        self.onlyLastFailuresLabel.linkActivated.connect(lambda: self.checkTests(_onlyLastFailures))
+
+        
 
         self.exportButton.clicked.connect(self.export)
 
