@@ -13,7 +13,7 @@ import webbrowser
 from collections import defaultdict
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import Qt, QSettings, QFileInfo
+from qgis.PyQt.QtCore import Qt, QSettings, QFileInfo, QColor
 from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QMenu,
                                  QAction,
@@ -30,7 +30,7 @@ WIDGET, BASE = uic.loadUiType(
 
 class ReportDialog(BASE, WIDGET):
 
-    resultColor = [Qt.green, Qt.red, Qt.gray, Qt.magenta, Qt.yellow]
+    resultColor = [Qt.green, Qt.red, Qt.gray, Qt.magenta, QColor(237, 189, 129)]
     resultTag = ['PASSED', 'FAILED', 'SKIPPED', 'CONTAINS_ERROR', 'FAILED_AT_SETUP']
 
     def __init__(self, report):
