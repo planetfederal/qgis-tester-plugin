@@ -13,7 +13,7 @@ import webbrowser
 from collections import defaultdict
 
 from qgis.PyQt import uic
-from qgis.PyQt.QtCore import Qt, QSettings, QFileInfo, QColor
+from qgis.PyQt.QtCore import Qt, QSettings, QFileInfo
 from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QMenu,
                                  QAction,
@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QPushButton,
                                  QDialogButtonBox,
                                  QMessageBox)
-
+from qgis.PyQt.QtGui import QColor
 from qgis.core import QgsApplication
 
 WIDGET, BASE = uic.loadUiType(
