@@ -51,27 +51,26 @@ def findTests(path=None, prefix=None):
 
 tests = findTests()
 
-def _testsFromModule(module, group = None):
+def _testsFromModule(module, category="General"):
     modtests = []
-    group = group or module.__name__.split(".")[-1]
     if "functionalTests" in dir(module):
         modtests.extend(module.functionalTests())
     if "unitTests" in dir(module):
-        modtests.extend([UnitTestWrapper(unit) for unit in module.unitTests()])
+        modtests.extend([UnitTestWrapper(unit, category) for unit in module.unitTests()])
     if "settings" in dir(module):
         for test in modtests:
             test.settings = module.settings()
     return modtests
 
 def addTestModule(module, group = None):
-    modtests = _testsFromModule(module, group)
+    modtests = _testsFromModule(module)
     for t in modtests:
         t.group = group
         if t not in tests:
             tests.append(t)
 
 def removeTestModule(module, group = None):
-    modtests = _testsFromModule(module, group)
+    modtests = _testsFromModule(module)
     for t in modtests:
         t.group = group
         if t in tests:
