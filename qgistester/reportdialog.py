@@ -21,7 +21,7 @@ from qgis.PyQt.QtWidgets import (QTreeWidgetItem,
                                  QPushButton,
                                  QDialogButtonBox,
                                  QMessageBox)
-
+from qgis.PyQt.QtGui import QColor
 from qgis.core import QgsApplication
 
 WIDGET, BASE = uic.loadUiType(
@@ -30,7 +30,7 @@ WIDGET, BASE = uic.loadUiType(
 
 class ReportDialog(BASE, WIDGET):
 
-    resultColor = [Qt.green, Qt.red, Qt.gray, Qt.magenta, Qt.yellow]
+    resultColor = [Qt.green, Qt.red, Qt.gray, Qt.magenta, QColor(237, 189, 129)]
     resultTag = ['PASSED', 'FAILED', 'SKIPPED', 'CONTAINS_ERROR', 'FAILED_AT_SETUP']
 
     def __init__(self, report):
