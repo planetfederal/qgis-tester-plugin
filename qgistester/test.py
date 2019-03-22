@@ -47,8 +47,8 @@ class Test(object):
 
 class UnitTestWrapper(Test):
 
-    def __init__(self, test):
-        Test.__init__(self, test.shortDescription() or test.id())
+    def __init__(self, test, category = "General"):
+        Test.__init__(self, test.shortDescription() or str(test), category)
         self.test = test
         self.steps.append(Step("Run unit test", self._runTest))
 
@@ -64,7 +64,10 @@ class UnitTestWrapper(Test):
         if result.err is not None:
             desc = str(result.err) + "\n" + \
                    "".join(traceback.format_tb(result.err[2]))
-            raise Exception(desc)
+            if isinstance(result.err[1], AssertionError):
+                raise AssertionError(desc)
+            else:
+                raise Exception(desc)
 
 
 class _TestRunner(TextTestRunner):
